@@ -117,7 +117,7 @@ export default function PartnerDashboard() {
     // 2. Sync Bookings in Real-time
     const bookingsQuery = query(collection(db, "bookings"), where("partnerId", "==", user.uid));
     const unsubscribeBookings = onSnapshot(bookingsQuery, (snapshot) => {
-      const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as any[];
       
       // Sort by creation time (newest first) or date
       data.sort((a: any, b: any) => {
