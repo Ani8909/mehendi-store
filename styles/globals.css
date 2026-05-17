@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #C2185B; /* Deep Rich Magenta */
+  --color-secondary: #E91E63; /* Pink */
+  --color-accent: #D4AF37; /* Royal Gold */
+  --color-background: #FCFAFA; /* Crisp Off-White */
+  --color-foreground: #1A1A1A; /* Almost Black for high contrast */
+  --color-header: #560319; /* Deep Maroon/Burgundy */
+
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-playfair), ui-serif, Georgia, serif;
+  
+  --size-7xl: 1440px; /* Redefine 7xl size to 1440px for wider premium layouts */
+}
+
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    @apply font-sans;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--color-header);
+    @apply font-serif;
+  }
+}
+
+@layer utilities {
+  @keyframes ken-burns {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.15); }
+  }
+
+  .animate-ken-burns {
+    animation: ken-burns 12s ease-out forwards;
+  }
+
+  @keyframes marquee-slow {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .animate-marquee-slow {
+    animation: marquee-slow 20s linear infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%) skewX(-20deg);
+    }
+    100% {
+      transform: translateX(200%) skewX(-20deg);
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite linear;
+  }
+}

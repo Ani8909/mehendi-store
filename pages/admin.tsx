@@ -1,0 +1,1535 @@
+import Head from "next/head";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { motion, AnimatePresence } from "framer-motion";
+import { collection, getDocs, updateDoc, doc, query, orderBy, addDoc, serverTimestamp, deleteDoc, setDoc, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { useAuth } from "@/lib/authContext";
+import { Bar, Doughnut } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+} from "chart.js";
+import { FiUsers, FiCalendar, FiDollarSign, FiLogOut, FiImage, FiLayout, FiPieChart, FiX, FiUploadCloud, FiClock, FiCheck, FiActivity } from "react-icons/fi";
+import { FullScreenLoader } from "@/components/Loader";
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
+
+export default function AdminDashboard() {
+  const { user, userData, loading: authLoading, signOut } = useAuth();
+  const router = useRouter();
+
+  const [activeTab, setActiveTab] = useState<"bookings" | "partners" | "reports" | "gallery" | "hero" | "express" | "packages">("bookings");
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [partners, setPartners] = useState<any[]>([]);
+  const [galleryItems, setGalleryItems] = useState<any[]>([]);
+  const [heroSlides, setHeroSlides] = useState<any[]>([]);
+  const [expressZones, setExpressZones] = useState<any[]>([]);
+  const [eventPackages, setEventPackages] = useState<any[]>([]);
+  const [packageEnquiries, setPackageEnquiries] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Upload States
+  const [uploading, setUploading] = useState(false);
+  const [newDesktopImage, setNewDesktopImage] = useState("");
+  const [newMobileImage, setNewMobileImage] = useState("");
+  const [newTitle, setNewTitle] = useState("");
+  const [newSubtitle, setNewSubtitle] = useState("");
+  const [newCategory, setNewCategory] = useState("Bridal");
+
+  // Partner State
+  const [newPartnerName, setNewPartnerName] = useState("");
+  const [newPartnerEmail, setNewPartnerEmail] = useState("");
+  const [newPartnerArea, setNewPartnerArea] = useState("");
+  const [partnerInvites, setPartnerInvites] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!authLoading && (!user || userData?.role !== "admin")) {
+      router.push("/login");
+    }
+  }, [user, userData, authLoading, router]);
+
+  useEffect(() => {
+    if (userData?.role !== "admin") return;
+
+    setLoading(true);
+    const unsubscribes: (() => void)[] = [];
+
+    // 1. Live Bookings Listener
+    const bookingsQuery = query(collection(db, "bookings"), orderBy("createdAt", "desc"));
+    const unsubBookings = onSnapshot(bookingsQuery, (snapshot) => {
+      setBookings(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+      setLoading(false); // Turn off main page loader once we get our first load
+    }, (err) => console.error("Bookings sync error:", err));
+    unsubscribes.push(unsubBookings);
+
+    // 2. Live Partners Listener
+    const unsubPartners = onSnapshot(collection(db, "partners"), (snapshot) => {
+      setPartners(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+    }, (err) => console.error("Partners sync error:", err));
+    unsubscribes.push(unsubPartners);
+
+    // 3. Live Designs Gallery Listener
+    const galleryQuery = query(collection(db, "designs_gallery"), orderBy("uploadedAt", "desc"));
+    const unsubGallery = onSnapshot(galleryQuery, (snapshot) => {
+      setGalleryItems(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+    }, (err) => console.error("Gallery sync error:", err));
+    unsubscribes.push(unsubGallery);
+
+    // 4. Live Hero Slides Listener
+    const unsubHero = onSnapshot(collection(db, "hero_slides"), (snapshot) => {
+      setHeroSlides(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+    }, (err) => console.error("Hero slides sync error:", err));
+    unsubscribes.push(unsubHero);
+
+    // 5. Live Express Zones Listener
+    const unsubExpress = onSnapshot(collection(db, "express_zones"), (snapshot) => {
+      setExpressZones(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+    }, (err) => console.error("Express zones sync error:", err));
+    unsubscribes.push(unsubExpress);
+
+    // 6. Live Event Packages Listener
+    const unsubPackages = onSnapshot(collection(db, "event_packages"), (snapshot) => {
+      setEventPackages(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+    }, (err) => console.error("Packages sync error:", err));
+    unsubscribes.push(unsubPackages);
+
+    // 7. Live Package Enquiries Listener
+    const enquiryQuery = query(collection(db, "package_enquiries"), orderBy("createdAt", "desc"));
+    const unsubEnquiry = onSnapshot(enquiryQuery, (snapshot) => {
+      setPackageEnquiries(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+    }, (err) => console.error("Enquiry sync error:", err));
+    unsubscribes.push(unsubEnquiry);
+
+    // 8. Live Partner Invites Listener
+    const unsubInvites = onSnapshot(collection(db, "partner_invites"), (snapshot) => {
+      setPartnerInvites(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+    }, (err) => console.error("Invites sync error:", err));
+    unsubscribes.push(unsubInvites);
+
+    // Clean up all active listeners on unmount or session switch
+    return () => {
+      unsubscribes.forEach(unsub => unsub());
+    };
+  }, [userData]);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: "desktop" | "mobile" | "gallery") => {
+    if (!e.target.files?.[0]) return;
+    const file = e.target.files[0];
+    
+    // Check size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert("File is too large! Please use an image smaller than 10MB.");
+      return;
+    }
+
+    setUploading(true);
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = async () => {
+      try {
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image: reader.result }),
+        });
+        
+        if (!res.ok) {
+          const text = await res.text();
+          let errorMessage = "Server Error";
+          try {
+            const json = JSON.parse(text);
+            errorMessage = json.error || json.message || errorMessage;
+          } catch (e) {
+            if (text.includes("Body exceeded")) errorMessage = "Image size is too large for the server.";
+            else errorMessage = text;
+          }
+          throw new Error(errorMessage);
+        }
+
+        const data = await res.json();
+        if (target === "desktop") setNewDesktopImage(data.url);
+        else if (target === "mobile") setNewMobileImage(data.url);
+        else if (target === "gallery") setNewImage(data.url);
+        
+        console.log(`Uploaded to ${target}:`, data.url);
+      } catch (err: any) {
+        console.error("Upload Error:", err);
+        alert("Upload failed: " + err.message);
+      } finally {
+        setUploading(false);
+      }
+    };
+  };
+
+  const handleAddPartner = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPartnerName || !newPartnerEmail || !newPartnerArea) return;
+    try {
+      const emailLower = newPartnerEmail.toLowerCase().trim();
+      const inviteData = {
+        name: newPartnerName,
+        email: emailLower,
+        area: newPartnerArea,
+        role: "partner",
+        status: "pending",
+        createdAt: serverTimestamp()
+      };
+      await setDoc(doc(db, "partner_invites", emailLower), inviteData);
+      setPartnerInvites([{ id: emailLower, ...inviteData }, ...partnerInvites]);
+      alert("Partner invited successfully! They can now sign up using this email to claim their account.");
+      setNewPartnerName("");
+      setNewPartnerEmail("");
+      setNewPartnerArea("");
+    } catch (err: any) {
+      console.error(err);
+      alert("Failed to invite partner: " + err.message);
+    }
+  };
+
+  const [newImage, setNewImage] = useState(""); // For gallery
+
+  const handleAddGalleryItem = async () => {
+    if (!newImage) return;
+    try {
+      const newItem = {
+        imageURL: newImage,
+        category: newCategory,
+        uploadedAt: serverTimestamp(),
+      };
+      const docRef = await addDoc(collection(db, "designs_gallery"), newItem);
+      setGalleryItems([{ id: docRef.id, ...newItem }, ...galleryItems]);
+      setNewImage("");
+    } catch (err) {
+      alert("Error adding to gallery");
+    }
+  };
+
+  const handleAddHeroSlide = async () => {
+    if (!newDesktopImage || !newMobileImage || !newTitle) return;
+    try {
+      const newSlide = {
+        image: newDesktopImage,
+        mobileImage: newMobileImage,
+        title: newTitle,
+        subtitle: newSubtitle,
+      };
+      const docRef = await addDoc(collection(db, "hero_slides"), newSlide);
+      setHeroSlides([...heroSlides, { id: docRef.id, ...newSlide }]);
+      setNewDesktopImage("");
+      setNewMobileImage("");
+      setNewTitle("");
+      setNewSubtitle("");
+    } catch (err) {
+      alert("Error adding hero slide");
+    }
+  };
+
+  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; col: string; id: string } | null>(null);
+  const [editModal, setEditModal] = useState<{ isOpen: boolean; type: string; data: any } | null>(null);
+
+  const deleteItem = async () => {
+    if (!deleteModal) return;
+    const { col, id } = deleteModal;
+    try {
+      await deleteDoc(doc(db, col, id));
+      if (col === "designs_gallery") setGalleryItems(galleryItems.filter(i => i.id !== id));
+      if (col === "hero_slides") setHeroSlides(heroSlides.filter(i => i.id !== id));
+      if (col === "express_zones") setExpressZones(expressZones.filter(i => i.id !== id));
+      if (col === "event_packages") setEventPackages(eventPackages.filter(i => i.id !== id));
+      if (col === "package_enquiries") setPackageEnquiries(packageEnquiries.filter(i => i.id !== id));
+      if (col === "partners") setPartners(partners.filter(i => i.id !== id));
+      if (col === "bookings") setBookings(bookings.filter(i => i.id !== id));
+      setDeleteModal(null);
+      alert("Deleted successfully!");
+    } catch (err: any) {
+      alert("Delete failed: " + err.message);
+    }
+  };
+
+  const saveEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editModal) return;
+    try {
+      const { type, data } = editModal;
+      let col = "";
+      if (type === "zone") col = "express_zones";
+      else if (type === "package") col = "event_packages";
+      else if (type === "partner") col = "partners";
+      else if (type === "booking") col = "bookings";
+      else if (type === "gallery") col = "designs_gallery";
+
+      if (!col) return;
+
+      const docRef = doc(db, col, data.id);
+      // Clean up data before saving (remove id to not overwrite it in doc)
+      const { id, ...updateData } = data;
+      
+      await updateDoc(docRef, updateData);
+
+      // Update local state
+      if (type === "zone") setExpressZones(expressZones.map(z => z.id === id ? { ...z, ...updateData } : z));
+      else if (type === "package") setEventPackages(eventPackages.map(p => p.id === id ? { ...p, ...updateData } : p));
+      else if (type === "partner") setPartners(partners.map(p => p.id === id ? { ...p, ...updateData } : p));
+      else if (type === "booking") setBookings(bookings.map(b => b.id === id ? { ...b, ...updateData } : b));
+      else if (type === "gallery") setGalleryItems(galleryItems.map(g => g.id === id ? { ...g, ...updateData } : g));
+
+      setEditModal(null);
+      alert("Updated successfully!");
+    } catch (err: any) {
+      alert("Update failed: " + err.message);
+    }
+  };
+
+  const [newZoneName, setNewZoneName] = useState("");
+
+  const handleAddExpressZone = async () => {
+    if (!newZoneName) return;
+    try {
+      const docRef = await addDoc(collection(db, "express_zones"), {
+        name: newZoneName,
+        createdAt: serverTimestamp()
+      });
+      setExpressZones([{ id: docRef.id, name: newZoneName }, ...expressZones]);
+      setNewZoneName("");
+    } catch (err: any) {
+      alert("Failed to add zone: " + err.message);
+    }
+  };
+
+  const seedExpressZones = async () => {
+    const demoZones = ["Kamla Nagar", "Sanjay Place", "Shastripuram ❤️", "Tajganj", "Dayalbagh"];
+    try {
+      for (const zone of demoZones) {
+        await addDoc(collection(db, "express_zones"), {
+          name: zone,
+          createdAt: serverTimestamp()
+        });
+      }
+      // Refresh list
+      const expressSnap = await getDocs(collection(db, "express_zones"));
+      setExpressZones(expressSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+      alert("Demo Areas added successfully!");
+    } catch (err: any) {
+      alert("Seeding failed: " + err.message);
+    }
+  };
+
+  const seedGalleryDesigns = async () => {
+    const demoDesigns = [
+      { imageURL: "/images/gallery/bridal_1.png", category: "Bridal" },
+      { imageURL: "/images/gallery/bridal_2.png", category: "Bridal" },
+      { imageURL: "/images/gallery/bridal_3.png", category: "Bridal" },
+      { imageURL: "/images/gallery/arabic_1.png", category: "Arabic" },
+      { imageURL: "/images/gallery/arabic_2.png", category: "Arabic" },
+      { imageURL: "/images/gallery/feet_1.png", category: "Feet" },
+      { imageURL: "/images/gallery/feet_2.png", category: "Feet" }
+    ];
+    try {
+      for (const design of demoDesigns) {
+        await addDoc(collection(db, "designs_gallery"), {
+          imageURL: design.imageURL,
+          category: design.category,
+          uploadedAt: serverTimestamp()
+        });
+      }
+      // Refresh list
+      const gallerySnap = await getDocs(query(collection(db, "designs_gallery"), orderBy("uploadedAt", "desc")));
+      setGalleryItems(gallerySnap.docs.map(d => ({ id: d.id, ...d.data() })));
+      alert("Demo designs seeded successfully!");
+    } catch (err: any) {
+      alert("Seeding failed: " + err.message);
+    }
+  };
+
+  const [newPkgName, setNewPkgName] = useState("");
+  const [newPkgPrice, setNewPkgPrice] = useState("");
+  const [newPkgDesc, setNewPkgDesc] = useState("");
+  const [newPkgFeatures, setNewPkgFeatures] = useState<string[]>([""]);
+
+  const addFeatureInput = () => setNewPkgFeatures([...newPkgFeatures, ""]);
+  const updateFeatureInput = (index: number, value: string) => {
+    const updated = [...newPkgFeatures];
+    updated[index] = value;
+    setNewPkgFeatures(updated);
+  };
+
+  const handleAddPackage = async () => {
+    if (!newPkgName || !newPkgPrice) return;
+    try {
+      const docRef = await addDoc(collection(db, "event_packages"), {
+        name: newPkgName,
+        price: Number(newPkgPrice),
+        description: newPkgDesc,
+        features: newPkgFeatures.filter(f => f.trim() !== ""),
+        createdAt: serverTimestamp()
+      });
+      setEventPackages([{ 
+        id: docRef.id, 
+        name: newPkgName, 
+        price: Number(newPkgPrice), 
+        description: newPkgDesc,
+        features: newPkgFeatures.filter(f => f.trim() !== "")
+      }, ...eventPackages]);
+      setNewPkgName(""); setNewPkgPrice(""); setNewPkgDesc(""); setNewPkgFeatures([""]);
+    } catch (err: any) {
+      alert("Failed to add package: " + err.message);
+    }
+  };
+
+  const seedPackages = async () => {
+    const demoPkgs = [
+      { 
+        name: "The Royal Queen (Bridal Contract)", 
+        price: 21000, 
+        desc: "Agra ki sabse sundar dulhan ke liye hamara sabse premium contract. Ismein har cheez 'Royal' hogi.",
+        features: ["Exquisite Bridal Mehndi (Full Hands & Legs)", "Mehndi for 10 Close Family Members", "3 Senior Artists for 6 Hours", "Premium Dark-Stain Organic Henna", "Complimentary Touch-up & Aftercare Kit"]
+      },
+      { 
+        name: "Suhagan Group Pack (Family Special)", 
+        price: 7999, 
+        desc: "Ghar ki ladies aur doston ke liye ek perfect combo. Kam time mein zyada khubsurti.",
+        features: ["Mehndi for up to 10 Ladies", "Stylish Arabic & Floral Patterns", "2 Professional Artists", "Quick-Drying Henna for Busy Events", "Fixed Price - No Hidden Charges"]
+      },
+      { 
+        name: "Shagun Party Contract (Events)", 
+        price: 12500, 
+        desc: "Engagement, Sangeet ya Kitty Party ke liye best choice. Poore function ki raunak badhayein.",
+        features: ["Unlimited Mehndi for 3 Hours", "Team of 3 Experts Artists", "Special Party Designs (Front & Back)", "Travel & Setup Included", "Instant Booking Confirmation"]
+      }
+    ];
+    try {
+      for (const pkg of demoPkgs) {
+        await addDoc(collection(db, "event_packages"), { ...pkg, createdAt: serverTimestamp() });
+      }
+      const pkgSnap = await getDocs(collection(db, "event_packages"));
+      setEventPackages(pkgSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+      alert("Beautiful Royal Packages added!");
+    } catch (err: any) {
+      alert("Failed to seed: " + err.message);
+    }
+  };
+
+  const updateSlideText = async (id: string, field: string, value: string) => {
+    try {
+      await updateDoc(doc(db, "hero_slides", id), { [field]: value });
+      setHeroSlides(heroSlides.map(s => s.id === id ? { ...s, [field]: value } : s));
+    } catch (err: any) {
+      alert("Update failed: " + err.message);
+    }
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/");
+  };
+
+  if (authLoading || loading) return <FullScreenLoader />;
+  if (!user || userData?.role !== "admin") return null;
+
+  // Chart Data preparation
+  const revenueByStatus = bookings.reduce((acc, curr) => {
+    acc[curr.status] = (acc[curr.status] || 0) + (curr.price || 0);
+    return acc;
+  }, {} as Record<string, number>);
+
+  const barData = {
+    labels: Object.keys(revenueByStatus),
+    datasets: [
+      {
+        label: "Revenue (₹)",
+        data: Object.values(revenueByStatus),
+        backgroundColor: ["#FF69B4", "#FFD700", "#FFB6C1", "#4ADE80", "#F87171"],
+      }
+    ]
+  };
+
+  const statusCount = bookings.reduce((acc, curr) => {
+    acc[curr.status] = (acc[curr.status] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const doughnutData = {
+    labels: Object.keys(statusCount),
+    datasets: [
+      {
+        data: Object.values(statusCount),
+        backgroundColor: ["#FF69B4", "#FFD700", "#FFB6C1", "#4ADE80", "#F87171"],
+      }
+    ]
+  };
+
+  return (
+    <>
+      <Head>
+        <title>Admin Dashboard | Jyoti Mehendi</title>
+      </Head>
+
+      <div className="bg-gray-50 min-h-screen pb-12">
+        {/* Admin Header */}
+        <div className="bg-gradient-to-r from-[var(--color-primary)] to-pink-600 text-white pt-28 pb-12 px-4 sm:px-6 lg:px-8 shadow-md relative overflow-hidden">
+          {/* Subtle geometric texture overlay */}
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')] opacity-15 mix-blend-overlay"></div>
+          {/* Soft background lighting accents */}
+          <div className="absolute -left-20 -top-20 w-60 h-60 bg-pink-300 rounded-full blur-[80px] opacity-30 pointer-events-none"></div>
+          <div className="absolute -right-20 -bottom-20 w-60 h-60 bg-amber-100 rounded-full blur-[80px] opacity-30 pointer-events-none"></div>
+          
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center relative z-10">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-extrabold font-serif tracking-tight text-white drop-shadow-sm">Admin Portal</h1>
+              <p className="text-pink-100 font-medium text-xs md:text-sm mt-1.5 leading-relaxed">Manage system bookings, registers, partners, and analytics reports.</p>
+            </div>
+            <button onClick={handleSignOut} className="mt-4 md:mt-0 flex items-center space-x-2 bg-white/25 hover:bg-white/35 text-white px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all shadow-md border border-white/20 backdrop-blur-sm">
+              <FiLogOut /> <span>Sign Out</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-[-20px] relative z-10">
+          {/* Quick Stats */}
+          <div className="grid grid-cols-3 gap-3 md:gap-6 mb-6">
+            <div className="bg-white rounded-xl md:rounded-2xl shadow-sm p-3 md:p-6 border border-gray-100 flex flex-col md:flex-row items-center md:items-center space-y-2 md:space-y-0 md:space-x-4 text-center md:text-left">
+              <div className="w-10 h-10 md:w-14 md:h-14 bg-pink-50 text-pink-500 rounded-lg md:rounded-xl flex items-center justify-center text-lg md:text-2xl"><FiCalendar /></div>
+              <div><p className="text-gray-400 md:text-gray-500 text-[9px] md:text-sm font-bold uppercase tracking-wider md:normal-case">Bookings</p><p className="text-base md:text-2xl font-black text-gray-800">{bookings.length}</p></div>
+            </div>
+            <div className="bg-white rounded-xl md:rounded-2xl shadow-sm p-3 md:p-6 border border-gray-100 flex flex-col md:flex-row items-center md:items-center space-y-2 md:space-y-0 md:space-x-4 text-center md:text-left">
+              <div className="w-10 h-10 md:w-14 md:h-14 bg-green-50 text-green-500 rounded-lg md:rounded-xl flex items-center justify-center text-lg md:text-2xl"><FiDollarSign /></div>
+              <div><p className="text-gray-400 md:text-gray-500 text-[9px] md:text-sm font-bold uppercase tracking-wider md:normal-case">Revenue</p><p className="text-base md:text-2xl font-black text-gray-800">₹{bookings.reduce((a, b) => a + (b.price || 0), 0)}</p></div>
+            </div>
+            <div className="bg-white rounded-xl md:rounded-2xl shadow-sm p-3 md:p-6 border border-gray-100 flex flex-col md:flex-row items-center md:items-center space-y-2 md:space-y-0 md:space-x-4 text-center md:text-left">
+              <div className="w-10 h-10 md:w-14 md:h-14 bg-purple-50 text-purple-500 rounded-lg md:rounded-xl flex items-center justify-center text-lg md:text-2xl"><FiUsers /></div>
+              <div><p className="text-gray-400 md:text-gray-500 text-[9px] md:text-sm font-bold uppercase tracking-wider md:normal-case">Partners</p><p className="text-base md:text-2xl font-black text-gray-800">{partners.filter(p => p.isAvailable).length}</p></div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden min-h-[60vh]">
+            
+            {/* Tabs */}
+            <div className="flex border-b border-gray-200 overflow-x-auto scrollbar-none scroll-smooth" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              <style jsx>{`
+                div::-webkit-scrollbar {
+                  display: none;
+                }
+              `}</style>
+              {[
+                { id: "bookings", label: "Bookings", icon: <FiCalendar/> },
+                { id: "partners", label: "Partners", icon: <FiUsers/> },
+                { id: "gallery", label: "Gallery", icon: <FiImage/> },
+                { id: "hero", label: "Hero Slider", icon: <FiLayout/> },
+                { id: "express", label: "Express Zones", icon: <FiClock/> },
+                { id: "packages", label: "Event Packages", icon: <FiUsers/> },
+                { id: "reports", label: "Reports", icon: <FiPieChart/> },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`px-6 md:px-8 py-4 font-bold capitalize whitespace-nowrap transition-all flex items-center space-x-2 border-b-2 text-xs md:text-sm ${activeTab === tab.id ? "text-[var(--color-primary)] border-[var(--color-primary)] bg-pink-50/40" : "text-gray-500 border-transparent hover:bg-gray-50"}`}
+                >
+                  <span className="text-base">{tab.icon}</span> <span>{tab.label}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="p-6">
+              {/* Bookings Tab */}
+              {activeTab === "bookings" && (
+                <div className="space-y-4">
+                  {/* Desktop Table View */}
+                  <div className="hidden md:block overflow-x-auto">
+                    <table className="w-full text-left text-sm">
+                      <thead className="bg-gray-50 text-gray-600">
+                        <tr>
+                          <th className="p-4 rounded-tl-xl font-medium">Customer</th>
+                          <th className="p-4 font-medium">Service</th>
+                          <th className="p-4 font-medium">Date & Time</th>
+                          <th className="p-4 font-medium">Status</th>
+                          <th className="p-4 font-medium">Assign Partner</th>
+                          <th className="p-4 rounded-tr-xl font-medium">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {bookings.map(booking => (
+                          <tr key={booking.id} className="hover:bg-gray-50">
+                            <td className="p-4">
+                              <div className="flex flex-col">
+                                <span className="font-semibold text-gray-800">{booking.customerName}</span>
+                                {booking.phone ? (
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <a 
+                                      href={`tel:${booking.phone}`} 
+                                      className="font-extrabold text-[var(--color-primary)] hover:underline flex items-center gap-1 text-xs"
+                                      title="Call Customer"
+                                    >
+                                      📞 {booking.phone}
+                                    </a>
+                                    <a 
+                                      href={`https://wa.me/91${booking.phone}?text=Hello%20${encodeURIComponent(booking.customerName)}%2C%20Jyoti%20Mehendi%20Admin%20here%20regarding%20your%20booking%20for%20${encodeURIComponent(booking.serviceTitle)}.`}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="text-emerald-600 hover:text-emerald-700 font-bold text-xs"
+                                      title="Chat on WhatsApp"
+                                    >
+                                      💬 WhatsApp
+                                    </a>
+                                  </div>
+                                ) : (
+                                  <span className="text-gray-400 text-xs">-</span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="p-4">
+                              {booking.serviceTitle} <br/>
+                              <span className="text-xs text-gray-500 font-semibold">₹{booking.price}</span>
+                              {booking.bookingType === "express" && (
+                                <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-pink-100 text-pink-600 uppercase tracking-widest animate-pulse">🚀 Express</span>
+                              )}
+                            </td>
+                            <td className="p-4">{booking.bookingDateString} <br/><span className="text-xs text-gray-500">{booking.timeSlot}</span></td>
+                            <td className="p-4">
+                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                booking.status === 'pending' ? 'bg-orange-100 text-orange-700' :
+                                booking.status === 'assigned' ? 'bg-blue-100 text-blue-700' :
+                                booking.status === 'dispatched' ? 'bg-pink-100 text-pink-700 font-extrabold animate-pulse border border-pink-200' :
+                                booking.status === 'completed' ? 'bg-green-100 text-green-700' :
+                                'bg-red-100 text-red-700'
+                              }`}>
+                                {booking.status.toUpperCase()}
+                              </span>
+                            </td>
+                            <td className="p-4">
+                              <select 
+                                  className="border border-gray-300 rounded p-1 text-sm bg-white"
+                                  value={booking.partnerId || ""}
+                                  onChange={async (e) => {
+                                    const pId = e.target.value;
+                                    await updateDoc(doc(db, "bookings", booking.id), { partnerId: pId, status: "assigned" });
+                                    setBookings(bookings.map(b => b.id === booking.id ? { ...b, partnerId: pId, status: "assigned" } : b));
+                                  }}
+                                  disabled={booking.status === "completed" || booking.status === "cancelled"}
+                                >
+                                  <option value="" disabled>Select Partner</option>
+                                  {partners.map(p => (
+                                    <option key={p.id} value={p.id}>{p.name} ({p.area})</option>
+                                  ))}
+                                </select>
+                            </td>
+                            <td className="p-4 flex flex-col items-start gap-1">
+                              <button onClick={() => setEditModal({ isOpen: true, type: "booking", data: booking })} className="text-[var(--color-primary)] font-semibold hover:underline text-[10px] uppercase tracking-tighter">Edit Details</button>
+                              <button onClick={() => setDeleteModal({ isOpen: true, col: "bookings", id: booking.id })} className="text-red-500 font-semibold hover:underline text-[10px] uppercase tracking-tighter">Delete Booking</button>
+                              <Link href={`/booking-slip/${booking.id}`} target="_blank" className="text-blue-500 font-bold hover:underline text-[10px] uppercase tracking-tighter">View Slip</Link>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Mobile Card List View */}
+                  <div className="block md:hidden space-y-4">
+                    {bookings.map(booking => (
+                      <div key={booking.id} className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+                        {booking.bookingType === "express" && (
+                          <div className="absolute top-0 right-0 bg-gradient-to-l from-pink-500 to-pink-400 text-white text-[9px] font-black uppercase tracking-wider px-3 py-1 rounded-bl-xl shadow-sm animate-pulse">
+                            🚀 EXPRESS DISPATCH
+                          </div>
+                        )}
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <h4 className="font-extrabold text-gray-800 text-base">{booking.customerName}</h4>
+                            {booking.phone ? (
+                              <div className="flex items-center gap-2 mt-1">
+                                <a href={`tel:${booking.phone}`} className="text-pink-600 font-bold text-xs hover:underline flex items-center">
+                                  📞 {booking.phone}
+                                </a>
+                                <a 
+                                  href={`https://wa.me/91${booking.phone}?text=Hello%20${encodeURIComponent(booking.customerName)}%2C%20Jyoti%20Mehendi%20Admin%20here%20regarding%20your%20booking%20for%20${encodeURIComponent(booking.serviceTitle)}.`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-emerald-600 font-bold text-xs flex items-center gap-0.5"
+                                >
+                                  💬 Chat
+                                </a>
+                              </div>
+                            ) : (
+                              <span className="text-gray-400 text-xs">-</span>
+                            )}
+                          </div>
+                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-wider ${
+                            booking.status === 'pending' ? 'bg-orange-100 text-orange-700' :
+                            booking.status === 'assigned' ? 'bg-blue-100 text-blue-700' :
+                            booking.status === 'dispatched' ? 'bg-pink-100 text-pink-700 animate-pulse border border-pink-200' :
+                            booking.status === 'completed' ? 'bg-green-100 text-green-700' :
+                            'bg-red-100 text-red-700'
+                          }`}>
+                            {booking.status.toUpperCase()}
+                          </span>
+                        </div>
+
+                        <div className="space-y-2 text-xs border-t border-gray-100 pt-3 text-gray-600">
+                          <div className="flex justify-between">
+                            <span className="font-semibold text-gray-400">Service:</span>
+                            <span className="font-bold text-gray-800">{booking.serviceTitle} (₹{booking.price})</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-semibold text-gray-400">Schedule:</span>
+                            <span className="font-bold text-gray-800">{booking.bookingDateString} | {booking.timeSlot}</span>
+                          </div>
+                          <div className="flex justify-between items-start">
+                            <span className="font-semibold text-gray-400 w-16">Address:</span>
+                            <span className="font-bold text-gray-800 text-right leading-relaxed flex-1 ml-4">{booking.address}</span>
+                          </div>
+                          {booking.additionalNotes && (
+                            <div className="bg-pink-50/50 p-2 rounded-lg mt-2 text-[11px]">
+                              <span className="font-semibold text-gray-400">Notes:</span> {booking.additionalNotes}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="mt-4 pt-3 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+                          <div className="flex-1">
+                            <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Assign Partner</label>
+                            <select 
+                              className="w-full border border-gray-300 rounded-xl px-2 py-1.5 text-xs bg-white font-bold"
+                              value={booking.partnerId || ""}
+                              onChange={async (e) => {
+                                const pId = e.target.value;
+                                await updateDoc(doc(db, "bookings", booking.id), { partnerId: pId, status: "assigned" });
+                                setBookings(bookings.map(b => b.id === booking.id ? { ...b, partnerId: pId, status: "assigned" } : b));
+                              }}
+                              disabled={booking.status === "completed" || booking.status === "cancelled"}
+                            >
+                              <option value="" disabled>Select Partner</option>
+                              {partners.map(p => (
+                                <option key={p.id} value={p.id}>{p.name} ({p.area})</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="flex justify-end items-center gap-3 pt-2">
+                            <button onClick={() => setEditModal({ isOpen: true, type: "booking", data: booking })} className="bg-pink-50 hover:bg-pink-100 text-[var(--color-primary)] font-extrabold px-3 py-2 rounded-xl text-xs uppercase tracking-wider transition-colors">Edit</button>
+                            <button onClick={() => setDeleteModal({ isOpen: true, col: "bookings", id: booking.id })} className="bg-red-50 hover:bg-red-100 text-red-500 font-extrabold px-3 py-2 rounded-xl text-xs uppercase tracking-wider transition-colors">Delete</button>
+                            <Link href={`/booking-slip/${booking.id}`} target="_blank" className="bg-blue-50 hover:bg-blue-100 text-blue-500 font-extrabold px-3 py-2 rounded-xl text-xs uppercase tracking-wider transition-colors text-center">Slip</Link>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {bookings.length === 0 && (
+                      <p className="text-center text-gray-400 py-8 italic">No bookings found.</p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Partners Tab */}
+              {activeTab === "partners" && (
+                <div className="space-y-8">
+                  {/* Register Form */}
+                  <div className="bg-pink-50 p-6 rounded-2xl border border-pink-100 shadow-sm">
+                    <h3 className="font-bold text-lg text-[var(--color-header)] mb-4">Invite New Partner</h3>
+                    <form onSubmit={handleAddPartner} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                      <div>
+                        <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Full Name</label>
+                        <input type="text" value={newPartnerName} onChange={e => setNewPartnerName(e.target.value)} required className="w-full p-2.5 border border-gray-200 rounded-lg text-sm" placeholder="e.g. Riya Mehndi Art" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Email Address</label>
+                        <input type="email" value={newPartnerEmail} onChange={e => setNewPartnerEmail(e.target.value)} required className="w-full p-2.5 border border-gray-200 rounded-lg text-sm" placeholder="partner@email.com" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Operational Area</label>
+                        <input type="text" value={newPartnerArea} onChange={e => setNewPartnerArea(e.target.value)} required className="w-full p-2.5 border border-gray-200 rounded-lg text-sm" placeholder="e.g. Kamla Nagar" />
+                      </div>
+                      <button type="submit" className="bg-[var(--color-primary)] text-white font-bold py-2.5 px-6 rounded-lg hover:bg-[var(--color-header)] transition-colors shadow-md w-full">
+                        Send Invite
+                      </button>
+                    </form>
+                    <p className="text-xs text-gray-500 mt-3 italic">* The partner simply needs to 'Sign Up' using this exact email address to claim their account.</p>
+                  </div>
+
+                  {/* Active Partners List */}
+                  <div>
+                    <h3 className="font-bold text-lg text-gray-700 mb-4 flex items-center space-x-2"><span>Registered Partners</span> <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">{partners.length} Active</span></h3>
+                    
+                    {/* Desktop Table View */}
+                    <div className="hidden md:block overflow-x-auto bg-white rounded-xl border border-gray-100 shadow-sm">
+                      <table className="w-full text-left text-sm">
+                        <thead className="bg-gray-50 text-gray-600 border-b border-gray-100">
+                          <tr>
+                            <th className="p-4 font-medium">Partner Name</th>
+                            <th className="p-4 font-medium">Contact</th>
+                            <th className="p-4 font-medium">Area</th>
+                            <th className="p-4 font-medium">Status</th>
+                            <th className="p-4 font-medium">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {partners.map(p => (
+                            <tr key={p.id} className="hover:bg-gray-50">
+                              <td className="p-4">
+                                <div className="flex flex-col">
+                                  <span className="font-semibold text-gray-800">{p.name}</span>
+                                  <span className="text-[10px] text-amber-500 font-bold mt-0.5">⭐ {p.rating?.toFixed(1) || "5.0"} Avg Rating</span>
+                                </div>
+                              </td>
+                              <td className="p-4">
+                                {p.phone ? (
+                                  <div className="flex flex-col">
+                                    <a href={`tel:${p.phone}`} className="font-extrabold text-[var(--color-primary)] hover:underline flex items-center gap-1 text-xs">
+                                      📞 {p.phone}
+                                    </a>
+                                    <span className="text-[10px] text-gray-400 mt-0.5">{p.email}</span>
+                                  </div>
+                                ) : (
+                                  <span className="text-gray-500 text-xs font-semibold">{p.email}</span>
+                                )}
+                              </td>
+                              <td className="p-4 text-gray-600">{p.area || "Not specified"}</td>
+                              <td className="p-4">
+                                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-wider ${
+                                  p.isAvailable ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"
+                                }`}>
+                                  {p.isAvailable ? "AVAILABLE" : "OFFLINE"}
+                                </span>
+                              </td>
+                              <td className="p-4 flex gap-2 items-center">
+                                {p.phone && (
+                                  <>
+                                    <a 
+                                      href={`tel:${p.phone}`} 
+                                      className="bg-green-50 hover:bg-green-100 text-green-600 font-extrabold px-2.5 py-1 rounded-lg border border-green-100/50 text-[10px] uppercase tracking-wider transition-colors flex items-center gap-1 shadow-sm"
+                                    >
+                                      Call Partner
+                                    </a>
+                                    <a 
+                                      href={`https://wa.me/91${p.phone}?text=Hello%20${encodeURIComponent(p.name)}%2C%20Jyoti%20Mehendi%20Admin%20here.`}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 font-extrabold px-2.5 py-1 rounded-lg border border-emerald-100/50 text-[10px] uppercase tracking-wider transition-colors flex items-center gap-1 shadow-sm"
+                                    >
+                                      WhatsApp
+                                    </a>
+                                  </>
+                                )}
+                                <button onClick={() => setEditModal({ isOpen: true, type: "partner", data: p })} className="text-pink-500 font-bold hover:underline text-[10px] uppercase tracking-wider">Edit</button>
+                                <button onClick={() => setDeleteModal({ isOpen: true, col: "partners", id: p.id })} className="text-red-500 font-bold hover:underline text-[10px] uppercase tracking-wider">Delete</button>
+                              </td>
+                            </tr>
+                          ))}
+                          {partners.length === 0 && (
+                            <tr><td colSpan={5} className="p-8 text-center text-gray-400">No active partners yet.</td></tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Mobile Card List View */}
+                    <div className="block md:hidden space-y-4">
+                      {partners.map(p => (
+                        <div key={p.id} className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
+                          <div className="flex justify-between items-start mb-3">
+                            <div>
+                              <h4 className="font-extrabold text-gray-800 text-base">{p.name}</h4>
+                              <p className="text-[10px] text-amber-500 font-bold mt-0.5 uppercase tracking-wider">⭐ {p.rating?.toFixed(1) || "5.0"} Rating</p>
+                            </div>
+                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-wider ${
+                              p.isAvailable ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"
+                            }`}>
+                              {p.isAvailable ? "AVAILABLE" : "OFFLINE"}
+                            </span>
+                          </div>
+                          <div className="space-y-2 text-xs border-t border-gray-100 pt-3 text-gray-600">
+                            <div className="flex justify-between items-center">
+                              <span className="font-semibold text-gray-400">Contact:</span>
+                              {p.phone ? (
+                                <a href={`tel:${p.phone}`} className="font-extrabold text-pink-600 hover:underline">
+                                  📞 {p.phone}
+                                </a>
+                              ) : (
+                                <span className="font-bold text-gray-800">{p.email}</span>
+                              )}
+                            </div>
+                            {p.phone && (
+                              <div className="flex justify-between">
+                                <span className="font-semibold text-gray-400">Email:</span>
+                                <span className="font-bold text-gray-800">{p.email}</span>
+                              </div>
+                            )}
+                            <div className="flex justify-between">
+                              <span className="font-semibold text-gray-400">Operational Area:</span>
+                              <span className="font-bold text-[var(--color-primary)]">{p.area || "Not specified"}</span>
+                            </div>
+                          </div>
+                          <div className="mt-4 pt-3 border-t border-gray-100 flex flex-wrap justify-between items-center gap-2">
+                            {p.phone ? (
+                              <div className="flex gap-2">
+                                <a 
+                                  href={`tel:${p.phone}`} 
+                                  className="bg-green-50 hover:bg-green-100 text-green-600 font-extrabold px-3 py-2 rounded-xl text-xs uppercase tracking-wider transition-colors"
+                                >
+                                  Call
+                                </a>
+                                <a 
+                                  href={`https://wa.me/91${p.phone}?text=Hello%20${encodeURIComponent(p.name)}%2C%20Jyoti%20Mehendi%20Admin%20here.`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 font-extrabold px-3 py-2 rounded-xl text-xs uppercase tracking-wider transition-colors"
+                                >
+                                  WhatsApp
+                                </a>
+                              </div>
+                            ) : (
+                              <div></div>
+                            )}
+                            <div className="flex gap-3">
+                              <button onClick={() => setEditModal({ isOpen: true, type: "partner", data: p })} className="bg-pink-50 text-pink-500 font-extrabold px-3 py-2 rounded-xl text-xs uppercase transition-colors">Edit</button>
+                              <button onClick={() => setDeleteModal({ isOpen: true, col: "partners", id: p.id })} className="bg-red-50 text-red-500 font-extrabold px-3 py-2 rounded-xl text-xs uppercase transition-colors">Delete</button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      {partners.length === 0 && (
+                        <p className="text-center text-gray-400 py-8 italic">No registered partners yet.</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Pending Invites List */}
+                  {partnerInvites.length > 0 && (
+                    <div>
+                      <h3 className="font-bold text-lg text-gray-700 mb-4 flex items-center space-x-2"><span>Pending Invites</span> <span className="bg-orange-100 text-orange-700 text-xs px-2 py-0.5 rounded-full">{partnerInvites.filter(i => i.status === "pending").length} Pending</span></h3>
+                      
+                      {/* Desktop Table View */}
+                      <div className="hidden md:block overflow-x-auto bg-white rounded-xl border border-gray-100 shadow-sm">
+                        <table className="w-full text-left text-sm">
+                          <thead className="bg-gray-50 text-gray-600 border-b border-gray-100">
+                            <tr>
+                              <th className="p-4 font-medium">Invited Name</th>
+                              <th className="p-4 font-medium">Email Address</th>
+                              <th className="p-4 font-medium">Area</th>
+                              <th className="p-4 font-medium">Status</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {partnerInvites.map(inv => (
+                              <tr key={inv.id} className="hover:bg-gray-50">
+                                <td className="p-4 font-semibold text-gray-600">{inv.name}</td>
+                                <td className="p-4 text-gray-500">{inv.email}</td>
+                                <td className="p-4 text-gray-500">{inv.area}</td>
+                                <td className="p-4">
+                                  <span className={`px-3 py-1 rounded-full text-xs font-bold ${inv.status === 'claimed' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
+                                    {inv.status === 'claimed' ? 'Claimed' : 'Waiting for Signup'}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Mobile Card List View */}
+                      <div className="block md:hidden space-y-4">
+                        {partnerInvites.map(inv => (
+                          <div key={inv.id} className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
+                            <div className="flex justify-between items-start mb-3">
+                              <h4 className="font-extrabold text-gray-800 text-base">{inv.name}</h4>
+                              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-wider ${inv.status === 'claimed' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
+                                {inv.status === 'claimed' ? 'CLAIMED' : 'PENDING'}
+                              </span>
+                            </div>
+                            <div className="space-y-2 text-xs border-t border-gray-100 pt-3 text-gray-600">
+                              <div className="flex justify-between">
+                                <span className="font-semibold text-gray-400">Email:</span>
+                                <span className="font-bold text-gray-800">{inv.email}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-semibold text-gray-400">Area:</span>
+                                <span className="font-bold text-gray-800">{inv.area}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Reports Tab */}
+              {activeTab === "reports" && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-4">
+                  <div className="bg-white p-6 border border-gray-100 rounded-2xl shadow-sm">
+                    <h3 className="font-bold text-gray-700 mb-4 text-center">Revenue by Status</h3>
+                    <div className="h-64"><Bar data={barData} options={{ maintainAspectRatio: false }} /></div>
+                  </div>
+                  <div className="bg-white p-6 border border-gray-100 rounded-2xl shadow-sm flex flex-col items-center">
+                    <h3 className="font-bold text-gray-700 mb-4 text-center">Booking Status Distribution</h3>
+                    <div className="h-64 w-64"><Doughnut data={doughnutData} options={{ maintainAspectRatio: false }} /></div>
+                  </div>
+                </div>
+              )}
+
+              {/* Gallery Tab */}
+              {activeTab === "gallery" && (
+                <div className="space-y-8">
+                  <div className="bg-pink-50 p-6 rounded-2xl border border-pink-100">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="font-bold text-lg text-pink-700 flex items-center"><FiImage className="mr-2"/> Add New Gallery Item</h3>
+                      <button 
+                        onClick={seedGalleryDesigns}
+                        className="text-xs bg-pink-100 hover:bg-pink-200 text-pink-700 px-3 py-1 rounded-lg transition-colors font-bold border border-pink-200"
+                      >
+                        Seed Demo Designs
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                      <div>
+                        <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Select Image</label>
+                        <div className="relative border border-gray-300 rounded-lg p-2 bg-white flex items-center justify-between">
+                          <input type="file" onChange={(e) => handleImageUpload(e, "gallery")} className="text-xs w-full cursor-pointer" />
+                        </div>
+                        {uploading && <p className="text-xs text-pink-500 mt-1 animate-pulse">Uploading to Cloudinary...</p>}
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Category</label>
+                        <select value={newCategory} onChange={(e) => setNewCategory(e.target.value)} className="w-full p-2.5 border border-gray-300 rounded-lg text-sm bg-white">
+                          <option>Bridal</option>
+                          <option>Arabic</option>
+                          <option>Party</option>
+                          <option>Feet</option>
+                        </select>
+                      </div>
+                      <button 
+                        onClick={handleAddGalleryItem} 
+                        disabled={!newImage || uploading} 
+                        className="bg-[var(--color-primary)] text-white font-bold py-3 px-6 rounded-lg hover:bg-[var(--color-header)] transition-colors disabled:opacity-50 shadow-md"
+                      >
+                        Add to Gallery
+                      </button>
+                    </div>
+                    {newImage && <div className="mt-4"><img src={newImage} className="h-32 rounded-lg shadow-sm border-2 border-white" alt="Preview"/></div>}
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    {galleryItems.map(item => (
+                      <div key={item.id} className="relative group rounded-xl overflow-hidden shadow-sm aspect-square bg-gray-100">
+                        <img src={item.imageURL} className="w-full h-full object-cover" alt="Gallery"/>
+                        <div className="absolute inset-0 bg-black/40 md:bg-black/60 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-2">
+                          <button onClick={() => setEditModal({ isOpen: true, type: "gallery", data: item })} className="bg-blue-500 text-white px-3 py-1 text-xs rounded hover:scale-105 transition-transform font-bold">Edit</button>
+                          <button onClick={() => setDeleteModal({ isOpen: true, col: "designs_gallery", id: item.id })} className="bg-red-500 text-white p-2 rounded-full hover:scale-110 transition-transform"><FiX size={20}/></button>
+                        </div>
+                        <div className="absolute top-2 left-2 bg-white/90 backdrop-blur px-2 py-0.5 rounded text-[10px] font-bold text-[var(--color-header)]">{item.category}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Hero Slider Tab */}
+              {activeTab === "hero" && (
+                <div className="space-y-8">
+                  <div className="bg-pink-50 p-6 rounded-2xl border border-pink-100">
+                    <h3 className="font-bold text-lg text-pink-700 mb-4 flex items-center"><FiLayout className="mr-2"/> Add Responsive Hero Slide</h3>
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Slide Title</label>
+                          <input type="text" placeholder="e.g. Exquisite Bridal Mehndi" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} className="w-full p-3 border border-gray-300 rounded-xl text-sm bg-white" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Subtitle</label>
+                          <input type="text" placeholder="e.g. Crafting memories..." value={newSubtitle} onChange={(e) => setNewSubtitle(e.target.value)} className="w-full p-3 border border-gray-300 rounded-xl text-sm bg-white" />
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="p-4 bg-white rounded-xl border border-pink-100">
+                          <label className="block text-xs font-bold text-pink-600 mb-2 uppercase">1. Desktop Image (Wide)</label>
+                          <input type="file" onChange={(e) => handleImageUpload(e, "desktop")} className="w-full text-xs" />
+                          {newDesktopImage && <img src={newDesktopImage} className="mt-2 h-20 w-full object-cover rounded-lg border" alt="Desktop Preview"/>}
+                        </div>
+                        <div className="p-4 bg-white rounded-xl border border-pink-100">
+                          <label className="block text-xs font-bold text-pink-600 mb-2 uppercase">2. Mobile Image (Portrait)</label>
+                          <input type="file" onChange={(e) => handleImageUpload(e, "mobile")} className="w-full text-xs" />
+                          {newMobileImage && <img src={newMobileImage} className="mt-2 h-20 w-20 object-cover rounded-lg border" alt="Mobile Preview"/>}
+                        </div>
+                      </div>
+
+                      <button 
+                        onClick={handleAddHeroSlide} 
+                        disabled={!newDesktopImage || !newMobileImage || !newTitle || uploading} 
+                        className="w-full bg-[var(--color-primary)] text-white font-bold py-4 rounded-xl hover:bg-[var(--color-header)] transition-colors disabled:opacity-50 shadow-lg"
+                      >
+                        {uploading ? "Uploading..." : "Save Responsive Slide"}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4">
+                    {heroSlides.map(slide => (
+                      <div key={slide.id} className="bg-gray-50 rounded-2xl p-6 border border-gray-200 flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6 group hover:shadow-md transition-shadow">
+                        {/* Image Previews */}
+                        <div className="flex space-x-3 flex-shrink-0">
+                          <div className="text-center">
+                            <img src={slide.image} className="w-32 h-20 rounded-lg object-cover shadow-sm border-2 border-white" alt="Desktop"/>
+                            <p className="text-[10px] text-gray-400 mt-1 uppercase font-bold">Desktop</p>
+                          </div>
+                          <div className="text-center">
+                            <img src={slide.mobileImage || slide.image} className="w-16 h-20 rounded-lg object-cover shadow-sm border-2 border-white" alt="Mobile"/>
+                            <p className="text-[10px] text-gray-400 mt-1 uppercase font-bold">Mobile</p>
+                          </div>
+                        </div>
+
+                        {/* Editable Content */}
+                        <div className="flex-1 space-y-2 w-full">
+                          <input 
+                            type="text" 
+                            value={slide.title} 
+                            onChange={(e) => updateSlideText(slide.id, "title", e.target.value)}
+                            className="font-bold text-gray-800 text-sm bg-transparent border-b border-transparent focus:border-blue-500 w-full outline-none p-1"
+                            placeholder="Slide Title"
+                          />
+                          <textarea 
+                            value={slide.subtitle} 
+                            onChange={(e) => updateSlideText(slide.id, "subtitle", e.target.value)}
+                            className="text-xs text-gray-500 bg-transparent border-b border-transparent focus:border-blue-500 w-full outline-none p-1 resize-none"
+                            placeholder="Slide Subtitle"
+                            rows={2}
+                          />
+                        </div>
+
+                        {/* Delete Button */}
+                        <button 
+                          onClick={() => setDeleteModal({ isOpen: true, col: "hero_slides", id: slide.id })} 
+                          className="bg-red-50 text-red-500 p-3 rounded-xl hover:bg-red-100 transition-colors shadow-sm"
+                          title="Delete Slide"
+                        >
+                          <FiX size={20}/>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* EXPRESS ZONES TAB */}
+              {activeTab === "express" && (
+                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                    <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-bold text-gray-800 font-serif">Manage Express Zones (20 Min Reach)</h3>
+                    <button 
+                      onClick={seedExpressZones}
+                      className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded-lg transition-colors font-bold"
+                    >
+                      Seed Demo Areas
+                    </button>
+                  </div>
+                    
+                    <div className="flex flex-col md:flex-row gap-4 mb-8">
+                      <input 
+                        type="text" 
+                        value={newZoneName}
+                        onChange={(e) => setNewZoneName(e.target.value)}
+                        placeholder="Enter Area Name (e.g. Kamla Nagar)"
+                        className="flex-1 p-3 border border-gray-200 rounded-xl focus:ring-[var(--color-primary)] outline-none"
+                      />
+                      <button 
+                        onClick={handleAddExpressZone}
+                        className="bg-[var(--color-primary)] text-white px-8 py-3 rounded-xl font-bold hover:bg-[var(--color-header)] transition-all shadow-lg shadow-pink-100"
+                      >
+                        Add Area
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {expressZones.length > 0 ? expressZones.map(zone => (
+                        <div key={zone.id} className="bg-gray-50 p-4 rounded-2xl flex items-center justify-between group hover:bg-pink-50 transition-colors border border-gray-100">
+                          <span className="font-medium text-gray-700">{zone.name}</span>
+                          <div className="flex space-x-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                            <button 
+                              onClick={() => setEditModal({ isOpen: true, type: "zone", data: zone })}
+                              className="bg-pink-100 text-pink-500 px-3 py-1 rounded-lg text-xs font-bold hover:bg-pink-200"
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              onClick={() => setDeleteModal({ isOpen: true, col: "express_zones", id: zone.id })}
+                              className="bg-red-100 text-red-500 p-1.5 rounded-lg hover:bg-red-200"
+                            >
+                              <FiX size={16} />
+                            </button>
+                          </div>
+                        </div>
+                      )) : (
+                        <p className="col-span-full text-center text-gray-400 py-8">No express zones added yet. Demo: Kamla Nagar, Sanjay Place.</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* PACKAGES TAB */}
+              {activeTab === "packages" && (
+                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-xl font-bold text-gray-800 font-serif">Manage Event & Wedding Packages</h3>
+                      <button 
+                        onClick={seedPackages}
+                        className="text-xs bg-amber-50 hover:bg-amber-100 text-amber-600 px-3 py-1 rounded-lg transition-colors font-bold border border-amber-200"
+                      >
+                        Seed Demo Packages
+                      </button>
+                    </div>
+
+                    <div className="bg-amber-50/30 p-8 rounded-[32px] border border-amber-100 mb-8">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div className="space-y-4">
+                          <label className="block text-sm font-bold text-gray-700">Package Name</label>
+                          <input type="text" value={newPkgName} onChange={(e)=>setNewPkgName(e.target.value)} placeholder="e.g. Royal Bridal Contract" className="w-full p-4 rounded-2xl border border-white bg-white shadow-sm outline-none focus:ring-2 focus:ring-amber-400" />
+                          
+                          <label className="block text-sm font-bold text-gray-700">Starting Price (₹)</label>
+                          <input type="number" value={newPkgPrice} onChange={(e)=>setNewPkgPrice(e.target.value)} placeholder="e.g. 15000" className="w-full p-4 rounded-2xl border border-white bg-white shadow-sm outline-none focus:ring-2 focus:ring-amber-400" />
+                        </div>
+                        <div className="space-y-4">
+                          <label className="block text-sm font-bold text-gray-700">Short Description</label>
+                          <textarea value={newPkgDesc} onChange={(e)=>setNewPkgDesc(e.target.value)} placeholder="What is this package about?" rows={5} className="w-full p-4 rounded-2xl border border-white bg-white shadow-sm outline-none focus:ring-2 focus:ring-amber-400 resize-none" />
+                        </div>
+                      </div>
+
+                      <div className="space-y-4 mb-8">
+                        <div className="flex justify-between items-center">
+                          <label className="block text-sm font-bold text-gray-700">Package Includes (Key Points)</label>
+                          <button onClick={addFeatureInput} className="text-xs bg-amber-500 text-white px-3 py-1 rounded-lg font-bold">+ Add Point</button>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {newPkgFeatures.map((feat, idx) => (
+                            <input 
+                              key={idx} 
+                              type="text" 
+                              value={feat} 
+                              onChange={(e) => updateFeatureInput(idx, e.target.value)} 
+                              placeholder={`Point ${idx+1} (e.g. Full Hand Bridal)`}
+                              className="p-3 rounded-xl border border-white bg-white shadow-sm outline-none focus:ring-2 focus:ring-amber-400 text-sm"
+                            />
+                          ))}
+                        </div>
+                      </div>
+
+                      <button onClick={handleAddPackage} className="w-full bg-amber-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-amber-700 transition-all shadow-xl shadow-amber-100">Create Luxury Package</button>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                      {eventPackages.map(pkg => (
+                        <div key={pkg.id} className="bg-white border border-gray-100 p-8 rounded-[40px] shadow-sm hover:shadow-xl transition-all relative group border-t-4 border-t-amber-400">
+                          <div className="flex justify-between items-start mb-4">
+                            <h4 className="text-2xl font-bold text-gray-800 font-serif">{pkg.name}</h4>
+                            <div className="text-right">
+                              <span className="text-amber-600 font-bold text-2xl">₹{pkg.price}</span>
+                              <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Starting At</p>
+                            </div>
+                          </div>
+                          <p className="text-gray-500 text-sm leading-relaxed mb-6">{pkg.description}</p>
+                          
+                          <div className="space-y-2 mb-6">
+                            {pkg.features?.map((f: string, i: number) => (
+                              <div key={i} className="flex items-center space-x-2 text-xs text-gray-600">
+                                <span className="text-amber-500 font-bold">✓</span>
+                                <span>{f}</span>
+                              </div>
+                            ))}
+                          </div>
+
+                          <div className="absolute -top-3 -right-3 flex space-x-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                            <button 
+                              onClick={() => setEditModal({ isOpen: true, type: "package", data: pkg })}
+                              className="bg-blue-500 text-white px-3 py-1 text-xs rounded-full shadow-lg font-bold"
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              onClick={() => setDeleteModal({ isOpen: true, col: "event_packages", id: pkg.id })}
+                              className="bg-red-500 text-white p-2 rounded-full shadow-lg"
+                            >
+                              <FiX size={16} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* NEW: PACKAGE ENQUIRIES TABLE */}
+                    <div className="mt-16">
+                      <h3 className="text-2xl font-bold text-gray-800 font-serif mb-6 flex items-center gap-3">
+                        <span className="bg-pink-100 p-2 rounded-xl text-pink-600">📩</span>
+                        Recent Package Enquiries
+                      </h3>
+                      {/* NEW: PACKAGE ENQUIRIES TABLE */}
+                      <div className="mt-16">
+                        <h3 className="text-2xl font-bold text-gray-800 font-serif mb-6 flex items-center gap-3">
+                          <span className="bg-pink-100 p-2 rounded-xl text-pink-600">📩</span>
+                          Recent Package Enquiries
+                        </h3>
+                        
+                        {/* Desktop Table View */}
+                        <div className="hidden md:block bg-white rounded-[32px] border border-gray-100 overflow-hidden shadow-sm">
+                          <table className="w-full text-left">
+                            <thead className="bg-gray-50 border-b border-gray-100">
+                              <tr>
+                                <th className="p-5 text-xs font-bold text-gray-400 uppercase">Customer</th>
+                                <th className="p-5 text-xs font-bold text-gray-400 uppercase">Package</th>
+                                <th className="p-5 text-xs font-bold text-gray-400 uppercase">Date & Address</th>
+                                <th className="p-5 text-xs font-bold text-gray-400 uppercase">Action</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50">
+                              {packageEnquiries.length > 0 ? packageEnquiries.map(enq => (
+                                <tr key={enq.id} className="hover:bg-pink-50/30 transition-colors">
+                                  <td className="p-5">
+                                    <p className="font-bold text-gray-800">{enq.name}</p>
+                                    <p className="text-sm text-pink-600 font-medium">{enq.phone}</p>
+                                  </td>
+                                  <td className="p-5">
+                                    <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-lg text-xs font-bold">
+                                      {enq.packageName}
+                                    </span>
+                                  </td>
+                                  <td className="p-5">
+                                    <p className="text-sm font-bold text-gray-700">{enq.date}</p>
+                                    <p className="text-xs text-gray-500 line-clamp-1">{enq.address}</p>
+                                  </td>
+                                  <td className="p-5">
+                                    <button 
+                                      onClick={() => setDeleteModal({ isOpen: true, col: "package_enquiries", id: enq.id })}
+                                      className="text-red-400 hover:text-red-600 p-2"
+                                    >
+                                      <FiX size={18} />
+                                    </button>
+                                  </td>
+                                </tr>
+                              )) : (
+                                <tr>
+                                  <td colSpan={4} className="p-10 text-center text-gray-400 italic">No enquiries yet.</td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        {/* Mobile Card List View */}
+                        <div className="block md:hidden space-y-4">
+                          {packageEnquiries.length > 0 ? packageEnquiries.map(enq => (
+                            <div key={enq.id} className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
+                              <div className="flex justify-between items-start mb-3">
+                                <h4 className="font-extrabold text-gray-800 text-base">{enq.name}</h4>
+                                <span className="bg-amber-100 text-amber-700 px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-wider">
+                                  {enq.packageName}
+                                </span>
+                              </div>
+                              <div className="space-y-2 text-xs border-t border-gray-100 pt-3 text-gray-600">
+                                <div className="flex justify-between">
+                                  <span className="font-semibold text-gray-400">Phone:</span>
+                                  <a href={`tel:${enq.phone}`} className="text-pink-600 font-bold hover:underline">{enq.phone}</a>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="font-semibold text-gray-400">Date:</span>
+                                  <span className="font-bold text-gray-800">{enq.date}</span>
+                                </div>
+                                <div className="flex justify-between items-start">
+                                  <span className="font-semibold text-gray-400 w-16">Address:</span>
+                                  <span className="font-bold text-gray-800 text-right leading-relaxed flex-1 ml-4">{enq.address}</span>
+                                </div>
+                              </div>
+                              <div className="mt-4 pt-3 border-t border-gray-100 flex justify-end">
+                                <button 
+                                  onClick={() => setDeleteModal({ isOpen: true, col: "package_enquiries", id: enq.id })}
+                                  className="bg-red-50 hover:bg-red-100 text-red-500 font-extrabold px-3 py-2 rounded-xl text-xs uppercase transition-colors"
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            </div>
+                          )) : (
+                            <p className="text-center text-gray-400 py-8 italic">No enquiries yet.</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Custom Delete Confirmation Modal */}
+        {deleteModal?.isOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setDeleteModal(null)}></div>
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-white rounded-3xl p-8 max-w-sm w-full relative z-10 shadow-2xl text-center"
+            >
+              <div className="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FiX size={32}/>
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">Delete This Item?</h3>
+              <p className="text-gray-500 text-sm mb-8">Kya aap sach mein ise delete karna chahte hain? Ye action wapas nahi liya ja sakega.</p>
+              <div className="flex space-x-3">
+                <button 
+                  onClick={() => setDeleteModal(null)}
+                  className="flex-1 py-3 px-4 bg-gray-100 text-gray-600 font-bold rounded-xl hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={deleteItem}
+                  className="flex-1 py-3 px-4 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 shadow-lg shadow-red-200 transition-all"
+                >
+                  Yes, Delete
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Global Edit Modal */}
+        {editModal?.isOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setEditModal(null)}></div>
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-white rounded-3xl p-8 max-w-lg w-full relative z-10 shadow-2xl"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold text-gray-800 capitalize">Edit {editModal.type}</h3>
+                <button onClick={() => setEditModal(null)} className="text-gray-400 hover:text-gray-600"><FiX size={24}/></button>
+              </div>
+              
+              <form onSubmit={saveEdit} className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+                
+                {/* ZONE EDIT */}
+                {editModal.type === "zone" && (
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1">Zone Name</label>
+                    <input type="text" value={editModal.data.name || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, name: e.target.value } })} className="w-full p-3 border rounded-xl" required />
+                  </div>
+                )}
+
+                {/* GALLERY EDIT */}
+                {editModal.type === "gallery" && (
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1">Category</label>
+                    <select value={editModal.data.category || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, category: e.target.value } })} className="w-full p-3 border rounded-xl">
+                      <option>Bridal</option>
+                      <option>Arabic</option>
+                      <option>Party</option>
+                      <option>Feet</option>
+                    </select>
+                  </div>
+                )}
+
+                {/* PARTNER EDIT */}
+                {editModal.type === "partner" && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-1">Name</label>
+                      <input type="text" value={editModal.data.name || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, name: e.target.value } })} className="w-full p-3 border rounded-xl" required />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-1">Area</label>
+                      <input type="text" value={editModal.data.area || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, area: e.target.value } })} className="w-full p-3 border rounded-xl" required />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-1">Phone</label>
+                      <input type="text" value={editModal.data.phone || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, phone: e.target.value } })} className="w-full p-3 border rounded-xl" />
+                    </div>
+                  </>
+                )}
+
+                {/* BOOKING EDIT */}
+                {editModal.type === "booking" && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-1">Customer Name</label>
+                      <input type="text" value={editModal.data.customerName || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, customerName: e.target.value } })} className="w-full p-3 border rounded-xl" required />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-1">WhatsApp Phone</label>
+                      <input type="text" value={editModal.data.phone || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, phone: e.target.value } })} className="w-full p-3 border rounded-xl" required />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-1">Complete Address</label>
+                      <textarea value={editModal.data.address || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, address: e.target.value } })} className="w-full p-3 border rounded-xl" rows={2} required />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Date</label>
+                        <input type="text" value={editModal.data.bookingDateString || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, bookingDateString: e.target.value } })} className="w-full p-3 border rounded-xl" required />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Time Slot</label>
+                        <input type="text" value={editModal.data.timeSlot || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, timeSlot: e.target.value } })} className="w-full p-3 border rounded-xl" required />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Price (₹)</label>
+                        <input type="number" value={editModal.data.price || 0} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, price: Number(e.target.value) } })} className="w-full p-3 border rounded-xl" required />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Booking Status</label>
+                        <select value={editModal.data.status || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, status: e.target.value } })} className="w-full p-3 border rounded-xl bg-white font-semibold">
+                          <option value="pending">PENDING</option>
+                          <option value="assigned">ASSIGNED</option>
+                          <option value="dispatched">DISPATCHED</option>
+                          <option value="completed">COMPLETED</option>
+                          <option value="cancelled">CANCELLED</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-1">Additional Notes</label>
+                      <textarea value={editModal.data.additionalNotes || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, additionalNotes: e.target.value } })} className="w-full p-3 border rounded-xl" rows={2} />
+                    </div>
+                  </>
+                )}
+
+                {/* PACKAGE EDIT */}
+                {editModal.type === "package" && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-1">Package Name</label>
+                      <input type="text" value={editModal.data.name || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, name: e.target.value } })} className="w-full p-3 border rounded-xl" required />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-1">Price (₹)</label>
+                      <input type="number" value={editModal.data.price || 0} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, price: Number(e.target.value) } })} className="w-full p-3 border rounded-xl" required />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-1">Description</label>
+                      <textarea value={editModal.data.description || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, description: e.target.value } })} className="w-full p-3 border rounded-xl" rows={3} required />
+                    </div>
+                  </>
+                )}
+
+                <div className="flex space-x-3 pt-4">
+                  <button type="button" onClick={() => setEditModal(null)} className="flex-1 py-3 px-4 bg-gray-100 text-gray-600 font-bold rounded-xl hover:bg-gray-200">Cancel</button>
+                  <button type="submit" className="flex-1 py-3 px-4 bg-[var(--color-primary)] text-white font-bold rounded-xl hover:bg-[var(--color-header)] shadow-lg shadow-pink-100">Save Changes</button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}

@@ -1,0 +1,4502 @@
+[
+  {
+    "id": "seed_0",
+    "name": "Anjali Chauhan",
+    "role": "Regular Client",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-01-28T17:31:31.197Z"
+  },
+  {
+    "id": "seed_1",
+    "name": "Divya Chauhan",
+    "role": "Event Booking",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Lohamandi",
+    "rating": 5,
+    "date": "2026-02-14T04:26:06.950Z"
+  },
+  {
+    "id": "seed_2",
+    "name": "Divya Gupta",
+    "role": "Event Booking",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Kargil Petrol Pump",
+    "rating": 3,
+    "date": "2026-04-01T09:13:17.477Z"
+  },
+  {
+    "id": "seed_3",
+    "name": "Nidhi Saxena",
+    "role": "Bridal Client",
+    "text": "I was amazed by the intricate details. Definitely the best mehndi artist in Fatehabad Road.",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-03-25T22:39:51.280Z"
+  },
+  {
+    "id": "seed_4",
+    "name": "Manisha Yadav",
+    "role": "Regular Client",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Balkeshwar",
+    "rating": 5,
+    "date": "2026-02-05T02:13:48.374Z"
+  },
+  {
+    "id": "seed_5",
+    "name": "Roshni Srivastava",
+    "role": "Engagement Client",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Balkeshwar",
+    "rating": 5,
+    "date": "2026-03-14T08:10:02.533Z"
+  },
+  {
+    "id": "seed_6",
+    "name": "Kavita Singh",
+    "role": "Regular Client",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Shahganj",
+    "rating": 4,
+    "date": "2026-03-23T19:29:11.309Z"
+  },
+  {
+    "id": "seed_7",
+    "name": "Swati Garg",
+    "role": "Regular Client",
+    "text": "Best experience ever! The regular client mehndi was so detailed and the stain was incredibly dark. Everyone loved it.",
+    "area": "Balkeshwar",
+    "rating": 5,
+    "date": "2026-03-12T16:55:59.563Z"
+  },
+  {
+    "id": "seed_8",
+    "name": "Divya Goyal",
+    "role": "Festival Booking",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Balkeshwar",
+    "rating": 5,
+    "date": "2026-04-21T05:38:41.360Z"
+  },
+  {
+    "id": "seed_9",
+    "name": "Geeta Goyal",
+    "role": "Party Booking",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-03-05T13:09:19.235Z"
+  },
+  {
+    "id": "seed_10",
+    "name": "Tanya Goyal",
+    "role": "Festival Booking",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Sikandra",
+    "rating": 5,
+    "date": "2026-02-08T15:27:42.732Z"
+  },
+  {
+    "id": "seed_11",
+    "name": "Riya Gupta",
+    "role": "Event Booking",
+    "text": "Best experience ever! The event booking mehndi was so detailed and the stain was incredibly dark. Everyone loved it.",
+    "area": "Shahganj",
+    "rating": 3,
+    "date": "2026-02-13T02:34:32.531Z"
+  },
+  {
+    "id": "seed_12",
+    "name": "Radhika Saxena",
+    "role": "Regular Client",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Dayalbagh",
+    "rating": 5,
+    "date": "2026-03-31T01:10:04.795Z"
+  },
+  {
+    "id": "seed_13",
+    "name": "Shikha Bansal",
+    "role": "Event Booking",
+    "text": "Best experience ever! The event booking mehndi was so detailed and the stain was incredibly dark. Everyone loved it.",
+    "area": "Khandari",
+    "rating": 4,
+    "date": "2026-02-13T20:59:17.581Z"
+  },
+  {
+    "id": "seed_14",
+    "name": "Radhika Tiwari",
+    "role": "Engagement Client",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Shahganj",
+    "rating": 4,
+    "date": "2026-04-20T11:45:03.231Z"
+  },
+  {
+    "id": "seed_15",
+    "name": "Nidhi Mathur",
+    "role": "Regular Client",
+    "text": "Best experience ever! The regular client mehndi was so detailed and the stain was incredibly dark. Everyone loved it.",
+    "area": "Khandari",
+    "rating": 5,
+    "date": "2026-03-04T12:27:26.783Z"
+  },
+  {
+    "id": "seed_16",
+    "name": "Sneha Mishra",
+    "role": "Bridal Client",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-03-30T13:12:02.469Z"
+  },
+  {
+    "id": "seed_17",
+    "name": "Simran Yadav",
+    "role": "Regular Client",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Lohamandi",
+    "rating": 5,
+    "date": "2026-02-27T01:16:21.184Z"
+  },
+  {
+    "id": "seed_18",
+    "name": "Riya Srivastava",
+    "role": "Party Booking",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Sikandra",
+    "rating": 4,
+    "date": "2026-03-03T21:06:17.465Z"
+  },
+  {
+    "id": "seed_19",
+    "name": "Kritika Mathur",
+    "role": "Regular Client",
+    "text": "Best experience ever! The regular client mehndi was so detailed and the stain was incredibly dark. Everyone loved it.",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-02-11T04:02:19.089Z"
+  },
+  {
+    "id": "seed_20",
+    "name": "Shikha Srivastava",
+    "role": "Engagement Client",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Shastripuram",
+    "rating": 3,
+    "date": "2026-03-23T11:54:27.501Z"
+  },
+  {
+    "id": "seed_21",
+    "name": "Roshni Agarwal",
+    "role": "Regular Client",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-04-24T11:13:52.994Z"
+  },
+  {
+    "id": "seed_22",
+    "name": "Kiran Pandey",
+    "role": "Bridal Client",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Dayalbagh",
+    "rating": 5,
+    "date": "2026-01-15T16:08:36.078Z"
+  },
+  {
+    "id": "seed_23",
+    "name": "Nidhi Garg",
+    "role": "Party Booking",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Avas Vikas",
+    "rating": 5,
+    "date": "2026-04-22T06:18:05.297Z"
+  },
+  {
+    "id": "seed_24",
+    "name": "Anjali Agarwal",
+    "role": "Party Booking",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Kamla Nagar",
+    "rating": 3,
+    "date": "2026-05-01T16:31:05.610Z"
+  },
+  {
+    "id": "seed_25",
+    "name": "Shikha Verma",
+    "role": "Event Booking",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Khandari",
+    "rating": 5,
+    "date": "2026-05-06T06:11:22.097Z"
+  },
+  {
+    "id": "seed_26",
+    "name": "Manisha Tiwari",
+    "role": "Festival Booking",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Tajganj",
+    "rating": 5,
+    "date": "2026-04-25T10:58:27.241Z"
+  },
+  {
+    "id": "seed_27",
+    "name": "Aarti Yadav",
+    "role": "Regular Client",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Balkeshwar",
+    "rating": 5,
+    "date": "2026-04-27T21:45:57.527Z"
+  },
+  {
+    "id": "seed_28",
+    "name": "Geeta Pandey",
+    "role": "Engagement Client",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Avas Vikas",
+    "rating": 5,
+    "date": "2026-03-25T06:05:12.411Z"
+  },
+  {
+    "id": "seed_29",
+    "name": "Nidhi Garg",
+    "role": "Bridal Client",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Khandari",
+    "rating": 5,
+    "date": "2026-04-26T20:56:51.835Z"
+  },
+  {
+    "id": "seed_30",
+    "name": "Sonal Garg",
+    "role": "Festival Booking",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Sikandra",
+    "rating": 4,
+    "date": "2026-01-26T10:36:10.052Z"
+  },
+  {
+    "id": "seed_31",
+    "name": "Sushma Sharma",
+    "role": "Regular Client",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Khandari",
+    "rating": 5,
+    "date": "2026-01-17T08:08:10.459Z"
+  },
+  {
+    "id": "seed_32",
+    "name": "Divya Agarwal",
+    "role": "Regular Client",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-03-28T03:09:55.342Z"
+  },
+  {
+    "id": "seed_33",
+    "name": "Riya Gupta",
+    "role": "Engagement Client",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Shastripuram",
+    "rating": 5,
+    "date": "2026-04-19T08:31:08.104Z"
+  },
+  {
+    "id": "seed_34",
+    "name": "Neha Gupta",
+    "role": "Event Booking",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Sikandra",
+    "rating": 4,
+    "date": "2026-04-04T21:45:56.657Z"
+  },
+  {
+    "id": "seed_35",
+    "name": "Simran Pandey",
+    "role": "Bridal Client",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Kargil Petrol Pump",
+    "rating": 4,
+    "date": "2026-04-29T01:52:31.829Z"
+  },
+  {
+    "id": "seed_36",
+    "name": "Kiran Chauhan",
+    "role": "Engagement Client",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Avas Vikas",
+    "rating": 5,
+    "date": "2026-04-14T22:54:00.479Z"
+  },
+  {
+    "id": "seed_37",
+    "name": "Geeta Srivastava",
+    "role": "Bridal Client",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-04-01T20:31:53.344Z"
+  },
+  {
+    "id": "seed_38",
+    "name": "Shikha Saxena",
+    "role": "Festival Booking",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-02-18T04:41:07.971Z"
+  },
+  {
+    "id": "seed_39",
+    "name": "Meera Verma",
+    "role": "Festival Booking",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Sanjay Place",
+    "rating": 4,
+    "date": "2026-04-25T12:54:22.978Z"
+  },
+  {
+    "id": "seed_40",
+    "name": "Manisha Agarwal",
+    "role": "Regular Client",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Sanjay Place",
+    "rating": 5,
+    "date": "2026-01-25T10:33:23.035Z"
+  },
+  {
+    "id": "seed_41",
+    "name": "Aarti Sharma",
+    "role": "Bridal Client",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Khandari",
+    "rating": 5,
+    "date": "2026-03-23T11:16:32.125Z"
+  },
+  {
+    "id": "seed_42",
+    "name": "Meera Singh",
+    "role": "Festival Booking",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Shastripuram",
+    "rating": 5,
+    "date": "2026-04-16T11:53:23.690Z"
+  },
+  {
+    "id": "seed_43",
+    "name": "Divya Agarwal",
+    "role": "Festival Booking",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Khandari",
+    "rating": 4,
+    "date": "2026-01-28T13:04:35.606Z"
+  },
+  {
+    "id": "seed_44",
+    "name": "Neha Goyal",
+    "role": "Engagement Client",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-03-31T05:50:36.014Z"
+  },
+  {
+    "id": "seed_45",
+    "name": "Deepa Goyal",
+    "role": "Party Booking",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-04-09T03:21:20.280Z"
+  },
+  {
+    "id": "seed_46",
+    "name": "Simran Saxena",
+    "role": "Festival Booking",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Sikandra",
+    "rating": 5,
+    "date": "2026-04-22T11:52:27.391Z"
+  },
+  {
+    "id": "seed_47",
+    "name": "Simran Mishra",
+    "role": "Engagement Client",
+    "text": "Ordered express service for my party. They arrived exactly on time! The artist was very professional.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-03-31T15:29:32.276Z"
+  },
+  {
+    "id": "seed_48",
+    "name": "Divya Gupta",
+    "role": "Engagement Client",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-04-08T07:00:55.736Z"
+  },
+  {
+    "id": "seed_49",
+    "name": "Aarti Rajput",
+    "role": "Event Booking",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Khandari",
+    "rating": 5,
+    "date": "2026-04-21T00:33:22.413Z"
+  },
+  {
+    "id": "seed_50",
+    "name": "Aarti Bansal",
+    "role": "Festival Booking",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Lohamandi",
+    "rating": 5,
+    "date": "2026-01-20T01:58:34.910Z"
+  },
+  {
+    "id": "seed_51",
+    "name": "Manisha Chauhan",
+    "role": "Event Booking",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Balkeshwar",
+    "rating": 5,
+    "date": "2026-04-07T19:44:42.245Z"
+  },
+  {
+    "id": "seed_52",
+    "name": "Manisha Mathur",
+    "role": "Engagement Client",
+    "text": "Beautiful traditional designs. My mother absolutely loved her mehndi.",
+    "area": "Balkeshwar",
+    "rating": 4,
+    "date": "2026-03-02T12:32:27.355Z"
+  },
+  {
+    "id": "seed_53",
+    "name": "Nidhi Yadav",
+    "role": "Engagement Client",
+    "text": "Ordered express service for my engagement. They arrived exactly on time! The artist was very professional.",
+    "area": "Trans Yamuna",
+    "rating": 4,
+    "date": "2026-03-11T05:39:25.070Z"
+  },
+  {
+    "id": "seed_54",
+    "name": "Radhika Pandey",
+    "role": "Event Booking",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Avas Vikas",
+    "rating": 5,
+    "date": "2026-02-16T21:05:50.853Z"
+  },
+  {
+    "id": "seed_55",
+    "name": "Pooja Gupta",
+    "role": "Event Booking",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Sanjay Place",
+    "rating": 5,
+    "date": "2026-01-27T11:34:57.407Z"
+  },
+  {
+    "id": "seed_56",
+    "name": "Simran Tiwari",
+    "role": "Engagement Client",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Sadar Bazar",
+    "rating": 4,
+    "date": "2026-02-13T20:18:55.353Z"
+  },
+  {
+    "id": "seed_57",
+    "name": "Shikha Agarwal",
+    "role": "Bridal Client",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Khandari",
+    "rating": 3,
+    "date": "2026-03-06T00:11:12.388Z"
+  },
+  {
+    "id": "seed_58",
+    "name": "Roshni Pandey",
+    "role": "Engagement Client",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Dayalbagh",
+    "rating": 5,
+    "date": "2026-03-02T13:07:03.928Z"
+  },
+  {
+    "id": "seed_59",
+    "name": "Riya Goyal",
+    "role": "Event Booking",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-03-25T13:29:54.118Z"
+  },
+  {
+    "id": "seed_60",
+    "name": "Simran Sharma",
+    "role": "Festival Booking",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Avas Vikas",
+    "rating": 5,
+    "date": "2026-04-13T04:06:21.837Z"
+  },
+  {
+    "id": "seed_61",
+    "name": "Jyoti Srivastava",
+    "role": "Festival Booking",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Fatehabad Road",
+    "rating": 4,
+    "date": "2026-02-02T17:32:33.834Z"
+  },
+  {
+    "id": "seed_62",
+    "name": "Jyoti Chauhan",
+    "role": "Festival Booking",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Tajganj",
+    "rating": 5,
+    "date": "2026-02-23T13:54:51.818Z"
+  },
+  {
+    "id": "seed_63",
+    "name": "Anjali Srivastava",
+    "role": "Festival Booking",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Balkeshwar",
+    "rating": 4,
+    "date": "2026-02-09T11:36:44.351Z"
+  },
+  {
+    "id": "seed_64",
+    "name": "Riya Jain",
+    "role": "Regular Client",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-05-07T23:49:39.902Z"
+  },
+  {
+    "id": "seed_65",
+    "name": "Roshni Rajput",
+    "role": "Bridal Client",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Sikandra",
+    "rating": 5,
+    "date": "2026-02-09T07:43:46.489Z"
+  },
+  {
+    "id": "seed_66",
+    "name": "Deepa Mathur",
+    "role": "Regular Client",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-01-15T21:45:44.180Z"
+  },
+  {
+    "id": "seed_67",
+    "name": "Sonal Singh",
+    "role": "Bridal Client",
+    "text": "Ordered express service for my teej. They arrived exactly on time! The artist was very professional.",
+    "area": "Kamla Nagar",
+    "rating": 4,
+    "date": "2026-01-23T19:17:20.144Z"
+  },
+  {
+    "id": "seed_68",
+    "name": "Riya Agarwal",
+    "role": "Engagement Client",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Khandari",
+    "rating": 5,
+    "date": "2026-02-03T15:09:53.175Z"
+  },
+  {
+    "id": "seed_69",
+    "name": "Anjali Chauhan",
+    "role": "Event Booking",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Avas Vikas",
+    "rating": 5,
+    "date": "2026-03-11T19:29:24.650Z"
+  },
+  {
+    "id": "seed_70",
+    "name": "Shikha Bansal",
+    "role": "Regular Client",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Shastripuram",
+    "rating": 5,
+    "date": "2026-01-30T11:14:28.413Z"
+  },
+  {
+    "id": "seed_71",
+    "name": "Priya Mathur",
+    "role": "Party Booking",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-05-03T20:16:41.395Z"
+  },
+  {
+    "id": "seed_72",
+    "name": "Geeta Rajput",
+    "role": "Party Booking",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Avas Vikas",
+    "rating": 5,
+    "date": "2026-04-22T16:28:34.757Z"
+  },
+  {
+    "id": "seed_73",
+    "name": "Geeta Yadav",
+    "role": "Engagement Client",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-03-02T21:20:56.584Z"
+  },
+  {
+    "id": "seed_74",
+    "name": "Sneha Bansal",
+    "role": "Party Booking",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Sadar Bazar",
+    "rating": 4,
+    "date": "2026-03-14T22:46:01.912Z"
+  },
+  {
+    "id": "seed_75",
+    "name": "Neha Sharma",
+    "role": "Bridal Client",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-03-29T17:33:38.936Z"
+  },
+  {
+    "id": "seed_76",
+    "name": "Sonal Rajput",
+    "role": "Regular Client",
+    "text": "I was amazed by the intricate details. Definitely the best mehndi artist in Sadar Bazar.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-01-16T04:10:29.438Z"
+  },
+  {
+    "id": "seed_77",
+    "name": "Simran Tiwari",
+    "role": "Regular Client",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Shastripuram",
+    "rating": 5,
+    "date": "2026-01-22T02:09:20.012Z"
+  },
+  {
+    "id": "seed_78",
+    "name": "Kritika Mishra",
+    "role": "Bridal Client",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Lohamandi",
+    "rating": 5,
+    "date": "2026-02-18T10:49:57.966Z"
+  },
+  {
+    "id": "seed_79",
+    "name": "Jyoti Garg",
+    "role": "Event Booking",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-01-28T03:12:08.344Z"
+  },
+  {
+    "id": "seed_80",
+    "name": "Pooja Gupta",
+    "role": "Regular Client",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Dayalbagh",
+    "rating": 5,
+    "date": "2026-05-01T13:39:25.849Z"
+  },
+  {
+    "id": "seed_81",
+    "name": "Shruti Verma",
+    "role": "Regular Client",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Shastripuram",
+    "rating": 5,
+    "date": "2026-02-13T19:20:31.712Z"
+  },
+  {
+    "id": "seed_82",
+    "name": "Nidhi Bansal",
+    "role": "Bridal Client",
+    "text": "Ordered express service for my wedding. They arrived exactly on time! The artist was very professional.",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-03-02T14:12:31.865Z"
+  },
+  {
+    "id": "seed_83",
+    "name": "Kritika Bansal",
+    "role": "Regular Client",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Idgah",
+    "rating": 3,
+    "date": "2026-03-15T04:29:25.740Z"
+  },
+  {
+    "id": "seed_84",
+    "name": "Kavita Agarwal",
+    "role": "Regular Client",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Sikandra",
+    "rating": 5,
+    "date": "2026-02-26T05:40:16.400Z"
+  },
+  {
+    "id": "seed_85",
+    "name": "Anjali Srivastava",
+    "role": "Event Booking",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Dayalbagh",
+    "rating": 5,
+    "date": "2026-02-13T02:42:48.922Z"
+  },
+  {
+    "id": "seed_86",
+    "name": "Priya Agarwal",
+    "role": "Engagement Client",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Lohamandi",
+    "rating": 5,
+    "date": "2026-03-03T19:19:08.833Z"
+  },
+  {
+    "id": "seed_87",
+    "name": "Shruti Goyal",
+    "role": "Festival Booking",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-03-21T05:13:07.554Z"
+  },
+  {
+    "id": "seed_88",
+    "name": "Manisha Tiwari",
+    "role": "Engagement Client",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Lohamandi",
+    "rating": 5,
+    "date": "2026-03-26T18:01:07.041Z"
+  },
+  {
+    "id": "seed_89",
+    "name": "Sneha Rajput",
+    "role": "Festival Booking",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Khandari",
+    "rating": 4,
+    "date": "2026-01-15T19:29:36.205Z"
+  },
+  {
+    "id": "seed_90",
+    "name": "Manisha Goyal",
+    "role": "Bridal Client",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-03-10T23:48:51.069Z"
+  },
+  {
+    "id": "seed_91",
+    "name": "Sushma Jain",
+    "role": "Festival Booking",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-03-10T12:30:41.363Z"
+  },
+  {
+    "id": "seed_92",
+    "name": "Kavita Pandey",
+    "role": "Engagement Client",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-03-06T15:56:44.083Z"
+  },
+  {
+    "id": "seed_93",
+    "name": "Nidhi Sharma",
+    "role": "Event Booking",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Shastripuram",
+    "rating": 5,
+    "date": "2026-01-28T09:00:18.753Z"
+  },
+  {
+    "id": "seed_94",
+    "name": "Geeta Agarwal",
+    "role": "Event Booking",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-02-23T06:45:37.467Z"
+  },
+  {
+    "id": "seed_95",
+    "name": "Anjali Verma",
+    "role": "Engagement Client",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-03-15T12:53:41.967Z"
+  },
+  {
+    "id": "seed_96",
+    "name": "Kritika Singh",
+    "role": "Regular Client",
+    "text": "I was amazed by the intricate details. Definitely the best mehndi artist in Sikandra.",
+    "area": "Sikandra",
+    "rating": 5,
+    "date": "2026-02-13T05:28:45.751Z"
+  },
+  {
+    "id": "seed_97",
+    "name": "Sneha Gupta",
+    "role": "Event Booking",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Sanjay Place",
+    "rating": 5,
+    "date": "2026-03-16T18:10:11.518Z"
+  },
+  {
+    "id": "seed_98",
+    "name": "Divya Chauhan",
+    "role": "Engagement Client",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Tajganj",
+    "rating": 4,
+    "date": "2026-04-20T16:11:03.662Z"
+  },
+  {
+    "id": "seed_99",
+    "name": "Nidhi Singh",
+    "role": "Event Booking",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-04-16T18:53:10.450Z"
+  },
+  {
+    "id": "seed_100",
+    "name": "Simran Yadav",
+    "role": "Regular Client",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Trans Yamuna",
+    "rating": 4,
+    "date": "2026-04-28T15:36:07.129Z"
+  },
+  {
+    "id": "seed_101",
+    "name": "Nidhi Tiwari",
+    "role": "Engagement Client",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Lohamandi",
+    "rating": 4,
+    "date": "2026-02-16T19:56:56.950Z"
+  },
+  {
+    "id": "seed_102",
+    "name": "Divya Singh",
+    "role": "Party Booking",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Sanjay Place",
+    "rating": 4,
+    "date": "2026-04-07T15:14:16.312Z"
+  },
+  {
+    "id": "seed_103",
+    "name": "Swati Saxena",
+    "role": "Engagement Client",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Balkeshwar",
+    "rating": 3,
+    "date": "2026-02-02T05:10:00.893Z"
+  },
+  {
+    "id": "seed_104",
+    "name": "Riya Mathur",
+    "role": "Bridal Client",
+    "text": "Ordered express service for my wedding. They arrived exactly on time! The artist was very professional.",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-03-21T02:50:16.156Z"
+  },
+  {
+    "id": "seed_105",
+    "name": "Riya Bansal",
+    "role": "Festival Booking",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Fatehabad Road",
+    "rating": 3,
+    "date": "2026-04-06T23:51:59.856Z"
+  },
+  {
+    "id": "seed_106",
+    "name": "Manisha Agarwal",
+    "role": "Event Booking",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Fatehabad Road",
+    "rating": 3,
+    "date": "2026-01-18T19:31:36.399Z"
+  },
+  {
+    "id": "seed_107",
+    "name": "Shikha Goyal",
+    "role": "Bridal Client",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Avas Vikas",
+    "rating": 4,
+    "date": "2026-03-11T17:34:34.796Z"
+  },
+  {
+    "id": "seed_108",
+    "name": "Jyoti Gupta",
+    "role": "Festival Booking",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Lohamandi",
+    "rating": 5,
+    "date": "2026-05-07T01:35:42.813Z"
+  },
+  {
+    "id": "seed_109",
+    "name": "Simran Rajput",
+    "role": "Festival Booking",
+    "text": "Ordered express service for my baby shower. They arrived exactly on time! The artist was very professional.",
+    "area": "Sanjay Place",
+    "rating": 4,
+    "date": "2026-04-10T02:17:23.344Z"
+  },
+  {
+    "id": "seed_110",
+    "name": "Deepa Garg",
+    "role": "Bridal Client",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-04-08T11:11:10.169Z"
+  },
+  {
+    "id": "seed_111",
+    "name": "Kritika Agarwal",
+    "role": "Regular Client",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-01-27T19:53:43.497Z"
+  },
+  {
+    "id": "seed_112",
+    "name": "Aarti Rajput",
+    "role": "Engagement Client",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Khandari",
+    "rating": 5,
+    "date": "2026-04-16T08:02:43.477Z"
+  },
+  {
+    "id": "seed_113",
+    "name": "Roshni Chauhan",
+    "role": "Bridal Client",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Balkeshwar",
+    "rating": 4,
+    "date": "2026-02-19T00:42:05.714Z"
+  },
+  {
+    "id": "seed_114",
+    "name": "Shikha Bansal",
+    "role": "Party Booking",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-01-26T19:29:00.815Z"
+  },
+  {
+    "id": "seed_115",
+    "name": "Geeta Agarwal",
+    "role": "Event Booking",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Lohamandi",
+    "rating": 5,
+    "date": "2026-04-07T18:05:48.558Z"
+  },
+  {
+    "id": "seed_116",
+    "name": "Sushma Goyal",
+    "role": "Party Booking",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Balkeshwar",
+    "rating": 4,
+    "date": "2026-03-01T12:44:14.651Z"
+  },
+  {
+    "id": "seed_117",
+    "name": "Sonal Saxena",
+    "role": "Festival Booking",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-05-01T07:26:52.121Z"
+  },
+  {
+    "id": "seed_118",
+    "name": "Shikha Bansal",
+    "role": "Bridal Client",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Dayalbagh",
+    "rating": 5,
+    "date": "2026-02-07T06:47:57.442Z"
+  },
+  {
+    "id": "seed_119",
+    "name": "Sneha Verma",
+    "role": "Engagement Client",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-02-03T12:33:04.494Z"
+  },
+  {
+    "id": "seed_120",
+    "name": "Jyoti Gupta",
+    "role": "Engagement Client",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-02-01T20:43:21.760Z"
+  },
+  {
+    "id": "seed_121",
+    "name": "Manisha Gupta",
+    "role": "Regular Client",
+    "text": "I was amazed by the intricate details. Definitely the best mehndi artist in Fatehabad Road.",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-02-04T22:43:55.699Z"
+  },
+  {
+    "id": "seed_122",
+    "name": "Sushma Yadav",
+    "role": "Party Booking",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Kamla Nagar",
+    "rating": 4,
+    "date": "2026-04-17T10:56:25.506Z"
+  },
+  {
+    "id": "seed_123",
+    "name": "Anjali Garg",
+    "role": "Festival Booking",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Khandari",
+    "rating": 5,
+    "date": "2026-02-03T15:25:43.045Z"
+  },
+  {
+    "id": "seed_124",
+    "name": "Radhika Rajput",
+    "role": "Party Booking",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-01-19T22:10:16.450Z"
+  },
+  {
+    "id": "seed_125",
+    "name": "Anjali Bansal",
+    "role": "Regular Client",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Khandari",
+    "rating": 5,
+    "date": "2026-03-01T08:02:33.796Z"
+  },
+  {
+    "id": "seed_126",
+    "name": "Manisha Jain",
+    "role": "Festival Booking",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-04-10T04:59:36.229Z"
+  },
+  {
+    "id": "seed_127",
+    "name": "Shikha Yadav",
+    "role": "Party Booking",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Khandari",
+    "rating": 5,
+    "date": "2026-04-10T14:13:35.843Z"
+  },
+  {
+    "id": "seed_128",
+    "name": "Simran Mishra",
+    "role": "Event Booking",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Dayalbagh",
+    "rating": 5,
+    "date": "2026-03-25T16:12:50.918Z"
+  },
+  {
+    "id": "seed_129",
+    "name": "Simran Pandey",
+    "role": "Festival Booking",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-04-02T20:58:37.039Z"
+  },
+  {
+    "id": "seed_130",
+    "name": "Tanya Sharma",
+    "role": "Regular Client",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Trans Yamuna",
+    "rating": 4,
+    "date": "2026-02-28T10:09:22.751Z"
+  },
+  {
+    "id": "seed_131",
+    "name": "Kritika Mishra",
+    "role": "Regular Client",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Balkeshwar",
+    "rating": 4,
+    "date": "2026-04-16T11:45:10.969Z"
+  },
+  {
+    "id": "seed_132",
+    "name": "Kavita Chauhan",
+    "role": "Bridal Client",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-04-22T21:39:57.352Z"
+  },
+  {
+    "id": "seed_133",
+    "name": "Divya Jain",
+    "role": "Regular Client",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Avas Vikas",
+    "rating": 4,
+    "date": "2026-04-22T08:29:18.489Z"
+  },
+  {
+    "id": "seed_134",
+    "name": "Sonal Verma",
+    "role": "Party Booking",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Tajganj",
+    "rating": 5,
+    "date": "2026-03-06T01:47:06.028Z"
+  },
+  {
+    "id": "seed_135",
+    "name": "Riya Agarwal",
+    "role": "Party Booking",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-03-01T17:44:37.026Z"
+  },
+  {
+    "id": "seed_136",
+    "name": "Manisha Mathur",
+    "role": "Party Booking",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-04-06T08:11:38.400Z"
+  },
+  {
+    "id": "seed_137",
+    "name": "Meera Tiwari",
+    "role": "Festival Booking",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Fatehabad Road",
+    "rating": 4,
+    "date": "2026-03-22T01:29:45.232Z"
+  },
+  {
+    "id": "seed_138",
+    "name": "Radhika Srivastava",
+    "role": "Event Booking",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-04-02T02:23:43.245Z"
+  },
+  {
+    "id": "seed_139",
+    "name": "Divya Bansal",
+    "role": "Event Booking",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-03-31T23:31:03.186Z"
+  },
+  {
+    "id": "seed_140",
+    "name": "Radhika Sharma",
+    "role": "Regular Client",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-02-07T19:37:45.587Z"
+  },
+  {
+    "id": "seed_141",
+    "name": "Riya Tiwari",
+    "role": "Regular Client",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Tajganj",
+    "rating": 3,
+    "date": "2026-04-19T22:48:51.050Z"
+  },
+  {
+    "id": "seed_142",
+    "name": "Shikha Rajput",
+    "role": "Regular Client",
+    "text": "Beautiful traditional designs. My mother absolutely loved her mehndi.",
+    "area": "Balkeshwar",
+    "rating": 5,
+    "date": "2026-03-17T23:36:46.663Z"
+  },
+  {
+    "id": "seed_143",
+    "name": "Radhika Goyal",
+    "role": "Bridal Client",
+    "text": "Beautiful traditional designs. My mother absolutely loved her mehndi.",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-02-02T21:27:39.910Z"
+  },
+  {
+    "id": "seed_144",
+    "name": "Swati Goyal",
+    "role": "Festival Booking",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-04-01T13:49:17.079Z"
+  },
+  {
+    "id": "seed_145",
+    "name": "Tanya Sharma",
+    "role": "Event Booking",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-03-24T07:25:01.846Z"
+  },
+  {
+    "id": "seed_146",
+    "name": "Deepa Mathur",
+    "role": "Bridal Client",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-04-02T09:24:50.449Z"
+  },
+  {
+    "id": "seed_147",
+    "name": "Aarti Yadav",
+    "role": "Engagement Client",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-04-02T18:01:44.092Z"
+  },
+  {
+    "id": "seed_148",
+    "name": "Neha Rajput",
+    "role": "Bridal Client",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-04-01T07:51:38.053Z"
+  },
+  {
+    "id": "seed_149",
+    "name": "Swati Yadav",
+    "role": "Bridal Client",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-02-07T10:39:00.583Z"
+  },
+  {
+    "id": "seed_150",
+    "name": "Simran Bansal",
+    "role": "Event Booking",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Shahganj",
+    "rating": 3,
+    "date": "2026-05-09T10:27:26.612Z"
+  },
+  {
+    "id": "seed_151",
+    "name": "Riya Singh",
+    "role": "Regular Client",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Shastripuram",
+    "rating": 5,
+    "date": "2026-03-14T14:45:27.109Z"
+  },
+  {
+    "id": "seed_152",
+    "name": "Sonal Goyal",
+    "role": "Festival Booking",
+    "text": "Ordered express service for my wedding. They arrived exactly on time! The artist was very professional.",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-01-15T02:13:05.760Z"
+  },
+  {
+    "id": "seed_153",
+    "name": "Neha Agarwal",
+    "role": "Regular Client",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Kargil Petrol Pump",
+    "rating": 3,
+    "date": "2026-04-07T13:08:42.678Z"
+  },
+  {
+    "id": "seed_154",
+    "name": "Sneha Rajput",
+    "role": "Event Booking",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Tajganj",
+    "rating": 5,
+    "date": "2026-02-07T22:31:59.499Z"
+  },
+  {
+    "id": "seed_155",
+    "name": "Geeta Agarwal",
+    "role": "Festival Booking",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Khandari",
+    "rating": 3,
+    "date": "2026-02-02T20:54:30.355Z"
+  },
+  {
+    "id": "seed_156",
+    "name": "Kavita Saxena",
+    "role": "Regular Client",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Dayalbagh",
+    "rating": 5,
+    "date": "2026-02-14T04:38:11.176Z"
+  },
+  {
+    "id": "seed_157",
+    "name": "Neha Sharma",
+    "role": "Festival Booking",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Shastripuram",
+    "rating": 3,
+    "date": "2026-03-31T06:23:30.234Z"
+  },
+  {
+    "id": "seed_158",
+    "name": "Riya Rajput",
+    "role": "Bridal Client",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Sadar Bazar",
+    "rating": 3,
+    "date": "2026-02-25T13:15:36.146Z"
+  },
+  {
+    "id": "seed_159",
+    "name": "Sneha Agarwal",
+    "role": "Regular Client",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Dayalbagh",
+    "rating": 5,
+    "date": "2026-03-14T11:36:47.638Z"
+  },
+  {
+    "id": "seed_160",
+    "name": "Roshni Goyal",
+    "role": "Festival Booking",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-04-05T11:46:50.049Z"
+  },
+  {
+    "id": "seed_161",
+    "name": "Roshni Jain",
+    "role": "Event Booking",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-04-10T08:49:56.258Z"
+  },
+  {
+    "id": "seed_162",
+    "name": "Sushma Garg",
+    "role": "Event Booking",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Lohamandi",
+    "rating": 5,
+    "date": "2026-04-19T07:35:48.964Z"
+  },
+  {
+    "id": "seed_163",
+    "name": "Tanya Sharma",
+    "role": "Bridal Client",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Shastripuram",
+    "rating": 4,
+    "date": "2026-02-17T06:17:48.996Z"
+  },
+  {
+    "id": "seed_164",
+    "name": "Divya Gupta",
+    "role": "Event Booking",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-01-27T00:52:31.885Z"
+  },
+  {
+    "id": "seed_165",
+    "name": "Neha Bansal",
+    "role": "Party Booking",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Idgah",
+    "rating": 4,
+    "date": "2026-02-05T22:24:22.705Z"
+  },
+  {
+    "id": "seed_166",
+    "name": "Sonal Chauhan",
+    "role": "Regular Client",
+    "text": "Best experience ever! The regular client mehndi was so detailed and the stain was incredibly dark. Everyone loved it.",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-02-21T07:47:09.040Z"
+  },
+  {
+    "id": "seed_167",
+    "name": "Priya Pandey",
+    "role": "Regular Client",
+    "text": "Ordered express service for my party. They arrived exactly on time! The artist was very professional.",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-03-28T23:10:00.928Z"
+  },
+  {
+    "id": "seed_168",
+    "name": "Kiran Chauhan",
+    "role": "Event Booking",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-03-20T08:03:59.050Z"
+  },
+  {
+    "id": "seed_169",
+    "name": "Kavita Tiwari",
+    "role": "Festival Booking",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Sanjay Place",
+    "rating": 3,
+    "date": "2026-02-28T02:54:26.081Z"
+  },
+  {
+    "id": "seed_170",
+    "name": "Deepa Chauhan",
+    "role": "Bridal Client",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Sadar Bazar",
+    "rating": 3,
+    "date": "2026-04-28T17:55:45.472Z"
+  },
+  {
+    "id": "seed_171",
+    "name": "Kavita Mathur",
+    "role": "Bridal Client",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-01-24T09:02:57.831Z"
+  },
+  {
+    "id": "seed_172",
+    "name": "Kavita Tiwari",
+    "role": "Bridal Client",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Balkeshwar",
+    "rating": 5,
+    "date": "2026-04-17T21:18:07.976Z"
+  },
+  {
+    "id": "seed_173",
+    "name": "Shikha Saxena",
+    "role": "Bridal Client",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Tajganj",
+    "rating": 4,
+    "date": "2026-04-18T08:38:22.600Z"
+  },
+  {
+    "id": "seed_174",
+    "name": "Kiran Garg",
+    "role": "Bridal Client",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Kargil Petrol Pump",
+    "rating": 4,
+    "date": "2026-02-20T05:36:13.952Z"
+  },
+  {
+    "id": "seed_175",
+    "name": "Aarti Tiwari",
+    "role": "Event Booking",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Sanjay Place",
+    "rating": 5,
+    "date": "2026-04-24T21:31:59.615Z"
+  },
+  {
+    "id": "seed_176",
+    "name": "Kiran Saxena",
+    "role": "Party Booking",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Khandari",
+    "rating": 4,
+    "date": "2026-03-07T16:57:10.332Z"
+  },
+  {
+    "id": "seed_177",
+    "name": "Tanya Saxena",
+    "role": "Engagement Client",
+    "text": "Best experience ever! The engagement client mehndi was so detailed and the stain was incredibly dark. Everyone loved it.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-02-09T22:31:10.191Z"
+  },
+  {
+    "id": "seed_178",
+    "name": "Shikha Goyal",
+    "role": "Party Booking",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Sikandra",
+    "rating": 5,
+    "date": "2026-03-30T12:51:48.379Z"
+  },
+  {
+    "id": "seed_179",
+    "name": "Sneha Gupta",
+    "role": "Party Booking",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Lohamandi",
+    "rating": 5,
+    "date": "2026-01-31T15:18:48.750Z"
+  },
+  {
+    "id": "seed_180",
+    "name": "Aarti Pandey",
+    "role": "Festival Booking",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Sikandra",
+    "rating": 5,
+    "date": "2026-04-02T20:59:30.096Z"
+  },
+  {
+    "id": "seed_181",
+    "name": "Riya Bansal",
+    "role": "Event Booking",
+    "text": "I was amazed by the intricate details. Definitely the best mehndi artist in Avas Vikas.",
+    "area": "Avas Vikas",
+    "rating": 4,
+    "date": "2026-04-14T09:14:59.456Z"
+  },
+  {
+    "id": "seed_182",
+    "name": "Shruti Garg",
+    "role": "Event Booking",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-04-25T12:47:48.911Z"
+  },
+  {
+    "id": "seed_183",
+    "name": "Sushma Pandey",
+    "role": "Party Booking",
+    "text": "Beautiful traditional designs. My mother absolutely loved her mehndi.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-02-23T02:57:57.430Z"
+  },
+  {
+    "id": "seed_184",
+    "name": "Deepa Verma",
+    "role": "Party Booking",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-03-29T08:55:08.932Z"
+  },
+  {
+    "id": "seed_185",
+    "name": "Shikha Mathur",
+    "role": "Regular Client",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-02-26T17:00:32.069Z"
+  },
+  {
+    "id": "seed_186",
+    "name": "Shruti Bansal",
+    "role": "Party Booking",
+    "text": "I was amazed by the intricate details. Definitely the best mehndi artist in Fatehabad Road.",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-03-04T04:48:03.373Z"
+  },
+  {
+    "id": "seed_187",
+    "name": "Pooja Rajput",
+    "role": "Festival Booking",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-02-24T20:04:10.718Z"
+  },
+  {
+    "id": "seed_188",
+    "name": "Shruti Yadav",
+    "role": "Regular Client",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Fatehabad Road",
+    "rating": 4,
+    "date": "2026-04-04T15:22:51.596Z"
+  },
+  {
+    "id": "seed_189",
+    "name": "Deepa Verma",
+    "role": "Regular Client",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Balkeshwar",
+    "rating": 5,
+    "date": "2026-02-13T00:33:50.897Z"
+  },
+  {
+    "id": "seed_190",
+    "name": "Radhika Garg",
+    "role": "Festival Booking",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Khandari",
+    "rating": 5,
+    "date": "2026-01-25T06:17:26.160Z"
+  },
+  {
+    "id": "seed_191",
+    "name": "Roshni Pandey",
+    "role": "Party Booking",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Sadar Bazar",
+    "rating": 3,
+    "date": "2026-01-25T11:18:40.936Z"
+  },
+  {
+    "id": "seed_192",
+    "name": "Priya Tiwari",
+    "role": "Engagement Client",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-01-22T15:54:00.581Z"
+  },
+  {
+    "id": "seed_193",
+    "name": "Priya Tiwari",
+    "role": "Party Booking",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-03-29T10:36:06.366Z"
+  },
+  {
+    "id": "seed_194",
+    "name": "Anjali Mathur",
+    "role": "Event Booking",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Sanjay Place",
+    "rating": 5,
+    "date": "2026-04-29T07:51:28.611Z"
+  },
+  {
+    "id": "seed_195",
+    "name": "Sonal Yadav",
+    "role": "Festival Booking",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Khandari",
+    "rating": 5,
+    "date": "2026-04-07T04:26:56.781Z"
+  },
+  {
+    "id": "seed_196",
+    "name": "Geeta Saxena",
+    "role": "Festival Booking",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Trans Yamuna",
+    "rating": 3,
+    "date": "2026-03-11T09:48:57.115Z"
+  },
+  {
+    "id": "seed_197",
+    "name": "Swati Chauhan",
+    "role": "Party Booking",
+    "text": "I was amazed by the intricate details. Definitely the best mehndi artist in Dayalbagh.",
+    "area": "Dayalbagh",
+    "rating": 4,
+    "date": "2026-04-22T22:51:07.639Z"
+  },
+  {
+    "id": "seed_198",
+    "name": "Swati Mathur",
+    "role": "Bridal Client",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Kargil Petrol Pump",
+    "rating": 4,
+    "date": "2026-04-15T20:07:53.454Z"
+  },
+  {
+    "id": "seed_199",
+    "name": "Roshni Tiwari",
+    "role": "Engagement Client",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Dayalbagh",
+    "rating": 5,
+    "date": "2026-04-15T11:43:13.749Z"
+  },
+  {
+    "id": "seed_200",
+    "name": "Kritika Sharma",
+    "role": "Party Booking",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Sikandra",
+    "rating": 5,
+    "date": "2026-01-20T23:00:32.642Z"
+  },
+  {
+    "id": "seed_201",
+    "name": "Anjali Rajput",
+    "role": "Festival Booking",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Tajganj",
+    "rating": 4,
+    "date": "2026-01-26T04:43:07.232Z"
+  },
+  {
+    "id": "seed_202",
+    "name": "Kavita Sharma",
+    "role": "Engagement Client",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Shahganj",
+    "rating": 4,
+    "date": "2026-05-01T12:57:15.484Z"
+  },
+  {
+    "id": "seed_203",
+    "name": "Deepa Bansal",
+    "role": "Festival Booking",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Sanjay Place",
+    "rating": 4,
+    "date": "2026-04-30T04:47:31.890Z"
+  },
+  {
+    "id": "seed_204",
+    "name": "Shruti Tiwari",
+    "role": "Engagement Client",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Khandari",
+    "rating": 5,
+    "date": "2026-01-24T14:29:31.454Z"
+  },
+  {
+    "id": "seed_205",
+    "name": "Kiran Verma",
+    "role": "Party Booking",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Balkeshwar",
+    "rating": 5,
+    "date": "2026-04-29T13:49:26.855Z"
+  },
+  {
+    "id": "seed_206",
+    "name": "Roshni Srivastava",
+    "role": "Regular Client",
+    "text": "I was amazed by the intricate details. Definitely the best mehndi artist in Shastripuram.",
+    "area": "Shastripuram",
+    "rating": 5,
+    "date": "2026-02-09T13:41:45.200Z"
+  },
+  {
+    "id": "seed_207",
+    "name": "Divya Chauhan",
+    "role": "Party Booking",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Kamla Nagar",
+    "rating": 4,
+    "date": "2026-04-13T05:02:18.571Z"
+  },
+  {
+    "id": "seed_208",
+    "name": "Manisha Mishra",
+    "role": "Event Booking",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-01-17T18:50:26.072Z"
+  },
+  {
+    "id": "seed_209",
+    "name": "Shikha Garg",
+    "role": "Festival Booking",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Tajganj",
+    "rating": 3,
+    "date": "2026-03-27T15:47:53.221Z"
+  },
+  {
+    "id": "seed_210",
+    "name": "Anjali Tiwari",
+    "role": "Party Booking",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Kamla Nagar",
+    "rating": 3,
+    "date": "2026-04-19T15:40:25.127Z"
+  },
+  {
+    "id": "seed_211",
+    "name": "Sushma Srivastava",
+    "role": "Festival Booking",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Shastripuram",
+    "rating": 5,
+    "date": "2026-03-09T05:06:19.057Z"
+  },
+  {
+    "id": "seed_212",
+    "name": "Jyoti Singh",
+    "role": "Event Booking",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Sikandra",
+    "rating": 5,
+    "date": "2026-05-04T05:18:54.953Z"
+  },
+  {
+    "id": "seed_213",
+    "name": "Priya Singh",
+    "role": "Engagement Client",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Dayalbagh",
+    "rating": 4,
+    "date": "2026-01-27T18:05:53.655Z"
+  },
+  {
+    "id": "seed_214",
+    "name": "Kritika Jain",
+    "role": "Event Booking",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-03-24T19:51:50.066Z"
+  },
+  {
+    "id": "seed_215",
+    "name": "Aarti Saxena",
+    "role": "Bridal Client",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-01-30T19:46:04.825Z"
+  },
+  {
+    "id": "seed_216",
+    "name": "Pooja Rajput",
+    "role": "Regular Client",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Trans Yamuna",
+    "rating": 4,
+    "date": "2026-02-07T15:32:58.235Z"
+  },
+  {
+    "id": "seed_217",
+    "name": "Nidhi Verma",
+    "role": "Bridal Client",
+    "text": "Ordered express service for my karwa chauth. They arrived exactly on time! The artist was very professional.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-04-14T03:40:12.289Z"
+  },
+  {
+    "id": "seed_218",
+    "name": "Priya Tiwari",
+    "role": "Event Booking",
+    "text": "Best experience ever! The event booking mehndi was so detailed and the stain was incredibly dark. Everyone loved it.",
+    "area": "Sanjay Place",
+    "rating": 5,
+    "date": "2026-05-09T12:41:23.338Z"
+  },
+  {
+    "id": "seed_219",
+    "name": "Anjali Bansal",
+    "role": "Engagement Client",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-03-24T10:13:15.695Z"
+  },
+  {
+    "id": "seed_220",
+    "name": "Priya Gupta",
+    "role": "Event Booking",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Balkeshwar",
+    "rating": 5,
+    "date": "2026-01-24T10:14:45.456Z"
+  },
+  {
+    "id": "seed_221",
+    "name": "Meera Garg",
+    "role": "Regular Client",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Khandari",
+    "rating": 4,
+    "date": "2026-01-26T00:52:32.146Z"
+  },
+  {
+    "id": "seed_222",
+    "name": "Meera Verma",
+    "role": "Event Booking",
+    "text": "I was amazed by the intricate details. Definitely the best mehndi artist in Sikandra.",
+    "area": "Sikandra",
+    "rating": 3,
+    "date": "2026-05-05T23:07:17.419Z"
+  },
+  {
+    "id": "seed_223",
+    "name": "Jyoti Verma",
+    "role": "Regular Client",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Balkeshwar",
+    "rating": 5,
+    "date": "2026-02-11T17:38:38.541Z"
+  },
+  {
+    "id": "seed_224",
+    "name": "Nidhi Garg",
+    "role": "Event Booking",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-02-05T11:25:33.151Z"
+  },
+  {
+    "id": "seed_225",
+    "name": "Kritika Chauhan",
+    "role": "Event Booking",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Fatehabad Road",
+    "rating": 4,
+    "date": "2026-01-21T07:38:01.787Z"
+  },
+  {
+    "id": "seed_226",
+    "name": "Priya Goyal",
+    "role": "Engagement Client",
+    "text": "I was amazed by the intricate details. Definitely the best mehndi artist in Lohamandi.",
+    "area": "Lohamandi",
+    "rating": 5,
+    "date": "2026-03-22T11:12:50.310Z"
+  },
+  {
+    "id": "seed_227",
+    "name": "Kavita Bansal",
+    "role": "Engagement Client",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Sikandra",
+    "rating": 5,
+    "date": "2026-04-28T08:36:52.413Z"
+  },
+  {
+    "id": "seed_228",
+    "name": "Kavita Agarwal",
+    "role": "Regular Client",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Balkeshwar",
+    "rating": 5,
+    "date": "2026-03-08T01:20:23.926Z"
+  },
+  {
+    "id": "seed_229",
+    "name": "Nidhi Jain",
+    "role": "Engagement Client",
+    "text": "Ordered express service for my wedding. They arrived exactly on time! The artist was very professional.",
+    "area": "Trans Yamuna",
+    "rating": 4,
+    "date": "2026-02-20T12:48:27.399Z"
+  },
+  {
+    "id": "seed_230",
+    "name": "Shruti Yadav",
+    "role": "Engagement Client",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-01-14T13:18:35.473Z"
+  },
+  {
+    "id": "seed_231",
+    "name": "Swati Pandey",
+    "role": "Festival Booking",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Sikandra",
+    "rating": 4,
+    "date": "2026-04-29T14:39:50.916Z"
+  },
+  {
+    "id": "seed_232",
+    "name": "Meera Sharma",
+    "role": "Party Booking",
+    "text": "Beautiful traditional designs. My mother absolutely loved her mehndi.",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-04-01T11:25:41.225Z"
+  },
+  {
+    "id": "seed_233",
+    "name": "Deepa Mathur",
+    "role": "Regular Client",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Sikandra",
+    "rating": 5,
+    "date": "2026-03-17T07:34:16.320Z"
+  },
+  {
+    "id": "seed_234",
+    "name": "Nidhi Chauhan",
+    "role": "Party Booking",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Kargil Petrol Pump",
+    "rating": 4,
+    "date": "2026-03-27T03:24:19.415Z"
+  },
+  {
+    "id": "seed_235",
+    "name": "Sneha Saxena",
+    "role": "Engagement Client",
+    "text": "Best experience ever! The engagement client mehndi was so detailed and the stain was incredibly dark. Everyone loved it.",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-03-05T08:49:23.864Z"
+  },
+  {
+    "id": "seed_236",
+    "name": "Kritika Saxena",
+    "role": "Engagement Client",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Kamla Nagar",
+    "rating": 3,
+    "date": "2026-03-21T23:56:10.600Z"
+  },
+  {
+    "id": "seed_237",
+    "name": "Sonal Singh",
+    "role": "Regular Client",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Balkeshwar",
+    "rating": 4,
+    "date": "2026-03-18T02:04:11.021Z"
+  },
+  {
+    "id": "seed_238",
+    "name": "Kiran Verma",
+    "role": "Bridal Client",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Balkeshwar",
+    "rating": 3,
+    "date": "2026-01-19T06:21:54.057Z"
+  },
+  {
+    "id": "seed_239",
+    "name": "Divya Jain",
+    "role": "Party Booking",
+    "text": "Beautiful traditional designs. My mother absolutely loved her mehndi.",
+    "area": "Fatehabad Road",
+    "rating": 4,
+    "date": "2026-03-01T00:56:08.709Z"
+  },
+  {
+    "id": "seed_240",
+    "name": "Pooja Mishra",
+    "role": "Party Booking",
+    "text": "Beautiful traditional designs. My mother absolutely loved her mehndi.",
+    "area": "Sanjay Place",
+    "rating": 4,
+    "date": "2026-02-20T18:05:54.988Z"
+  },
+  {
+    "id": "seed_241",
+    "name": "Riya Chauhan",
+    "role": "Engagement Client",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Dayalbagh",
+    "rating": 4,
+    "date": "2026-01-25T00:08:31.722Z"
+  },
+  {
+    "id": "seed_242",
+    "name": "Meera Tiwari",
+    "role": "Regular Client",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Balkeshwar",
+    "rating": 4,
+    "date": "2026-01-26T13:03:42.331Z"
+  },
+  {
+    "id": "seed_243",
+    "name": "Roshni Gupta",
+    "role": "Engagement Client",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Avas Vikas",
+    "rating": 5,
+    "date": "2026-03-29T17:25:17.579Z"
+  },
+  {
+    "id": "seed_244",
+    "name": "Riya Verma",
+    "role": "Bridal Client",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Khandari",
+    "rating": 5,
+    "date": "2026-01-20T19:31:10.880Z"
+  },
+  {
+    "id": "seed_245",
+    "name": "Anjali Srivastava",
+    "role": "Event Booking",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Sanjay Place",
+    "rating": 4,
+    "date": "2026-04-26T09:01:57.519Z"
+  },
+  {
+    "id": "seed_246",
+    "name": "Kritika Agarwal",
+    "role": "Bridal Client",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Kargil Petrol Pump",
+    "rating": 4,
+    "date": "2026-05-01T15:35:31.205Z"
+  },
+  {
+    "id": "seed_247",
+    "name": "Shruti Rajput",
+    "role": "Engagement Client",
+    "text": "Beautiful traditional designs. My mother absolutely loved her mehndi.",
+    "area": "Lohamandi",
+    "rating": 5,
+    "date": "2026-02-15T19:27:49.475Z"
+  },
+  {
+    "id": "seed_248",
+    "name": "Geeta Jain",
+    "role": "Party Booking",
+    "text": "Beautiful traditional designs. My mother absolutely loved her mehndi.",
+    "area": "Khandari",
+    "rating": 5,
+    "date": "2026-01-14T13:36:17.421Z"
+  },
+  {
+    "id": "seed_249",
+    "name": "Riya Garg",
+    "role": "Bridal Client",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Tajganj",
+    "rating": 5,
+    "date": "2026-03-01T22:36:12.128Z"
+  },
+  {
+    "id": "seed_250",
+    "name": "Nidhi Verma",
+    "role": "Engagement Client",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Tajganj",
+    "rating": 4,
+    "date": "2026-03-05T10:03:26.706Z"
+  },
+  {
+    "id": "seed_251",
+    "name": "Swati Saxena",
+    "role": "Bridal Client",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Lohamandi",
+    "rating": 5,
+    "date": "2026-02-12T15:23:14.555Z"
+  },
+  {
+    "id": "seed_252",
+    "name": "Sonal Jain",
+    "role": "Festival Booking",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-02-17T19:56:46.833Z"
+  },
+  {
+    "id": "seed_253",
+    "name": "Aarti Goyal",
+    "role": "Party Booking",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Sanjay Place",
+    "rating": 5,
+    "date": "2026-03-25T04:45:47.692Z"
+  },
+  {
+    "id": "seed_254",
+    "name": "Manisha Chauhan",
+    "role": "Engagement Client",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-04-27T18:35:28.536Z"
+  },
+  {
+    "id": "seed_255",
+    "name": "Swati Mishra",
+    "role": "Event Booking",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Sikandra",
+    "rating": 5,
+    "date": "2026-02-12T21:00:37.301Z"
+  },
+  {
+    "id": "seed_256",
+    "name": "Shruti Mishra",
+    "role": "Event Booking",
+    "text": "Best experience ever! The event booking mehndi was so detailed and the stain was incredibly dark. Everyone loved it.",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-01-28T17:24:44.307Z"
+  },
+  {
+    "id": "seed_257",
+    "name": "Shruti Mishra",
+    "role": "Engagement Client",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Shahganj",
+    "rating": 4,
+    "date": "2026-03-09T15:35:22.900Z"
+  },
+  {
+    "id": "seed_258",
+    "name": "Nidhi Mishra",
+    "role": "Regular Client",
+    "text": "Beautiful traditional designs. My mother absolutely loved her mehndi.",
+    "area": "Dayalbagh",
+    "rating": 5,
+    "date": "2026-01-29T15:03:23.153Z"
+  },
+  {
+    "id": "seed_259",
+    "name": "Kritika Goyal",
+    "role": "Bridal Client",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Balkeshwar",
+    "rating": 5,
+    "date": "2026-02-09T17:46:33.681Z"
+  },
+  {
+    "id": "seed_260",
+    "name": "Kavita Jain",
+    "role": "Regular Client",
+    "text": "I was amazed by the intricate details. Definitely the best mehndi artist in Kamla Nagar.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-04-26T22:05:13.035Z"
+  },
+  {
+    "id": "seed_261",
+    "name": "Shruti Pandey",
+    "role": "Event Booking",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Shastripuram",
+    "rating": 4,
+    "date": "2026-01-23T08:19:41.386Z"
+  },
+  {
+    "id": "seed_262",
+    "name": "Sonal Pandey",
+    "role": "Party Booking",
+    "text": "Best experience ever! The party booking mehndi was so detailed and the stain was incredibly dark. Everyone loved it.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-02-20T19:35:38.496Z"
+  },
+  {
+    "id": "seed_263",
+    "name": "Kritika Mathur",
+    "role": "Party Booking",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Shastripuram",
+    "rating": 5,
+    "date": "2026-01-26T18:30:31.647Z"
+  },
+  {
+    "id": "seed_264",
+    "name": "Sonal Singh",
+    "role": "Festival Booking",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-03-01T17:05:13.658Z"
+  },
+  {
+    "id": "seed_265",
+    "name": "Geeta Mishra",
+    "role": "Regular Client",
+    "text": "Ordered express service for my wedding. They arrived exactly on time! The artist was very professional.",
+    "area": "Shastripuram",
+    "rating": 5,
+    "date": "2026-03-20T06:10:17.292Z"
+  },
+  {
+    "id": "seed_266",
+    "name": "Aarti Chauhan",
+    "role": "Event Booking",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Idgah",
+    "rating": 4,
+    "date": "2026-01-22T14:53:49.471Z"
+  },
+  {
+    "id": "seed_267",
+    "name": "Geeta Rajput",
+    "role": "Regular Client",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-02-11T14:59:34.334Z"
+  },
+  {
+    "id": "seed_268",
+    "name": "Geeta Mathur",
+    "role": "Bridal Client",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Dayalbagh",
+    "rating": 3,
+    "date": "2026-04-04T02:54:03.023Z"
+  },
+  {
+    "id": "seed_269",
+    "name": "Radhika Gupta",
+    "role": "Regular Client",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-05-04T15:57:39.428Z"
+  },
+  {
+    "id": "seed_270",
+    "name": "Riya Tiwari",
+    "role": "Regular Client",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Kargil Petrol Pump",
+    "rating": 3,
+    "date": "2026-03-21T18:05:08.446Z"
+  },
+  {
+    "id": "seed_271",
+    "name": "Sushma Singh",
+    "role": "Regular Client",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-04-13T22:12:34.744Z"
+  },
+  {
+    "id": "seed_272",
+    "name": "Sneha Mishra",
+    "role": "Bridal Client",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Lohamandi",
+    "rating": 5,
+    "date": "2026-04-18T22:27:08.235Z"
+  },
+  {
+    "id": "seed_273",
+    "name": "Kavita Pandey",
+    "role": "Engagement Client",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-04-11T19:03:36.417Z"
+  },
+  {
+    "id": "seed_274",
+    "name": "Radhika Mathur",
+    "role": "Festival Booking",
+    "text": "Best experience ever! The festival booking mehndi was so detailed and the stain was incredibly dark. Everyone loved it.",
+    "area": "Idgah",
+    "rating": 3,
+    "date": "2026-01-28T14:59:25.862Z"
+  },
+  {
+    "id": "seed_275",
+    "name": "Tanya Mishra",
+    "role": "Bridal Client",
+    "text": "Best experience ever! The bridal client mehndi was so detailed and the stain was incredibly dark. Everyone loved it.",
+    "area": "Shastripuram",
+    "rating": 4,
+    "date": "2026-04-05T02:12:18.108Z"
+  },
+  {
+    "id": "seed_276",
+    "name": "Divya Jain",
+    "role": "Event Booking",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Lohamandi",
+    "rating": 4,
+    "date": "2026-03-31T06:03:20.555Z"
+  },
+  {
+    "id": "seed_277",
+    "name": "Divya Srivastava",
+    "role": "Event Booking",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Kargil Petrol Pump",
+    "rating": 4,
+    "date": "2026-04-10T03:08:36.481Z"
+  },
+  {
+    "id": "seed_278",
+    "name": "Nidhi Singh",
+    "role": "Regular Client",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Fatehabad Road",
+    "rating": 4,
+    "date": "2026-01-24T06:54:23.402Z"
+  },
+  {
+    "id": "seed_279",
+    "name": "Sneha Agarwal",
+    "role": "Party Booking",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Sanjay Place",
+    "rating": 5,
+    "date": "2026-04-23T23:14:40.440Z"
+  },
+  {
+    "id": "seed_280",
+    "name": "Jyoti Yadav",
+    "role": "Festival Booking",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Tajganj",
+    "rating": 5,
+    "date": "2026-03-12T11:07:00.982Z"
+  },
+  {
+    "id": "seed_281",
+    "name": "Sneha Verma",
+    "role": "Event Booking",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-01-24T06:33:49.292Z"
+  },
+  {
+    "id": "seed_282",
+    "name": "Anjali Jain",
+    "role": "Bridal Client",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Balkeshwar",
+    "rating": 5,
+    "date": "2026-04-27T12:25:28.548Z"
+  },
+  {
+    "id": "seed_283",
+    "name": "Sonal Bansal",
+    "role": "Event Booking",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-05-03T03:45:13.341Z"
+  },
+  {
+    "id": "seed_284",
+    "name": "Sonal Jain",
+    "role": "Festival Booking",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-04-20T21:37:17.666Z"
+  },
+  {
+    "id": "seed_285",
+    "name": "Geeta Gupta",
+    "role": "Party Booking",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Balkeshwar",
+    "rating": 5,
+    "date": "2026-01-20T04:06:08.944Z"
+  },
+  {
+    "id": "seed_286",
+    "name": "Radhika Gupta",
+    "role": "Regular Client",
+    "text": "I was amazed by the intricate details. Definitely the best mehndi artist in Khandari.",
+    "area": "Khandari",
+    "rating": 4,
+    "date": "2026-01-19T09:29:09.363Z"
+  },
+  {
+    "id": "seed_287",
+    "name": "Neha Garg",
+    "role": "Festival Booking",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-03-02T08:34:24.019Z"
+  },
+  {
+    "id": "seed_288",
+    "name": "Priya Garg",
+    "role": "Bridal Client",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Khandari",
+    "rating": 4,
+    "date": "2026-04-01T06:43:19.860Z"
+  },
+  {
+    "id": "seed_289",
+    "name": "Swati Chauhan",
+    "role": "Bridal Client",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Idgah",
+    "rating": 4,
+    "date": "2026-04-03T23:51:50.991Z"
+  },
+  {
+    "id": "seed_290",
+    "name": "Anjali Mathur",
+    "role": "Festival Booking",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-03-08T06:01:24.399Z"
+  },
+  {
+    "id": "seed_291",
+    "name": "Riya Chauhan",
+    "role": "Festival Booking",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-05-03T14:02:48.534Z"
+  },
+  {
+    "id": "seed_292",
+    "name": "Sushma Mathur",
+    "role": "Event Booking",
+    "text": "I was amazed by the intricate details. Definitely the best mehndi artist in Sikandra.",
+    "area": "Sikandra",
+    "rating": 4,
+    "date": "2026-03-27T07:02:15.637Z"
+  },
+  {
+    "id": "seed_293",
+    "name": "Sneha Rajput",
+    "role": "Engagement Client",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-02-20T22:42:18.322Z"
+  },
+  {
+    "id": "seed_294",
+    "name": "Meera Bansal",
+    "role": "Event Booking",
+    "text": "Ordered express service for my teej. They arrived exactly on time! The artist was very professional.",
+    "area": "Tajganj",
+    "rating": 5,
+    "date": "2026-04-11T06:18:26.251Z"
+  },
+  {
+    "id": "seed_295",
+    "name": "Priya Jain",
+    "role": "Festival Booking",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Fatehabad Road",
+    "rating": 4,
+    "date": "2026-03-28T18:44:32.711Z"
+  },
+  {
+    "id": "seed_296",
+    "name": "Riya Goyal",
+    "role": "Festival Booking",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Trans Yamuna",
+    "rating": 4,
+    "date": "2026-04-18T08:10:38.642Z"
+  },
+  {
+    "id": "seed_297",
+    "name": "Pooja Pandey",
+    "role": "Bridal Client",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Dayalbagh",
+    "rating": 4,
+    "date": "2026-04-01T11:58:16.188Z"
+  },
+  {
+    "id": "seed_298",
+    "name": "Simran Saxena",
+    "role": "Festival Booking",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Sanjay Place",
+    "rating": 5,
+    "date": "2026-02-17T05:07:23.783Z"
+  },
+  {
+    "id": "seed_299",
+    "name": "Meera Gupta",
+    "role": "Regular Client",
+    "text": "Beautiful traditional designs. My mother absolutely loved her mehndi.",
+    "area": "Shastripuram",
+    "rating": 5,
+    "date": "2026-04-13T17:22:39.099Z"
+  },
+  {
+    "id": "seed_300",
+    "name": "Tanya Chauhan",
+    "role": "Regular Client",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-03-03T16:26:58.956Z"
+  },
+  {
+    "id": "seed_301",
+    "name": "Kiran Yadav",
+    "role": "Party Booking",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Trans Yamuna",
+    "rating": 3,
+    "date": "2026-03-15T02:19:09.686Z"
+  },
+  {
+    "id": "seed_302",
+    "name": "Geeta Sharma",
+    "role": "Regular Client",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Shastripuram",
+    "rating": 4,
+    "date": "2026-01-23T10:32:42.718Z"
+  },
+  {
+    "id": "seed_303",
+    "name": "Deepa Tiwari",
+    "role": "Event Booking",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-03-23T16:32:25.976Z"
+  },
+  {
+    "id": "seed_304",
+    "name": "Aarti Mishra",
+    "role": "Event Booking",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Sikandra",
+    "rating": 4,
+    "date": "2026-01-29T11:28:35.225Z"
+  },
+  {
+    "id": "seed_305",
+    "name": "Kavita Mishra",
+    "role": "Party Booking",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Tajganj",
+    "rating": 4,
+    "date": "2026-03-22T16:17:08.514Z"
+  },
+  {
+    "id": "seed_306",
+    "name": "Simran Tiwari",
+    "role": "Engagement Client",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Fatehabad Road",
+    "rating": 3,
+    "date": "2026-01-31T08:53:03.667Z"
+  },
+  {
+    "id": "seed_307",
+    "name": "Kritika Agarwal",
+    "role": "Festival Booking",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Sanjay Place",
+    "rating": 5,
+    "date": "2026-03-19T14:54:44.799Z"
+  },
+  {
+    "id": "seed_308",
+    "name": "Radhika Srivastava",
+    "role": "Party Booking",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Avas Vikas",
+    "rating": 4,
+    "date": "2026-04-25T20:55:18.050Z"
+  },
+  {
+    "id": "seed_309",
+    "name": "Kritika Jain",
+    "role": "Party Booking",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Sanjay Place",
+    "rating": 5,
+    "date": "2026-04-01T05:14:59.416Z"
+  },
+  {
+    "id": "seed_310",
+    "name": "Priya Rajput",
+    "role": "Engagement Client",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Balkeshwar",
+    "rating": 4,
+    "date": "2026-05-07T17:27:36.537Z"
+  },
+  {
+    "id": "seed_311",
+    "name": "Tanya Garg",
+    "role": "Festival Booking",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-04-16T20:44:50.767Z"
+  },
+  {
+    "id": "seed_312",
+    "name": "Sneha Gupta",
+    "role": "Event Booking",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-04-25T12:09:33.610Z"
+  },
+  {
+    "id": "seed_313",
+    "name": "Kritika Mishra",
+    "role": "Bridal Client",
+    "text": "Beautiful traditional designs. My mother absolutely loved her mehndi.",
+    "area": "Khandari",
+    "rating": 5,
+    "date": "2026-02-19T12:52:06.988Z"
+  },
+  {
+    "id": "seed_314",
+    "name": "Manisha Singh",
+    "role": "Festival Booking",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Lohamandi",
+    "rating": 5,
+    "date": "2026-05-03T13:44:12.508Z"
+  },
+  {
+    "id": "seed_315",
+    "name": "Shruti Singh",
+    "role": "Party Booking",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-03-30T22:54:17.413Z"
+  },
+  {
+    "id": "seed_316",
+    "name": "Shruti Chauhan",
+    "role": "Engagement Client",
+    "text": "Beautiful traditional designs. My mother absolutely loved her mehndi.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-03-28T07:35:51.805Z"
+  },
+  {
+    "id": "seed_317",
+    "name": "Divya Goyal",
+    "role": "Party Booking",
+    "text": "Ordered express service for my baby shower. They arrived exactly on time! The artist was very professional.",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-02-23T20:19:05.925Z"
+  },
+  {
+    "id": "seed_318",
+    "name": "Divya Rajput",
+    "role": "Event Booking",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-02-11T18:18:16.873Z"
+  },
+  {
+    "id": "seed_319",
+    "name": "Meera Mishra",
+    "role": "Festival Booking",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-02-08T06:16:30.033Z"
+  },
+  {
+    "id": "seed_320",
+    "name": "Jyoti Mathur",
+    "role": "Event Booking",
+    "text": "Beautiful traditional designs. My mother absolutely loved her mehndi.",
+    "area": "Avas Vikas",
+    "rating": 5,
+    "date": "2026-04-04T14:14:16.954Z"
+  },
+  {
+    "id": "seed_321",
+    "name": "Anjali Singh",
+    "role": "Engagement Client",
+    "text": "Beautiful traditional designs. My mother absolutely loved her mehndi.",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-03-07T15:23:43.634Z"
+  },
+  {
+    "id": "seed_322",
+    "name": "Sneha Gupta",
+    "role": "Event Booking",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Tajganj",
+    "rating": 5,
+    "date": "2026-03-03T15:12:09.912Z"
+  },
+  {
+    "id": "seed_323",
+    "name": "Radhika Mathur",
+    "role": "Event Booking",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Avas Vikas",
+    "rating": 5,
+    "date": "2026-01-17T15:53:00.840Z"
+  },
+  {
+    "id": "seed_324",
+    "name": "Sneha Saxena",
+    "role": "Regular Client",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-02-09T16:07:21.979Z"
+  },
+  {
+    "id": "seed_325",
+    "name": "Neha Saxena",
+    "role": "Event Booking",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Shastripuram",
+    "rating": 5,
+    "date": "2026-01-25T06:05:16.931Z"
+  },
+  {
+    "id": "seed_326",
+    "name": "Radhika Srivastava",
+    "role": "Engagement Client",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-03-11T04:18:16.640Z"
+  },
+  {
+    "id": "seed_327",
+    "name": "Pooja Mishra",
+    "role": "Engagement Client",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Khandari",
+    "rating": 4,
+    "date": "2026-02-09T18:36:39.405Z"
+  },
+  {
+    "id": "seed_328",
+    "name": "Pooja Bansal",
+    "role": "Party Booking",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Avas Vikas",
+    "rating": 4,
+    "date": "2026-03-10T03:06:21.645Z"
+  },
+  {
+    "id": "seed_329",
+    "name": "Radhika Verma",
+    "role": "Bridal Client",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Balkeshwar",
+    "rating": 5,
+    "date": "2026-02-15T05:48:55.709Z"
+  },
+  {
+    "id": "seed_330",
+    "name": "Kiran Chauhan",
+    "role": "Regular Client",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Avas Vikas",
+    "rating": 5,
+    "date": "2026-02-21T23:20:35.835Z"
+  },
+  {
+    "id": "seed_331",
+    "name": "Sonal Agarwal",
+    "role": "Party Booking",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-01-23T13:06:47.188Z"
+  },
+  {
+    "id": "seed_332",
+    "name": "Geeta Mathur",
+    "role": "Festival Booking",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Sikandra",
+    "rating": 5,
+    "date": "2026-02-18T19:10:29.335Z"
+  },
+  {
+    "id": "seed_333",
+    "name": "Jyoti Gupta",
+    "role": "Party Booking",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Avas Vikas",
+    "rating": 5,
+    "date": "2026-04-16T17:39:39.889Z"
+  },
+  {
+    "id": "seed_334",
+    "name": "Nidhi Mathur",
+    "role": "Party Booking",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-04-13T01:35:28.102Z"
+  },
+  {
+    "id": "seed_335",
+    "name": "Riya Srivastava",
+    "role": "Regular Client",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-03-20T01:22:01.502Z"
+  },
+  {
+    "id": "seed_336",
+    "name": "Sneha Tiwari",
+    "role": "Engagement Client",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-02-26T13:40:34.889Z"
+  },
+  {
+    "id": "seed_337",
+    "name": "Riya Singh",
+    "role": "Engagement Client",
+    "text": "Beautiful traditional designs. My mother absolutely loved her mehndi.",
+    "area": "Lohamandi",
+    "rating": 3,
+    "date": "2026-04-04T18:46:03.777Z"
+  },
+  {
+    "id": "seed_338",
+    "name": "Aarti Yadav",
+    "role": "Engagement Client",
+    "text": "Beautiful traditional designs. My mother absolutely loved her mehndi.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-03-20T06:16:49.841Z"
+  },
+  {
+    "id": "seed_339",
+    "name": "Sneha Saxena",
+    "role": "Regular Client",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-04-07T11:09:51.371Z"
+  },
+  {
+    "id": "seed_340",
+    "name": "Pooja Pandey",
+    "role": "Festival Booking",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Shastripuram",
+    "rating": 5,
+    "date": "2026-04-19T20:16:59.406Z"
+  },
+  {
+    "id": "seed_341",
+    "name": "Neha Pandey",
+    "role": "Regular Client",
+    "text": "Ordered express service for my wedding. They arrived exactly on time! The artist was very professional.",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-01-21T02:32:59.191Z"
+  },
+  {
+    "id": "seed_342",
+    "name": "Roshni Agarwal",
+    "role": "Bridal Client",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Sanjay Place",
+    "rating": 5,
+    "date": "2026-03-28T20:45:00.963Z"
+  },
+  {
+    "id": "seed_343",
+    "name": "Pooja Agarwal",
+    "role": "Regular Client",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Idgah",
+    "rating": 4,
+    "date": "2026-01-28T12:33:10.792Z"
+  },
+  {
+    "id": "seed_344",
+    "name": "Jyoti Srivastava",
+    "role": "Event Booking",
+    "text": "Best experience ever! The event booking mehndi was so detailed and the stain was incredibly dark. Everyone loved it.",
+    "area": "Sanjay Place",
+    "rating": 5,
+    "date": "2026-02-08T20:53:46.218Z"
+  },
+  {
+    "id": "seed_345",
+    "name": "Sushma Singh",
+    "role": "Event Booking",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Dayalbagh",
+    "rating": 5,
+    "date": "2026-04-22T05:01:40.131Z"
+  },
+  {
+    "id": "seed_346",
+    "name": "Kritika Rajput",
+    "role": "Engagement Client",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-04-29T21:01:22.989Z"
+  },
+  {
+    "id": "seed_347",
+    "name": "Neha Agarwal",
+    "role": "Regular Client",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Dayalbagh",
+    "rating": 5,
+    "date": "2026-04-04T16:32:44.397Z"
+  },
+  {
+    "id": "seed_348",
+    "name": "Simran Pandey",
+    "role": "Event Booking",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-04-24T19:04:22.071Z"
+  },
+  {
+    "id": "seed_349",
+    "name": "Sonal Pandey",
+    "role": "Regular Client",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-04-03T08:09:03.530Z"
+  },
+  {
+    "id": "seed_350",
+    "name": "Manisha Tiwari",
+    "role": "Engagement Client",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Lohamandi",
+    "rating": 5,
+    "date": "2026-04-27T08:25:54.727Z"
+  },
+  {
+    "id": "seed_351",
+    "name": "Kritika Sharma",
+    "role": "Festival Booking",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Sikandra",
+    "rating": 5,
+    "date": "2026-04-25T14:50:42.361Z"
+  },
+  {
+    "id": "seed_352",
+    "name": "Sneha Rajput",
+    "role": "Regular Client",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-02-01T03:02:17.063Z"
+  },
+  {
+    "id": "seed_353",
+    "name": "Manisha Agarwal",
+    "role": "Bridal Client",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-03-11T06:32:30.335Z"
+  },
+  {
+    "id": "seed_354",
+    "name": "Shikha Rajput",
+    "role": "Party Booking",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Lohamandi",
+    "rating": 4,
+    "date": "2026-02-10T22:12:49.007Z"
+  },
+  {
+    "id": "seed_355",
+    "name": "Deepa Goyal",
+    "role": "Bridal Client",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Kamla Nagar",
+    "rating": 4,
+    "date": "2026-04-02T07:08:50.884Z"
+  },
+  {
+    "id": "seed_356",
+    "name": "Meera Tiwari",
+    "role": "Regular Client",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-01-23T18:47:38.466Z"
+  },
+  {
+    "id": "seed_357",
+    "name": "Neha Mishra",
+    "role": "Engagement Client",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Tajganj",
+    "rating": 4,
+    "date": "2026-05-03T23:53:03.071Z"
+  },
+  {
+    "id": "seed_358",
+    "name": "Meera Yadav",
+    "role": "Regular Client",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Fatehabad Road",
+    "rating": 4,
+    "date": "2026-05-05T11:08:16.745Z"
+  },
+  {
+    "id": "seed_359",
+    "name": "Deepa Singh",
+    "role": "Event Booking",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Khandari",
+    "rating": 4,
+    "date": "2026-01-30T07:21:49.507Z"
+  },
+  {
+    "id": "seed_360",
+    "name": "Radhika Saxena",
+    "role": "Bridal Client",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Shahganj",
+    "rating": 4,
+    "date": "2026-05-08T00:16:16.675Z"
+  },
+  {
+    "id": "seed_361",
+    "name": "Manisha Garg",
+    "role": "Party Booking",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Tajganj",
+    "rating": 3,
+    "date": "2026-04-14T11:53:50.551Z"
+  },
+  {
+    "id": "seed_362",
+    "name": "Manisha Tiwari",
+    "role": "Engagement Client",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Balkeshwar",
+    "rating": 5,
+    "date": "2026-03-19T16:10:51.336Z"
+  },
+  {
+    "id": "seed_363",
+    "name": "Radhika Garg",
+    "role": "Bridal Client",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Shastripuram",
+    "rating": 5,
+    "date": "2026-05-10T00:33:45.679Z"
+  },
+  {
+    "id": "seed_364",
+    "name": "Nidhi Agarwal",
+    "role": "Event Booking",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Sikandra",
+    "rating": 4,
+    "date": "2026-03-12T05:34:21.148Z"
+  },
+  {
+    "id": "seed_365",
+    "name": "Pooja Agarwal",
+    "role": "Bridal Client",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Balkeshwar",
+    "rating": 5,
+    "date": "2026-03-14T11:37:43.368Z"
+  },
+  {
+    "id": "seed_366",
+    "name": "Radhika Gupta",
+    "role": "Event Booking",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-03-31T08:42:28.897Z"
+  },
+  {
+    "id": "seed_367",
+    "name": "Shruti Bansal",
+    "role": "Engagement Client",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Kargil Petrol Pump",
+    "rating": 4,
+    "date": "2026-02-01T18:35:02.909Z"
+  },
+  {
+    "id": "seed_368",
+    "name": "Neha Gupta",
+    "role": "Regular Client",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-04-27T08:58:01.776Z"
+  },
+  {
+    "id": "seed_369",
+    "name": "Kritika Saxena",
+    "role": "Regular Client",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-04-13T19:22:49.178Z"
+  },
+  {
+    "id": "seed_370",
+    "name": "Meera Verma",
+    "role": "Festival Booking",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-02-28T19:57:21.071Z"
+  },
+  {
+    "id": "seed_371",
+    "name": "Kiran Saxena",
+    "role": "Event Booking",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Kargil Petrol Pump",
+    "rating": 4,
+    "date": "2026-04-05T20:23:16.788Z"
+  },
+  {
+    "id": "seed_372",
+    "name": "Meera Srivastava",
+    "role": "Festival Booking",
+    "text": "Ordered express service for my party. They arrived exactly on time! The artist was very professional.",
+    "area": "Sadar Bazar",
+    "rating": 3,
+    "date": "2026-03-01T08:34:53.171Z"
+  },
+  {
+    "id": "seed_373",
+    "name": "Shikha Agarwal",
+    "role": "Bridal Client",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-01-27T17:19:38.950Z"
+  },
+  {
+    "id": "seed_374",
+    "name": "Shruti Yadav",
+    "role": "Bridal Client",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Khandari",
+    "rating": 4,
+    "date": "2026-01-27T08:47:25.821Z"
+  },
+  {
+    "id": "seed_375",
+    "name": "Shruti Chauhan",
+    "role": "Engagement Client",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Shastripuram",
+    "rating": 5,
+    "date": "2026-03-20T11:34:31.468Z"
+  },
+  {
+    "id": "seed_376",
+    "name": "Simran Saxena",
+    "role": "Bridal Client",
+    "text": "I was amazed by the intricate details. Definitely the best mehndi artist in Kargil Petrol Pump.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-01-16T14:36:34.893Z"
+  },
+  {
+    "id": "seed_377",
+    "name": "Divya Gupta",
+    "role": "Regular Client",
+    "text": "Ordered express service for my party. They arrived exactly on time! The artist was very professional.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-01-14T22:47:31.838Z"
+  },
+  {
+    "id": "seed_378",
+    "name": "Simran Jain",
+    "role": "Event Booking",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-01-31T16:56:09.799Z"
+  },
+  {
+    "id": "seed_379",
+    "name": "Radhika Verma",
+    "role": "Event Booking",
+    "text": "Beautiful traditional designs. My mother absolutely loved her mehndi.",
+    "area": "Dayalbagh",
+    "rating": 5,
+    "date": "2026-02-15T07:23:23.237Z"
+  },
+  {
+    "id": "seed_380",
+    "name": "Manisha Jain",
+    "role": "Festival Booking",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Avas Vikas",
+    "rating": 3,
+    "date": "2026-02-16T04:53:22.443Z"
+  },
+  {
+    "id": "seed_381",
+    "name": "Neha Gupta",
+    "role": "Party Booking",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-03-07T22:58:08.415Z"
+  },
+  {
+    "id": "seed_382",
+    "name": "Shikha Sharma",
+    "role": "Regular Client",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-02-14T01:24:45.698Z"
+  },
+  {
+    "id": "seed_383",
+    "name": "Jyoti Chauhan",
+    "role": "Bridal Client",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-02-15T18:53:16.785Z"
+  },
+  {
+    "id": "seed_384",
+    "name": "Radhika Tiwari",
+    "role": "Festival Booking",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-03-25T06:49:25.116Z"
+  },
+  {
+    "id": "seed_385",
+    "name": "Kavita Singh",
+    "role": "Party Booking",
+    "text": "I was amazed by the intricate details. Definitely the best mehndi artist in Shastripuram.",
+    "area": "Shastripuram",
+    "rating": 4,
+    "date": "2026-04-02T21:12:37.505Z"
+  },
+  {
+    "id": "seed_386",
+    "name": "Kavita Goyal",
+    "role": "Festival Booking",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Avas Vikas",
+    "rating": 5,
+    "date": "2026-02-16T16:32:50.372Z"
+  },
+  {
+    "id": "seed_387",
+    "name": "Geeta Bansal",
+    "role": "Party Booking",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Sanjay Place",
+    "rating": 3,
+    "date": "2026-02-27T10:05:36.884Z"
+  },
+  {
+    "id": "seed_388",
+    "name": "Meera Bansal",
+    "role": "Engagement Client",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Kamla Nagar",
+    "rating": 4,
+    "date": "2026-04-12T00:26:15.466Z"
+  },
+  {
+    "id": "seed_389",
+    "name": "Shruti Srivastava",
+    "role": "Event Booking",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Kargil Petrol Pump",
+    "rating": 4,
+    "date": "2026-01-19T18:07:26.948Z"
+  },
+  {
+    "id": "seed_390",
+    "name": "Kiran Singh",
+    "role": "Regular Client",
+    "text": "Ordered express service for my baby shower. They arrived exactly on time! The artist was very professional.",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-03-25T07:14:17.229Z"
+  },
+  {
+    "id": "seed_391",
+    "name": "Deepa Goyal",
+    "role": "Bridal Client",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Trans Yamuna",
+    "rating": 3,
+    "date": "2026-03-15T10:21:02.028Z"
+  },
+  {
+    "id": "seed_392",
+    "name": "Sonal Sharma",
+    "role": "Regular Client",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Dayalbagh",
+    "rating": 5,
+    "date": "2026-04-16T04:46:43.392Z"
+  },
+  {
+    "id": "seed_393",
+    "name": "Divya Garg",
+    "role": "Event Booking",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Shastripuram",
+    "rating": 5,
+    "date": "2026-02-14T23:55:36.584Z"
+  },
+  {
+    "id": "seed_394",
+    "name": "Jyoti Goyal",
+    "role": "Party Booking",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Sikandra",
+    "rating": 5,
+    "date": "2026-04-13T09:11:21.157Z"
+  },
+  {
+    "id": "seed_395",
+    "name": "Riya Goyal",
+    "role": "Regular Client",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-01-24T15:24:54.153Z"
+  },
+  {
+    "id": "seed_396",
+    "name": "Sushma Srivastava",
+    "role": "Engagement Client",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-04-02T20:24:05.320Z"
+  },
+  {
+    "id": "seed_397",
+    "name": "Sushma Goyal",
+    "role": "Engagement Client",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Balkeshwar",
+    "rating": 5,
+    "date": "2026-03-07T19:07:39.549Z"
+  },
+  {
+    "id": "seed_398",
+    "name": "Sonal Rajput",
+    "role": "Bridal Client",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Khandari",
+    "rating": 3,
+    "date": "2026-02-02T07:43:16.845Z"
+  },
+  {
+    "id": "seed_399",
+    "name": "Riya Jain",
+    "role": "Party Booking",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Fatehabad Road",
+    "rating": 4,
+    "date": "2026-03-28T05:06:38.521Z"
+  },
+  {
+    "id": "seed_400",
+    "name": "Manisha Rajput",
+    "role": "Engagement Client",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Shastripuram",
+    "rating": 3,
+    "date": "2026-03-12T00:17:42.387Z"
+  },
+  {
+    "id": "seed_401",
+    "name": "Nidhi Singh",
+    "role": "Festival Booking",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Khandari",
+    "rating": 5,
+    "date": "2026-03-27T23:54:25.983Z"
+  },
+  {
+    "id": "seed_402",
+    "name": "Nidhi Saxena",
+    "role": "Regular Client",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-04-15T16:05:52.760Z"
+  },
+  {
+    "id": "seed_403",
+    "name": "Kiran Mathur",
+    "role": "Bridal Client",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Fatehabad Road",
+    "rating": 5,
+    "date": "2026-03-25T08:55:54.734Z"
+  },
+  {
+    "id": "seed_404",
+    "name": "Nidhi Gupta",
+    "role": "Bridal Client",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-03-01T02:33:01.660Z"
+  },
+  {
+    "id": "seed_405",
+    "name": "Swati Saxena",
+    "role": "Event Booking",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Kamla Nagar",
+    "rating": 4,
+    "date": "2026-04-22T22:08:30.338Z"
+  },
+  {
+    "id": "seed_406",
+    "name": "Simran Agarwal",
+    "role": "Event Booking",
+    "text": "Ordered express service for my engagement. They arrived exactly on time! The artist was very professional.",
+    "area": "Sanjay Place",
+    "rating": 5,
+    "date": "2026-03-16T14:16:44.818Z"
+  },
+  {
+    "id": "seed_407",
+    "name": "Kavita Yadav",
+    "role": "Party Booking",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-04-02T14:17:31.288Z"
+  },
+  {
+    "id": "seed_408",
+    "name": "Shruti Gupta",
+    "role": "Event Booking",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-04-15T03:24:56.684Z"
+  },
+  {
+    "id": "seed_409",
+    "name": "Swati Chauhan",
+    "role": "Engagement Client",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Shahganj",
+    "rating": 4,
+    "date": "2026-05-04T05:22:23.790Z"
+  },
+  {
+    "id": "seed_410",
+    "name": "Divya Singh",
+    "role": "Event Booking",
+    "text": "I was amazed by the intricate details. Definitely the best mehndi artist in Sanjay Place.",
+    "area": "Sanjay Place",
+    "rating": 3,
+    "date": "2026-02-16T13:42:07.546Z"
+  },
+  {
+    "id": "seed_411",
+    "name": "Tanya Verma",
+    "role": "Festival Booking",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-04-10T07:18:28.227Z"
+  },
+  {
+    "id": "seed_412",
+    "name": "Sushma Goyal",
+    "role": "Party Booking",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-03-27T18:29:57.777Z"
+  },
+  {
+    "id": "seed_413",
+    "name": "Anjali Mishra",
+    "role": "Bridal Client",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Idgah",
+    "rating": 4,
+    "date": "2026-03-27T03:11:24.127Z"
+  },
+  {
+    "id": "seed_414",
+    "name": "Shikha Tiwari",
+    "role": "Festival Booking",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Shastripuram",
+    "rating": 3,
+    "date": "2026-02-01T08:28:30.120Z"
+  },
+  {
+    "id": "seed_415",
+    "name": "Kritika Jain",
+    "role": "Bridal Client",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-02-24T04:54:42.894Z"
+  },
+  {
+    "id": "seed_416",
+    "name": "Shruti Verma",
+    "role": "Event Booking",
+    "text": "Beautiful traditional designs. My mother absolutely loved her mehndi.",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-03-14T12:35:53.092Z"
+  },
+  {
+    "id": "seed_417",
+    "name": "Meera Singh",
+    "role": "Event Booking",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-04-06T10:13:44.920Z"
+  },
+  {
+    "id": "seed_418",
+    "name": "Kritika Mishra",
+    "role": "Engagement Client",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Idgah",
+    "rating": 4,
+    "date": "2026-03-26T08:47:18.321Z"
+  },
+  {
+    "id": "seed_419",
+    "name": "Geeta Mathur",
+    "role": "Bridal Client",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Sanjay Place",
+    "rating": 5,
+    "date": "2026-04-29T00:26:42.936Z"
+  },
+  {
+    "id": "seed_420",
+    "name": "Shruti Mathur",
+    "role": "Regular Client",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Avas Vikas",
+    "rating": 5,
+    "date": "2026-04-11T00:41:00.148Z"
+  },
+  {
+    "id": "seed_421",
+    "name": "Tanya Verma",
+    "role": "Festival Booking",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Shahganj",
+    "rating": 4,
+    "date": "2026-04-30T16:46:41.013Z"
+  },
+  {
+    "id": "seed_422",
+    "name": "Meera Agarwal",
+    "role": "Bridal Client",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Khandari",
+    "rating": 5,
+    "date": "2026-01-19T15:33:04.019Z"
+  },
+  {
+    "id": "seed_423",
+    "name": "Radhika Verma",
+    "role": "Event Booking",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-02-07T00:19:03.209Z"
+  },
+  {
+    "id": "seed_424",
+    "name": "Simran Mishra",
+    "role": "Festival Booking",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-04-17T15:34:16.116Z"
+  },
+  {
+    "id": "seed_425",
+    "name": "Manisha Chauhan",
+    "role": "Regular Client",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-05-04T08:24:22.879Z"
+  },
+  {
+    "id": "seed_426",
+    "name": "Sushma Agarwal",
+    "role": "Bridal Client",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Sanjay Place",
+    "rating": 5,
+    "date": "2026-04-13T16:40:58.027Z"
+  },
+  {
+    "id": "seed_427",
+    "name": "Riya Yadav",
+    "role": "Engagement Client",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Lohamandi",
+    "rating": 5,
+    "date": "2026-05-01T00:56:59.988Z"
+  },
+  {
+    "id": "seed_428",
+    "name": "Anjali Sharma",
+    "role": "Engagement Client",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Avas Vikas",
+    "rating": 4,
+    "date": "2026-04-09T21:12:17.004Z"
+  },
+  {
+    "id": "seed_429",
+    "name": "Meera Mishra",
+    "role": "Festival Booking",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Avas Vikas",
+    "rating": 5,
+    "date": "2026-01-27T22:47:08.602Z"
+  },
+  {
+    "id": "seed_430",
+    "name": "Kritika Agarwal",
+    "role": "Event Booking",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-03-13T21:35:10.455Z"
+  },
+  {
+    "id": "seed_431",
+    "name": "Jyoti Pandey",
+    "role": "Party Booking",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-02-15T16:17:45.924Z"
+  },
+  {
+    "id": "seed_432",
+    "name": "Manisha Saxena",
+    "role": "Party Booking",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-04-08T23:19:22.957Z"
+  },
+  {
+    "id": "seed_433",
+    "name": "Nidhi Mathur",
+    "role": "Festival Booking",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-04-28T11:28:32.332Z"
+  },
+  {
+    "id": "seed_434",
+    "name": "Sushma Pandey",
+    "role": "Event Booking",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-04-24T22:09:10.790Z"
+  },
+  {
+    "id": "seed_435",
+    "name": "Manisha Saxena",
+    "role": "Party Booking",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-03-27T01:52:26.163Z"
+  },
+  {
+    "id": "seed_436",
+    "name": "Shruti Srivastava",
+    "role": "Party Booking",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Avas Vikas",
+    "rating": 5,
+    "date": "2026-04-04T11:05:19.621Z"
+  },
+  {
+    "id": "seed_437",
+    "name": "Sonal Sharma",
+    "role": "Party Booking",
+    "text": "Ordered express service for my party. They arrived exactly on time! The artist was very professional.",
+    "area": "Lohamandi",
+    "rating": 5,
+    "date": "2026-04-20T02:22:21.993Z"
+  },
+  {
+    "id": "seed_438",
+    "name": "Kritika Yadav",
+    "role": "Party Booking",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-05-07T22:15:09.695Z"
+  },
+  {
+    "id": "seed_439",
+    "name": "Kavita Verma",
+    "role": "Festival Booking",
+    "text": "I was amazed by the intricate details. Definitely the best mehndi artist in Lohamandi.",
+    "area": "Lohamandi",
+    "rating": 5,
+    "date": "2026-03-28T18:12:02.966Z"
+  },
+  {
+    "id": "seed_440",
+    "name": "Aarti Chauhan",
+    "role": "Regular Client",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Dayalbagh",
+    "rating": 4,
+    "date": "2026-01-15T14:25:15.218Z"
+  },
+  {
+    "id": "seed_441",
+    "name": "Shikha Verma",
+    "role": "Regular Client",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Shahganj",
+    "rating": 4,
+    "date": "2026-04-06T12:11:23.177Z"
+  },
+  {
+    "id": "seed_442",
+    "name": "Riya Tiwari",
+    "role": "Bridal Client",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Tajganj",
+    "rating": 3,
+    "date": "2026-02-24T14:20:34.658Z"
+  },
+  {
+    "id": "seed_443",
+    "name": "Shikha Mathur",
+    "role": "Party Booking",
+    "text": "Ordered express service for my engagement. They arrived exactly on time! The artist was very professional.",
+    "area": "Sanjay Place",
+    "rating": 5,
+    "date": "2026-04-19T11:36:10.022Z"
+  },
+  {
+    "id": "seed_444",
+    "name": "Riya Gupta",
+    "role": "Festival Booking",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-01-25T22:52:15.815Z"
+  },
+  {
+    "id": "seed_445",
+    "name": "Divya Jain",
+    "role": "Bridal Client",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-04-22T20:16:42.389Z"
+  },
+  {
+    "id": "seed_446",
+    "name": "Radhika Rajput",
+    "role": "Party Booking",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Kamla Nagar",
+    "rating": 4,
+    "date": "2026-03-24T08:14:30.578Z"
+  },
+  {
+    "id": "seed_447",
+    "name": "Jyoti Gupta",
+    "role": "Event Booking",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Sikandra",
+    "rating": 5,
+    "date": "2026-03-04T16:21:54.524Z"
+  },
+  {
+    "id": "seed_448",
+    "name": "Sneha Bansal",
+    "role": "Festival Booking",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-03-22T14:50:33.697Z"
+  },
+  {
+    "id": "seed_449",
+    "name": "Sushma Yadav",
+    "role": "Bridal Client",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Avas Vikas",
+    "rating": 3,
+    "date": "2026-03-28T01:54:49.392Z"
+  },
+  {
+    "id": "seed_450",
+    "name": "Priya Srivastava",
+    "role": "Engagement Client",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Dayalbagh",
+    "rating": 4,
+    "date": "2026-03-27T18:30:26.195Z"
+  },
+  {
+    "id": "seed_451",
+    "name": "Jyoti Yadav",
+    "role": "Bridal Client",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Dayalbagh",
+    "rating": 5,
+    "date": "2026-05-03T01:49:20.095Z"
+  },
+  {
+    "id": "seed_452",
+    "name": "Aarti Verma",
+    "role": "Bridal Client",
+    "text": "Ordered express service for my engagement. They arrived exactly on time! The artist was very professional.",
+    "area": "Sikandra",
+    "rating": 5,
+    "date": "2026-02-22T23:23:59.246Z"
+  },
+  {
+    "id": "seed_453",
+    "name": "Kavita Jain",
+    "role": "Party Booking",
+    "text": "Ordered express service for my party. They arrived exactly on time! The artist was very professional.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-01-27T12:40:36.735Z"
+  },
+  {
+    "id": "seed_454",
+    "name": "Aarti Srivastava",
+    "role": "Festival Booking",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Tajganj",
+    "rating": 5,
+    "date": "2026-03-05T21:46:32.293Z"
+  },
+  {
+    "id": "seed_455",
+    "name": "Divya Goyal",
+    "role": "Event Booking",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Avas Vikas",
+    "rating": 5,
+    "date": "2026-02-07T05:49:03.025Z"
+  },
+  {
+    "id": "seed_456",
+    "name": "Sushma Yadav",
+    "role": "Party Booking",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Dayalbagh",
+    "rating": 5,
+    "date": "2026-03-14T13:36:21.232Z"
+  },
+  {
+    "id": "seed_457",
+    "name": "Radhika Pandey",
+    "role": "Party Booking",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-03-22T09:21:15.349Z"
+  },
+  {
+    "id": "seed_458",
+    "name": "Manisha Yadav",
+    "role": "Festival Booking",
+    "text": "Best experience ever! The festival booking mehndi was so detailed and the stain was incredibly dark. Everyone loved it.",
+    "area": "Khandari",
+    "rating": 5,
+    "date": "2026-03-09T05:52:03.908Z"
+  },
+  {
+    "id": "seed_459",
+    "name": "Divya Verma",
+    "role": "Party Booking",
+    "text": "Professional, punctual, and perfect designs. What more could you ask for?",
+    "area": "Sikandra",
+    "rating": 5,
+    "date": "2026-05-02T17:21:21.459Z"
+  },
+  {
+    "id": "seed_460",
+    "name": "Radhika Saxena",
+    "role": "Regular Client",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Tajganj",
+    "rating": 4,
+    "date": "2026-03-03T18:52:56.395Z"
+  },
+  {
+    "id": "seed_461",
+    "name": "Pooja Jain",
+    "role": "Bridal Client",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-04-26T02:23:54.107Z"
+  },
+  {
+    "id": "seed_462",
+    "name": "Radhika Pandey",
+    "role": "Party Booking",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-02-27T22:36:56.010Z"
+  },
+  {
+    "id": "seed_463",
+    "name": "Kiran Sharma",
+    "role": "Event Booking",
+    "text": "I was worried about my sensitive skin, but their organic henna caused no issues at all.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-03-30T15:55:06.176Z"
+  },
+  {
+    "id": "seed_464",
+    "name": "Geeta Sharma",
+    "role": "Regular Client",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-03-21T10:19:40.500Z"
+  },
+  {
+    "id": "seed_465",
+    "name": "Sonal Chauhan",
+    "role": "Engagement Client",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-02-17T13:07:38.332Z"
+  },
+  {
+    "id": "seed_466",
+    "name": "Divya Singh",
+    "role": "Event Booking",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-04-03T17:16:44.987Z"
+  },
+  {
+    "id": "seed_467",
+    "name": "Roshni Goyal",
+    "role": "Regular Client",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Avas Vikas",
+    "rating": 5,
+    "date": "2026-03-20T00:46:03.414Z"
+  },
+  {
+    "id": "seed_468",
+    "name": "Swati Jain",
+    "role": "Regular Client",
+    "text": "The booking process was so easy, and the artist was very friendly. Loved the floral Arabic design.",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-02-20T08:50:27.181Z"
+  },
+  {
+    "id": "seed_469",
+    "name": "Aarti Pandey",
+    "role": "Party Booking",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Dayalbagh",
+    "rating": 4,
+    "date": "2026-04-15T11:59:13.071Z"
+  },
+  {
+    "id": "seed_470",
+    "name": "Kavita Verma",
+    "role": "Regular Client",
+    "text": "Ordered express service for my party. They arrived exactly on time! The artist was very professional.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-03-23T21:56:22.014Z"
+  },
+  {
+    "id": "seed_471",
+    "name": "Anjali Jain",
+    "role": "Regular Client",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Sanjay Place",
+    "rating": 4,
+    "date": "2026-02-11T23:24:08.033Z"
+  },
+  {
+    "id": "seed_472",
+    "name": "Divya Mathur",
+    "role": "Regular Client",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Avas Vikas",
+    "rating": 5,
+    "date": "2026-01-23T18:46:42.471Z"
+  },
+  {
+    "id": "seed_473",
+    "name": "Divya Agarwal",
+    "role": "Regular Client",
+    "text": "Ordered express service for my wedding. They arrived exactly on time! The artist was very professional.",
+    "area": "Sadar Bazar",
+    "rating": 5,
+    "date": "2026-02-28T06:34:10.389Z"
+  },
+  {
+    "id": "seed_474",
+    "name": "Divya Bansal",
+    "role": "Regular Client",
+    "text": "The 3D figures in the bridal mehndi were mind-blowing. True artistry!",
+    "area": "Idgah",
+    "rating": 4,
+    "date": "2026-02-03T16:48:30.120Z"
+  },
+  {
+    "id": "seed_475",
+    "name": "Nidhi Goyal",
+    "role": "Engagement Client",
+    "text": "Ordered express service for my karwa chauth. They arrived exactly on time! The artist was very professional.",
+    "area": "Khandari",
+    "rating": 4,
+    "date": "2026-04-15T16:26:10.517Z"
+  },
+  {
+    "id": "seed_476",
+    "name": "Manisha Verma",
+    "role": "Regular Client",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Sadar Bazar",
+    "rating": 4,
+    "date": "2026-02-14T10:51:57.716Z"
+  },
+  {
+    "id": "seed_477",
+    "name": "Tanya Srivastava",
+    "role": "Festival Booking",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Kamla Nagar",
+    "rating": 3,
+    "date": "2026-04-08T10:44:24.710Z"
+  },
+  {
+    "id": "seed_478",
+    "name": "Sonal Goyal",
+    "role": "Event Booking",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Shastripuram",
+    "rating": 5,
+    "date": "2026-04-19T04:20:15.929Z"
+  },
+  {
+    "id": "seed_479",
+    "name": "Radhika Tiwari",
+    "role": "Event Booking",
+    "text": "Stunning designs and very polite staff. They made my day special.",
+    "area": "Shahganj",
+    "rating": 5,
+    "date": "2026-04-18T18:37:16.015Z"
+  },
+  {
+    "id": "seed_480",
+    "name": "Deepa Tiwari",
+    "role": "Regular Client",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Kamla Nagar",
+    "rating": 4,
+    "date": "2026-02-03T02:22:02.723Z"
+  },
+  {
+    "id": "seed_481",
+    "name": "Kavita Agarwal",
+    "role": "Event Booking",
+    "text": "Quick and beautiful. The organic henna smells amazing and leaves a rich color.",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-04-11T05:20:40.328Z"
+  },
+  {
+    "id": "seed_482",
+    "name": "Jyoti Rajput",
+    "role": "Festival Booking",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Kargil Petrol Pump",
+    "rating": 5,
+    "date": "2026-03-19T14:58:17.646Z"
+  },
+  {
+    "id": "seed_483",
+    "name": "Priya Yadav",
+    "role": "Regular Client",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Shastripuram",
+    "rating": 5,
+    "date": "2026-03-20T23:38:31.077Z"
+  },
+  {
+    "id": "seed_484",
+    "name": "Jyoti Singh",
+    "role": "Festival Booking",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Shastripuram",
+    "rating": 3,
+    "date": "2026-01-26T17:31:19.360Z"
+  },
+  {
+    "id": "seed_485",
+    "name": "Swati Verma",
+    "role": "Bridal Client",
+    "text": "Booked them for my sister's wedding. The whole team was fast and the designs were unique.",
+    "area": "Idgah",
+    "rating": 5,
+    "date": "2026-01-26T11:49:43.916Z"
+  },
+  {
+    "id": "seed_486",
+    "name": "Sonal Jain",
+    "role": "Regular Client",
+    "text": "Best experience ever! The regular client mehndi was so detailed and the stain was incredibly dark. Everyone loved it.",
+    "area": "Balkeshwar",
+    "rating": 4,
+    "date": "2026-02-21T01:56:08.655Z"
+  },
+  {
+    "id": "seed_487",
+    "name": "Meera Mathur",
+    "role": "Regular Client",
+    "text": "Ordered express service for my teej. They arrived exactly on time! The artist was very professional.",
+    "area": "Kargil Petrol Pump",
+    "rating": 4,
+    "date": "2026-04-02T11:05:53.655Z"
+  },
+  {
+    "id": "seed_488",
+    "name": "Neha Pandey",
+    "role": "Event Booking",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Lohamandi",
+    "rating": 4,
+    "date": "2026-02-20T03:07:58.208Z"
+  },
+  {
+    "id": "seed_489",
+    "name": "Pooja Srivastava",
+    "role": "Event Booking",
+    "text": "Beautiful traditional designs. My mother absolutely loved her mehndi.",
+    "area": "Balkeshwar",
+    "rating": 4,
+    "date": "2026-01-25T19:19:52.861Z"
+  },
+  {
+    "id": "seed_490",
+    "name": "Shikha Jain",
+    "role": "Bridal Client",
+    "text": "I was amazed by the intricate details. Definitely the best mehndi artist in Shastripuram.",
+    "area": "Shastripuram",
+    "rating": 5,
+    "date": "2026-04-10T00:34:12.831Z"
+  },
+  {
+    "id": "seed_491",
+    "name": "Shikha Jain",
+    "role": "Bridal Client",
+    "text": "My bridal mehndi looked exactly like the Pinterest reference photo I showed them.",
+    "area": "Tajganj",
+    "rating": 5,
+    "date": "2026-02-21T00:31:13.455Z"
+  },
+  {
+    "id": "seed_492",
+    "name": "Radhika Gupta",
+    "role": "Bridal Client",
+    "text": "Fantastic service! Will definitely book again for the next festival.",
+    "area": "Lohamandi",
+    "rating": 4,
+    "date": "2026-02-08T11:21:50.324Z"
+  },
+  {
+    "id": "seed_493",
+    "name": "Manisha Agarwal",
+    "role": "Party Booking",
+    "text": "Worth every penny. The team handled a crowd of 20 ladies very efficiently.",
+    "area": "Idgah",
+    "rating": 4,
+    "date": "2026-04-03T02:35:45.388Z"
+  },
+  {
+    "id": "seed_494",
+    "name": "Priya Sharma",
+    "role": "Event Booking",
+    "text": "They are my go-to mehndi artists now. Always perfect.",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-01-25T09:47:34.243Z"
+  },
+  {
+    "id": "seed_495",
+    "name": "Aarti Verma",
+    "role": "Engagement Client",
+    "text": "The stain lasted for more than a week without fading much. Great quality henna.",
+    "area": "Sikandra",
+    "rating": 5,
+    "date": "2026-03-03T08:55:42.670Z"
+  },
+  {
+    "id": "seed_496",
+    "name": "Pooja Yadav",
+    "role": "Engagement Client",
+    "text": "Such a premium service! The artists wear uniform and use high-quality organic cones.",
+    "area": "Kamla Nagar",
+    "rating": 5,
+    "date": "2026-04-29T21:20:01.588Z"
+  },
+  {
+    "id": "seed_497",
+    "name": "Jyoti Agarwal",
+    "role": "Festival Booking",
+    "text": "Highly recommend! The artists are very talented and the prices are reasonable.",
+    "area": "Trans Yamuna",
+    "rating": 5,
+    "date": "2026-04-29T14:09:23.877Z"
+  },
+  {
+    "id": "seed_498",
+    "name": "Manisha Mishra",
+    "role": "Engagement Client",
+    "text": "Very neat and clean work. The color came out so dark the next day!",
+    "area": "Tajganj",
+    "rating": 4,
+    "date": "2026-03-16T02:23:05.664Z"
+  },
+  {
+    "id": "seed_499",
+    "name": "Kiran Chauhan",
+    "role": "Event Booking",
+    "text": "I always book Jyoti Mehndi for festivals. They are the only ones I trust with organic henna.",
+    "area": "Shastripuram",
+    "rating": 5,
+    "date": "2026-01-20T21:18:05.869Z"
+  }
+]
