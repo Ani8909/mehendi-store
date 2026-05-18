@@ -1,4 +1,4 @@
-import Head from "next/head";
+import SEO from "@/components/SEO";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { FiStar, FiArrowLeft, FiEdit2 } from "react-icons/fi";
@@ -32,9 +32,10 @@ export default function Reviews() {
 
   return (
     <>
-      <Head>
-        <title>Customer Reviews | Jyoti Mehendi Artist</title>
-      </Head>
+      <SEO 
+        title="Customer Reviews | Jyoti Mehendi Artist Agra"
+        description="Read thousands of verified reviews from our happy clients in Agra. See why Jyoti Mehendi is the top-rated bridal mehndi artist."
+      />
 
       <div className="bg-gray-50 min-h-screen py-12 px-4">
         <div className="max-w-7xl mx-auto">

@@ -1,4 +1,4 @@
-import Head from "next/head";
+import SEO from "@/components/SEO";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { FiCheck, FiArrowLeft } from "react-icons/fi";
@@ -27,10 +27,23 @@ export default function Packages() {
 
   return (
     <>
-      <Head>
-        <title>Premium Mehndi Packages | Jyoti Mehendi Artist</title>
-        <meta name="description" content="Explore our premium and custom Mehndi packages for weddings, engagements, and festivals in Agra." />
-      </Head>
+      <SEO 
+        title="Mehndi Packages & Pricing Agra | Affordable Bridal Henna"
+        description="View our affordable Mehndi packages in Agra. Choose from Basic, Premium, and Royal Bridal packages starting at just ₹500. Book online instantly!"
+        schema={JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "serviceType": "Bridal Mehndi Packages",
+          "provider": {
+            "@type": "LocalBusiness",
+            "name": "Jyoti Mehendi Artist"
+          },
+          "areaServed": {
+            "@type": "City",
+            "name": "Agra"
+          }
+        })}
+      />
 
       <div className="bg-[var(--color-background)] min-h-screen">
         {/* Hero Section */}

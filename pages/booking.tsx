@@ -1,4 +1,4 @@
-import Head from "next/head";
+import SEO from "@/components/SEO";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
@@ -213,9 +213,10 @@ export default function Booking() {
 
   return (
     <>
-      <Head>
-        <title>Book Appointment | Jyoti Mehendi Artist</title>
-      </Head>
+      <SEO 
+        title="Book Appointment | Jyoti Mehendi Artist Agra"
+        description="Book your Mehndi artist appointment online. Instant confirmation for bridal, party, and custom henna designs in Agra."
+      />
 
       <div className="bg-[var(--color-background)] min-h-[90vh] py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">

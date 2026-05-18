@@ -1174,7 +1174,7 @@ export default function AdminDashboard() {
                           </div>
 
                           <div>
-                            <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Service Image (Optional)</label>
+                            <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Service Image (Optional) <span className="text-[10px] text-pink-500 normal-case ml-1">(Rec: 600x600px, Max 1MB)</span></label>
                             <div className="flex items-center space-x-4 bg-white p-3 border border-gray-200 rounded-2xl shadow-sm">
                               <input 
                                 type="file" 
@@ -1303,7 +1303,7 @@ export default function AdminDashboard() {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                       <div>
-                        <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Select Image</label>
+                        <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Select Image <span className="text-[10px] text-pink-500 normal-case ml-1">(Rec: 800x1200px, Max 2MB)</span></label>
                         <div className="relative border border-gray-300 rounded-lg p-2 bg-white flex items-center justify-between">
                           <input type="file" onChange={(e) => handleImageUpload(e, "gallery")} className="text-xs w-full cursor-pointer" />
                         </div>
@@ -1363,12 +1363,12 @@ export default function AdminDashboard() {
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="p-4 bg-white rounded-xl border border-pink-100">
-                          <label className="block text-xs font-bold text-pink-600 mb-2 uppercase">1. Desktop Image (Wide)</label>
+                          <label className="block text-xs font-bold text-pink-600 mb-2 uppercase">1. Desktop Image (Wide) <span className="text-[10px] text-gray-400 normal-case ml-1">(Rec: 1920x1080px, Max 2MB)</span></label>
                           <input type="file" onChange={(e) => handleImageUpload(e, "desktop")} className="w-full text-xs" />
                           {newDesktopImage && <img src={newDesktopImage} className="mt-2 h-20 w-full object-cover rounded-lg border" alt="Desktop Preview"/>}
                         </div>
                         <div className="p-4 bg-white rounded-xl border border-pink-100">
-                          <label className="block text-xs font-bold text-pink-600 mb-2 uppercase">2. Mobile Image (Portrait)</label>
+                          <label className="block text-xs font-bold text-pink-600 mb-2 uppercase">2. Mobile Image (Portrait) <span className="text-[10px] text-gray-400 normal-case ml-1">(Rec: 1080x1920px, Max 2MB)</span></label>
                           <input type="file" onChange={(e) => handleImageUpload(e, "mobile")} className="w-full text-xs" />
                           {newMobileImage && <img src={newMobileImage} className="mt-2 h-20 w-20 object-cover rounded-lg border" alt="Mobile Preview"/>}
                         </div>

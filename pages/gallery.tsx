@@ -1,4 +1,4 @@
-import Head from "next/head";
+import SEO from "@/components/SEO";
 import { useEffect, useState } from "react";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -37,9 +37,10 @@ export default function Gallery() {
 
   return (
     <>
-      <Head>
-        <title>Design Gallery | Jyoti Mehendi Artist</title>
-      </Head>
+      <SEO 
+        title="Mehndi Design Gallery | Jyoti Mehendi Artist Agra"
+        description="Browse our extensive gallery of Bridal, Arabic, and custom Mehndi designs. Get inspired for your next event in Agra with Jyoti Mehendi Artist."
+      />
 
       <div className="bg-[var(--color-background)] min-h-screen">
         {/* Hero Section */}

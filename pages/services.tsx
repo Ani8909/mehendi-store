@@ -1,4 +1,4 @@
-import Head from "next/head";
+import SEO from "@/components/SEO";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
@@ -26,9 +26,43 @@ export default function Services() {
 
   return (
     <>
-      <Head>
-        <title>Our Services | Jyoti Mehendi Artist</title>
-      </Head>
+      <SEO 
+        title="Mehndi Services in Agra | Bridal, Party & Traditional Henna"
+        description="Explore our premium Mehndi services in Agra. From intricate bridal mehndi to quick party designs, our professional artists deliver perfection."
+        schema={JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "serviceType": "Mehndi Design",
+          "provider": {
+            "@type": "LocalBusiness",
+            "name": "Jyoti Mehendi Artist"
+          },
+          "areaServed": {
+            "@type": "City",
+            "name": "Agra"
+          },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Mehndi Services",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Bridal Mehndi"
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Arabic Mehndi"
+                }
+              }
+            ]
+          }
+        })}
+      />
 
       <div className="bg-[var(--color-background)] min-h-screen">
         {/* Hero Section */}

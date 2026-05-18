@@ -1,4 +1,4 @@
-import Head from "next/head";
+import SEO from "@/components/SEO";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiCheckCircle, FiClock, FiCreditCard, FiMapPin, FiCheck, FiTruck, FiAward, FiHeart, FiStar, FiShoppingBag, FiArrowRight, FiEdit2, FiX } from "react-icons/fi";
@@ -159,10 +159,33 @@ export default function Home() {
 
   return (
     <>
-      <Head>
-        <title>Jyoti Mehendi Artist Store – Best Mehndi Service Online</title>
-        <meta name="description" content="Book professional Mehndi artists for Bridal, Arabic, and Party designs." />
-      </Head>
+      <SEO 
+        title="Jyoti Mehendi Artist Agra | Best Bridal & Arabic Henna Designs"
+        description="Looking for the best Mehndi artist in Agra? Book Jyoti Mehendi for stunning Bridal, Arabic, and custom henna designs. Affordable packages & home service available."
+        schema={JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          "name": "Jyoti Mehendi Artist",
+          "image": "https://jyotimehendi.in/logo.png",
+          "description": "Best Mehndi artist in Agra. Book professional Mehndi artists for Bridal, Arabic, and Party designs.",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Agra",
+            "addressRegion": "Uttar Pradesh",
+            "addressCountry": "IN"
+          },
+          "url": "https://jyotimehendi.in",
+          "priceRange": "₹500 - ₹5100",
+          "openingHoursSpecification": [
+            {
+              "@type": "OpeningHoursSpecification",
+              "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+              "opens": "09:00",
+              "closes": "21:00"
+            }
+          ]
+        })}
+      />
 
       {/* Animated Hero Section */}
       <section className="relative h-[85vh] min-h-[600px] w-full overflow-hidden bg-black">
