@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Private & Admin Routes (Do not index)
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /partner
+Disallow: /login
+Disallow: /booking-slip/
+
+# Sitemap Location
+Sitemap: https://jyotimehendi.in/sitemap.xml
