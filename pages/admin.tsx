@@ -26,9 +26,10 @@ export default function AdminDashboard() {
   const { user, userData, loading: authLoading, signOut } = useAuth();
   const router = useRouter();
 
-  const [activeTab, setActiveTab] = useState<"bookings" | "partners" | "reports" | "gallery" | "hero" | "express" | "packages">("bookings");
+  const [activeTab, setActiveTab] = useState<"bookings" | "partners" | "reports" | "gallery" | "hero" | "express" | "packages" | "services">("bookings");
   const [bookings, setBookings] = useState<any[]>([]);
   const [partners, setPartners] = useState<any[]>([]);
+  const [services, setServices] = useState<any[]>([]);
   const [galleryItems, setGalleryItems] = useState<any[]>([]);
   const [heroSlides, setHeroSlides] = useState<any[]>([]);
   const [expressZones, setExpressZones] = useState<any[]>([]);
@@ -43,6 +44,14 @@ export default function AdminDashboard() {
   const [newTitle, setNewTitle] = useState("");
   const [newSubtitle, setNewSubtitle] = useState("");
   const [newCategory, setNewCategory] = useState("Bridal");
+
+  // Service States
+  const [newServiceTitle, setNewServiceTitle] = useState("");
+  const [newServiceCategory, setNewServiceCategory] = useState("Bridal");
+  const [newServicePrice, setNewServicePrice] = useState("");
+  const [newServiceDuration, setNewServiceDuration] = useState("");
+  const [newServiceDesc, setNewServiceDesc] = useState("");
+  const [newServiceImage, setNewServiceImage] = useState("");
 
   // Partner State
   const [newPartnerName, setNewPartnerName] = useState("");
@@ -114,13 +123,19 @@ export default function AdminDashboard() {
     }, (err) => console.error("Invites sync error:", err));
     unsubscribes.push(unsubInvites);
 
+    // 9. Live Services Listener
+    const unsubServices = onSnapshot(collection(db, "services"), (snapshot) => {
+      setServices(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+    }, (err) => console.error("Services sync error:", err));
+    unsubscribes.push(unsubServices);
+
     // Clean up all active listeners on unmount or session switch
     return () => {
       unsubscribes.forEach(unsub => unsub());
     };
   }, [userData]);
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: "desktop" | "mobile" | "gallery") => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: "desktop" | "mobile" | "gallery" | "service") => {
     if (!e.target.files?.[0]) return;
     const file = e.target.files[0];
     
@@ -158,6 +173,7 @@ export default function AdminDashboard() {
         if (target === "desktop") setNewDesktopImage(data.url);
         else if (target === "mobile") setNewMobileImage(data.url);
         else if (target === "gallery") setNewImage(data.url);
+        else if (target === "service") setNewServiceImage(data.url);
         
         console.log(`Uploaded to ${target}:`, data.url);
       } catch (err: any) {
@@ -247,6 +263,7 @@ export default function AdminDashboard() {
       if (col === "package_enquiries") setPackageEnquiries(packageEnquiries.filter(i => i.id !== id));
       if (col === "partners") setPartners(partners.filter(i => i.id !== id));
       if (col === "bookings") setBookings(bookings.filter(i => i.id !== id));
+      if (col === "services") setServices(services.filter(s => s.id !== id));
       setDeleteModal(null);
       alert("Deleted successfully!");
     } catch (err: any) {
@@ -265,6 +282,7 @@ export default function AdminDashboard() {
       else if (type === "partner") col = "partners";
       else if (type === "booking") col = "bookings";
       else if (type === "gallery") col = "designs_gallery";
+      else if (type === "service") col = "services";
 
       if (!col) return;
 
@@ -278,8 +296,21 @@ export default function AdminDashboard() {
       if (type === "zone") setExpressZones(expressZones.map(z => z.id === id ? { ...z, ...updateData } : z));
       else if (type === "package") setEventPackages(eventPackages.map(p => p.id === id ? { ...p, ...updateData } : p));
       else if (type === "partner") setPartners(partners.map(p => p.id === id ? { ...p, ...updateData } : p));
-      else if (type === "booking") setBookings(bookings.map(b => b.id === id ? { ...b, ...updateData } : b));
+      else if (type === "booking") {
+        setBookings(bookings.map(b => b.id === id ? { ...b, ...updateData } : b));
+        const originalBooking = bookings.find(b => b.id === id);
+        if (originalBooking && originalBooking.status !== updateData.status) {
+          if (updateData.status === 'assigned' || updateData.status === 'dispatched') {
+            fetch("/api/notify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ type: "BOOKING_CONFIRMED", data: updateData })
+            }).catch(console.error);
+          }
+        }
+      }
       else if (type === "gallery") setGalleryItems(galleryItems.map(g => g.id === id ? { ...g, ...updateData } : g));
+      else if (type === "service") setServices(services.map(s => s.id === id ? { ...s, ...updateData } : s));
 
       setEditModal(null);
       alert("Updated successfully!");
@@ -417,6 +448,61 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleAddService = async () => {
+    if (!newServiceTitle || !newServicePrice || !newServiceDuration) {
+      alert("Please fill in Title, Price, and Duration.");
+      return;
+    }
+    try {
+      await addDoc(collection(db, "services"), {
+        title: newServiceTitle,
+        category: newServiceCategory,
+        price: Number(newServicePrice),
+        duration: newServiceDuration,
+        description: newServiceDesc,
+        image: newServiceImage || "",
+        isActive: true,
+        createdAt: serverTimestamp()
+      });
+      // Reset form states
+      setNewServiceTitle("");
+      setNewServiceCategory("Bridal");
+      setNewServicePrice("");
+      setNewServiceDuration("");
+      setNewServiceDesc("");
+      setNewServiceImage("");
+      alert("Service added successfully!");
+    } catch (err: any) {
+      alert("Failed to add service: " + err.message);
+    }
+  };
+
+  const toggleServiceStatus = async (id: string, currentStatus: boolean) => {
+    try {
+      await updateDoc(doc(db, "services", id), { isActive: !currentStatus });
+    } catch (err: any) {
+      alert("Failed to update status: " + err.message);
+    }
+  };
+
+  const seedServicesList = async () => {
+    const demoServices = [
+      { title: "Traditional Bridal Mehndi", description: "Intricate full-hand and foot art with Marwari/Rajasthani motifs like peacocks and lotuses.", price: 5000, duration: "5 hours", image: "/images/services/bridal.png", category: "Bridal", isActive: true },
+      { title: "Arabic Floral Mehndi", description: "Bold, flowing patterns with elegant floral and vine motifs. Modern and stylish.", price: 1500, duration: "2 hours", image: "/images/services/arabic.png", category: "Arabic", isActive: true },
+      { title: "Indo-Arabic Fusion", description: "A beautiful blend of traditional Indian intricacy and bold Arabic outlines.", price: 2500, duration: "3 hours", image: "/images/services/fusion.png", category: "Fusion", isActive: true },
+      { title: "Leg & Foot Bridal", description: "Intricate bridal patterns extending from the feet to the legs for a complete look.", price: 3000, duration: "3 hours", image: "/images/services/leg.png", category: "Bridal", isActive: true },
+      { title: "Minimalist Guest Mehndi", description: "Quick and elegant designs for wedding guests and small functions.", price: 500, duration: "30 mins", image: "/images/services/minimalist.png", category: "Guest", isActive: true },
+    ];
+    try {
+      for (const s of demoServices) {
+        await addDoc(collection(db, "services"), { ...s, createdAt: serverTimestamp() });
+      }
+      alert("Demo services added successfully!");
+    } catch (err: any) {
+      alert("Seeding failed: " + err.message);
+    }
+  };
+
   const updateSlideText = async (id: string, field: string, value: string) => {
     try {
       await updateDoc(doc(db, "hero_slides", id), { [field]: value });
@@ -521,6 +607,7 @@ export default function AdminDashboard() {
               {[
                 { id: "bookings", label: "Bookings", icon: <FiCalendar/> },
                 { id: "partners", label: "Partners", icon: <FiUsers/> },
+                { id: "services", label: "Services", icon: <FiActivity/> },
                 { id: "gallery", label: "Gallery", icon: <FiImage/> },
                 { id: "hero", label: "Hero Slider", icon: <FiLayout/> },
                 { id: "express", label: "Express Zones", icon: <FiClock/> },
@@ -560,6 +647,7 @@ export default function AdminDashboard() {
                             <td className="p-4">
                               <div className="flex flex-col">
                                 <span className="font-semibold text-gray-800">{booking.customerName}</span>
+                                {booking.bookingRef && <span className="text-[10px] font-mono font-bold text-[var(--color-primary)] mt-0.5">{booking.bookingRef}</span>}
                                 {booking.phone ? (
                                   <div className="flex items-center gap-2 mt-1">
                                     <a 
@@ -602,6 +690,9 @@ export default function AdminDashboard() {
                               }`}>
                                 {booking.status.toUpperCase()}
                               </span>
+                              {booking.status === 'completed' && booking.completedBy && (
+                                <div className="text-[9px] text-gray-500 font-bold mt-1 uppercase">By: {booking.completedBy}</div>
+                              )}
                             </td>
                             <td className="p-4">
                               <select 
@@ -611,6 +702,14 @@ export default function AdminDashboard() {
                                     const pId = e.target.value;
                                     await updateDoc(doc(db, "bookings", booking.id), { partnerId: pId, status: "assigned" });
                                     setBookings(bookings.map(b => b.id === booking.id ? { ...b, partnerId: pId, status: "assigned" } : b));
+                                    const partner = partners.find(p => p.id === pId);
+                                    if (partner) {
+                                      fetch("/api/notify", {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ type: "PARTNER_ASSIGNED", data: { ...booking, partnerEmail: partner.email } })
+                                      }).catch(console.error);
+                                    }
                                   }}
                                   disabled={booking.status === "completed" || booking.status === "cancelled"}
                                 >
@@ -642,7 +741,10 @@ export default function AdminDashboard() {
                         )}
                         <div className="flex justify-between items-start mb-3">
                           <div>
-                            <h4 className="font-extrabold text-gray-800 text-base">{booking.customerName}</h4>
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-extrabold text-gray-800 text-base">{booking.customerName}</h4>
+                              {booking.bookingRef && <span className="bg-pink-50 text-pink-600 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold">{booking.bookingRef}</span>}
+                            </div>
                             {booking.phone ? (
                               <div className="flex items-center gap-2 mt-1">
                                 <a href={`tel:${booking.phone}`} className="text-pink-600 font-bold text-xs hover:underline flex items-center">
@@ -670,6 +772,9 @@ export default function AdminDashboard() {
                           }`}>
                             {booking.status.toUpperCase()}
                           </span>
+                          {booking.status === 'completed' && booking.completedBy && (
+                            <div className="text-[9px] text-gray-500 font-bold text-right mt-1 uppercase">By: {booking.completedBy}</div>
+                          )}
                         </div>
 
                         <div className="space-y-2 text-xs border-t border-gray-100 pt-3 text-gray-600">
@@ -702,6 +807,14 @@ export default function AdminDashboard() {
                                 const pId = e.target.value;
                                 await updateDoc(doc(db, "bookings", booking.id), { partnerId: pId, status: "assigned" });
                                 setBookings(bookings.map(b => b.id === booking.id ? { ...b, partnerId: pId, status: "assigned" } : b));
+                                const partner = partners.find(p => p.id === pId);
+                                if (partner) {
+                                  fetch("/api/notify", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ type: "PARTNER_ASSIGNED", data: { ...booking, partnerEmail: partner.email } })
+                                  }).catch(console.error);
+                                }
                               }}
                               disabled={booking.status === "completed" || booking.status === "cancelled"}
                             >
@@ -970,6 +1083,207 @@ export default function AdminDashboard() {
                   <div className="bg-white p-6 border border-gray-100 rounded-2xl shadow-sm flex flex-col items-center">
                     <h3 className="font-bold text-gray-700 mb-4 text-center">Booking Status Distribution</h3>
                     <div className="h-64 w-64"><Doughnut data={doughnutData} options={{ maintainAspectRatio: false }} /></div>
+                  </div>
+                </div>
+              )}
+
+              {/* Services Tab */}
+              {activeTab === "services" && (
+                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-xl font-bold text-gray-800 font-serif">Manage Mehndi Services</h3>
+                      <button 
+                        onClick={seedServicesList}
+                        className="text-xs bg-pink-100 hover:bg-pink-200 text-pink-700 px-3 py-1 rounded-lg transition-colors font-bold border border-pink-200"
+                      >
+                        Seed Demo Services
+                      </button>
+                    </div>
+
+                    {/* Add New Service Form */}
+                    <div className="bg-pink-50/30 p-8 rounded-[32px] border border-pink-100 mb-8">
+                      <h4 className="font-bold text-pink-700 text-lg mb-6 flex items-center"><FiActivity className="mr-2"/> Create New Service</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Service Title</label>
+                            <input 
+                              type="text" 
+                              value={newServiceTitle} 
+                              onChange={(e)=>setNewServiceTitle(e.target.value)} 
+                              placeholder="e.g. Traditional Bridal Mehndi" 
+                              className="w-full p-4 rounded-2xl border border-gray-200 bg-white shadow-sm outline-none focus:ring-2 focus:ring-pink-400 text-sm" 
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Category</label>
+                              <select 
+                                value={newServiceCategory} 
+                                onChange={(e)=>setNewServiceCategory(e.target.value)} 
+                                className="w-full p-4 rounded-2xl border border-gray-200 bg-white shadow-sm outline-none focus:ring-2 focus:ring-pink-400 text-sm"
+                              >
+                                <option>Bridal</option>
+                                <option>Arabic</option>
+                                <option>Fusion</option>
+                                <option>Mandala</option>
+                                <option>Geometric</option>
+                                <option>Minimalist</option>
+                                <option>Guest</option>
+                                <option>Modern</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Price (₹)</label>
+                              <input 
+                                type="number" 
+                                value={newServicePrice} 
+                                onChange={(e)=>setNewServicePrice(e.target.value)} 
+                                placeholder="e.g. 5000" 
+                                className="w-full p-4 rounded-2xl border border-gray-200 bg-white shadow-sm outline-none focus:ring-2 focus:ring-pink-400 text-sm" 
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 gap-4">
+                            <div>
+                              <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Duration</label>
+                              <input 
+                                type="text" 
+                                value={newServiceDuration} 
+                                onChange={(e)=>setNewServiceDuration(e.target.value)} 
+                                placeholder="e.g. 5 hours, 45 mins" 
+                                className="w-full p-4 rounded-2xl border border-gray-200 bg-white shadow-sm outline-none focus:ring-2 focus:ring-pink-400 text-sm" 
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Short Description</label>
+                            <textarea 
+                              value={newServiceDesc} 
+                              onChange={(e)=>setNewServiceDesc(e.target.value)} 
+                              placeholder="Write a charming description of the service..." 
+                              rows={5} 
+                              className="w-full p-4 rounded-2xl border border-gray-200 bg-white shadow-sm outline-none focus:ring-2 focus:ring-pink-400 resize-none text-sm" 
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-bold text-gray-500 mb-1 uppercase">Service Image (Optional)</label>
+                            <div className="flex items-center space-x-4 bg-white p-3 border border-gray-200 rounded-2xl shadow-sm">
+                              <input 
+                                type="file" 
+                                onChange={(e) => handleImageUpload(e, "service")} 
+                                className="text-xs cursor-pointer flex-1" 
+                              />
+                              {uploading && <span className="text-xs text-pink-500 animate-pulse">Uploading...</span>}
+                              {newServiceImage && (
+                                <img src={newServiceImage} className="w-12 h-12 rounded-xl object-cover border" alt="Preview"/>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <button 
+                        onClick={handleAddService} 
+                        disabled={!newServiceTitle || !newServicePrice || !newServiceDuration || uploading}
+                        className="w-full bg-[var(--color-primary)] hover:bg-pink-600 text-white py-4 rounded-2xl font-extrabold text-lg transition-all shadow-xl shadow-pink-100 disabled:opacity-50"
+                      >
+                        Create Premium Service
+                      </button>
+                    </div>
+
+                    {/* Services Listing Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                      {services.map(service => {
+                        const getDefaultImage = (title: string) => {
+                          const t = title.toLowerCase();
+                          if (t.includes('bridal')) return '/images/services/bridal.png';
+                          if (t.includes('arabic')) return '/images/services/arabic.png';
+                          if (t.includes('portrait')) return '/images/services/portrait.png';
+                          if (t.includes('mandala')) return '/images/services/mandala.png';
+                          if (t.includes('fusion')) return '/images/services/fusion.png';
+                          return '/images/services/minimalist.png';
+                        };
+
+                        return (
+                          <div 
+                            key={service.id} 
+                            className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all relative flex flex-col group"
+                          >
+                            <div className="relative h-48 overflow-hidden bg-pink-50">
+                              <img 
+                                src={service.image || getDefaultImage(service.title)} 
+                                onError={(e) => { e.currentTarget.src = getDefaultImage(service.title); }}
+                                alt={service.title} 
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                              />
+                              <div className="absolute top-3 left-3">
+                                <span className="bg-white/90 backdrop-blur-md text-[var(--color-primary)] text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-sm">
+                                  {service.category || 'Service'}
+                                </span>
+                              </div>
+                              <div className="absolute top-3 right-3 bg-[var(--color-primary)] text-white px-3 py-1 rounded-full font-bold text-sm shadow-md">
+                                ₹{service.price}
+                              </div>
+                            </div>
+
+                            <div className="p-6 flex flex-col flex-grow">
+                              <h4 className="text-xl font-bold text-gray-800 font-serif leading-snug mb-2">{service.title}</h4>
+                              <div className="flex items-center text-xs text-gray-400 font-semibold mb-3 space-x-3">
+                                <span className="flex items-center">
+                                  <svg className="w-3.5 h-3.5 mr-1 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                  </svg>
+                                  {service.duration}
+                                </span>
+                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${service.isActive ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'}`}>
+                                  {service.isActive ? 'ACTIVE' : 'INACTIVE'}
+                                </span>
+                              </div>
+                              <p className="text-gray-500 text-xs leading-relaxed mb-6 flex-grow line-clamp-3">{service.description}</p>
+                              
+                              <div className="border-t border-gray-100 pt-4 flex items-center justify-between mt-auto">
+                                <div className="flex items-center space-x-2">
+                                  <span className="text-[10px] text-gray-400 font-black uppercase">Visible:</span>
+                                  <button
+                                    onClick={() => toggleServiceStatus(service.id, service.isActive)}
+                                    className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${service.isActive ? 'bg-pink-500' : 'bg-gray-200'}`}
+                                  >
+                                    <span
+                                      className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${service.isActive ? 'translate-x-4' : 'translate-x-0'}`}
+                                    />
+                                  </button>
+                                </div>
+                                <div className="flex space-x-2">
+                                  <button 
+                                    onClick={() => setEditModal({ isOpen: true, type: "service", data: service })}
+                                    className="bg-blue-50 hover:bg-blue-100 text-blue-600 font-extrabold px-3 py-1.5 rounded-xl text-xs uppercase tracking-wider transition-colors"
+                                  >
+                                    Edit
+                                  </button>
+                                  <button 
+                                    onClick={() => setDeleteModal({ isOpen: true, col: "services", id: service.id })}
+                                    className="bg-red-50 hover:bg-red-100 text-red-500 font-extrabold px-3 py-1.5 rounded-xl text-xs uppercase tracking-wider transition-colors"
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {services.length === 0 && (
+                        <p className="col-span-full text-center text-gray-400 py-10 italic bg-gray-50 rounded-2xl">No services found. Click "Seed Demo Services" to populate.</p>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
@@ -1499,6 +1813,78 @@ export default function AdminDashboard() {
                     <div>
                       <label className="block text-sm font-bold text-gray-700 mb-1">Additional Notes</label>
                       <textarea value={editModal.data.additionalNotes || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, additionalNotes: e.target.value } })} className="w-full p-3 border rounded-xl" rows={2} />
+                    </div>
+                  </>
+                )}
+
+                {/* SERVICE EDIT */}
+                {editModal.type === "service" && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-1">Service Title</label>
+                      <input type="text" value={editModal.data.title || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, title: e.target.value } })} className="w-full p-3 border rounded-xl" required />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Category</label>
+                        <select value={editModal.data.category || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, category: e.target.value } })} className="w-full p-3 border rounded-xl bg-white font-semibold">
+                          <option value="Bridal">Bridal</option>
+                          <option value="Arabic">Arabic</option>
+                          <option value="Fusion">Fusion</option>
+                          <option value="Mandala">Mandala</option>
+                          <option value="Geometric">Geometric</option>
+                          <option value="Minimalist">Minimalist</option>
+                          <option value="Guest">Guest</option>
+                          <option value="Modern">Modern</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Price (₹)</label>
+                        <input type="number" value={editModal.data.price || 0} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, price: Number(e.target.value) } })} className="w-full p-3 border rounded-xl" required />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Duration</label>
+                        <input type="text" value={editModal.data.duration || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, duration: e.target.value } })} className="w-full p-3 border rounded-xl" placeholder="e.g. 5 hours, 45 mins" required />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Status</label>
+                        <select value={editModal.data.isActive ? "active" : "inactive"} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, isActive: e.target.value === "active" } })} className="w-full p-3 border rounded-xl bg-white font-semibold">
+                          <option value="active">Active (Visible)</option>
+                          <option value="inactive">Inactive (Hidden)</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-1">Description</label>
+                      <textarea value={editModal.data.description || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, description: e.target.value } })} className="w-full p-3 border rounded-xl" rows={3} required />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-1">Image URL (Optional)</label>
+                      <input type="text" value={editModal.data.image || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, image: e.target.value } })} className="w-full p-3 border rounded-xl text-xs" />
+                      <div className="mt-2 flex items-center space-x-2">
+                        <input type="file" onChange={async (e) => {
+                          if (!e.target.files?.[0]) return;
+                          const file = e.target.files[0];
+                          const reader = new FileReader();
+                          reader.readAsDataURL(file);
+                          reader.onloadend = async () => {
+                            try {
+                              const res = await fetch("/api/upload", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ image: reader.result }),
+                              });
+                              if (!res.ok) throw new Error("Upload failed");
+                              const uploadRes = await res.json();
+                              setEditModal({ ...editModal, data: { ...editModal.data, image: uploadRes.url } });
+                            } catch (err: any) {
+                              alert("Upload failed: " + err.message);
+                            }
+                          };
+                        }} className="text-xs" />
+                      </div>
                     </div>
                   </>
                 )}

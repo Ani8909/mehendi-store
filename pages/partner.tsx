@@ -164,7 +164,9 @@ export default function PartnerDashboard() {
   const updateBookingStatus = async (bookingId: string, status: string) => {
     try {
       const docRef = doc(db, "bookings", bookingId);
-      await updateDoc(docRef, { status });
+      const updateData: any = { status };
+      if (status === "completed") updateData.completedBy = "partner";
+      await updateDoc(docRef, updateData);
       
       // Add notification log
       const newNotif = {

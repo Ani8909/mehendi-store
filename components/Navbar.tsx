@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FiMenu, FiX, FiUser, FiLogOut } from "react-icons/fi";
+import { FiMenu, FiX, FiUser, FiLogOut, FiSearch } from "react-icons/fi";
 import { useState } from "react";
 import { useAuth } from "@/lib/authContext";
 
@@ -55,6 +55,9 @@ export default function Navbar() {
               </Link>
             ))}
             <div className="flex items-center space-x-4 ml-4 border-l border-gray-200 pl-6">
+              <Link href="/verify" className="text-gray-500 hover:text-[var(--color-primary)] transition-colors p-1 flex items-center justify-center bg-gray-50 rounded-full w-9 h-9 border border-gray-200" title="Track Booking">
+                <FiSearch size={18} />
+              </Link>
               {!loading && user ? (
                 <div className="flex items-center space-x-4">
                   <Link 
@@ -117,6 +120,13 @@ export default function Navbar() {
               </Link>
             ))}
             <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col space-y-2">
+              <Link
+                href="/verify"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-[var(--color-primary)] hover:bg-[var(--color-background)] flex items-center gap-2"
+                onClick={() => setIsOpen(false)}
+              >
+                <FiSearch size={18} /> Track Booking
+              </Link>
               {!loading && user ? (
                 <>
                   <Link

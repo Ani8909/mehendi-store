@@ -139,7 +139,9 @@ export default function Booking() {
     // Final Step - Create Booking (Bypassing Razorpay for offline payments)
     setLoading(true);
     try {
+      const bRef = "JM-" + Math.random().toString(36).substring(2, 8).toUpperCase();
       const bookingData = {
+        bookingRef: bRef,
         customerId: user?.uid || "guest",
         customerName: data.name,
         phone: data.phone,
@@ -161,11 +163,17 @@ export default function Booking() {
 
       const docRef = await addDoc(collection(db, "bookings"), bookingData);
       
-      // Send notifications (simulated)
-      await fetch("/api/notifications", {
+      // Send Email Notification
+      await fetch("/api/notify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "booking_confirmation", phone: data.phone, name: data.name })
+        body: JSON.stringify({ 
+          type: "NEW_BOOKING", 
+          data: {
+            ...bookingData,
+            email: user?.email || ""
+          }
+        })
       });
 
       router.push(`/booking-slip/${docRef.id}`);

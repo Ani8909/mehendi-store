@@ -35,7 +35,7 @@ export default function BookingSlip() {
   const handleShareWhatsApp = () => {
     if (!booking) return;
     const text = `🎉 *Jyoti Mehendi Booking Confirmed!* 🎉\n\n` +
-      `*Booking ID:* #${booking.id?.slice(-8).toUpperCase()}\n` +
+      `*Booking ID:* ${booking.bookingRef || '#' + booking.id?.slice(-8).toUpperCase()}\n` +
       `*Customer:* ${booking.customerName}\n` +
       `*Service:* ${booking.serviceTitle}\n` +
       `*Date:* ${booking.bookingDateString}\n` +
@@ -114,7 +114,7 @@ export default function BookingSlip() {
                 <div key={i} className="bg-gray-800" style={{ width: Math.random() > 0.5 ? '2px' : '4px', margin: '0 1px', height: '100%' }}></div>
               ))}
             </div>
-            <p className="font-mono text-xs tracking-[0.3em] text-gray-500 mb-6">{booking.id?.toUpperCase()}</p>
+            <p className="font-mono text-xs tracking-[0.3em] text-gray-500 mb-6">{booking.bookingRef || booking.id?.toUpperCase()}</p>
             
             <div className="inline-flex items-center bg-green-700 text-white px-5 py-2 text-xs font-bold tracking-widest uppercase rounded-full shadow-sm">
               <FiCheck className="mr-2" strokeWidth={3}/> BOOKING CONFIRMED
@@ -218,6 +218,7 @@ export default function BookingSlip() {
 
         {/* Help Note */}
         <p className="mt-8 text-center text-gray-500 text-sm font-medium no-print">
+          Track your booking using ID: <span className="text-pink-600 font-bold">{booking.bookingRef || booking.id?.slice(-8).toUpperCase()}</span> at <Link href="/verify" className="underline hover:text-pink-700">jyotimehendi.in/verify</Link><br/>
           In case of any issue, call us at <span className="text-gray-900 font-bold">+91 7906297942</span> or email <span className="text-gray-900 font-bold text-pink-600">suport@jyotimehendi.in</span>
         </p>
       </div>
