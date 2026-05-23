@@ -35,6 +35,7 @@ export function PageTransitionLoader() {
 }
 
 export const FullScreenLoader = PageTransitionLoader;
+export default PageTransitionLoader;
 
 export function Skeleton({ className = "" }: { className?: string }) {
   return (
