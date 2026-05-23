@@ -259,27 +259,7 @@ export default function Home() {
               <div className="absolute inset-0 flex items-center justify-center text-center p-4 sm:p-6 z-10">
                 <div className="max-w-4xl flex flex-col items-center">
                   
-                  {/* Flash Offer Top Banner */}
-                  {flashOffer && (
-                    <motion.div
-                      initial={{ y: -50, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ delay: 0.1, duration: 0.8 }}
-                      className="mb-8 w-full max-w-2xl mx-auto flex flex-col items-center"
-                    >
-                      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white drop-shadow-[0_0_15px_rgba(236,72,153,0.8)] mb-4 text-center">
-                        {flashOffer.bannerText || `Special Flash Offer: ${flashOffer.discountType === 'percent' ? flashOffer.discountAmount + '%' : '₹' + flashOffer.discountAmount} OFF`}
-                      </h2>
-                      <CountdownTimer 
-                        targetDate={flashOffer.expiresAt} 
-                        onExpire={() => setFlashOffer(null)} 
-                        theme="pink"
-                      />
-                      <p className="mt-3 text-xs sm:text-sm text-pink-200 font-bold tracking-widest uppercase bg-black/50 px-4 py-1 rounded-full border border-pink-500/30 shadow-[0_0_10px_rgba(236,72,153,0.3)]">
-                        Use Code: <span className="text-white text-base font-black">{flashOffer.code}</span>
-                      </p>
-                    </motion.div>
-                  )}
+
 
                   {/* Glassmorphic Top Badge with Line Reveal */}
                   <div className="overflow-hidden mb-6">

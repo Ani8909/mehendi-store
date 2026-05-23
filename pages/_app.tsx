@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { PageTransitionLoader } from "@/components/Loader";
 import { AnimatePresence } from "framer-motion";
+import FlashOfferWidget from "@/components/FlashOfferWidget";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -42,6 +43,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <AuthProvider>
       <main className={`${playfair.variable} ${poppins.variable} font-sans`}>
         <Layout>
+          <FlashOfferWidget />
           <AnimatePresence mode="wait">
             {loading && <PageTransitionLoader />}
           </AnimatePresence>
