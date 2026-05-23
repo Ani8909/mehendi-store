@@ -7,10 +7,16 @@ import CountdownTimer from "./CountdownTimer";
 
 export default function FlashOfferWidget() {
   const [flashOffer, setFlashOffer] = useState<any>(null);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
+    // Check if dismissed in this session
+    if (sessionStorage.getItem("flashOfferDismissed")) {
+      setIsDismissed(true);
+      setIsExpanded(false);
+    }
+
     async function fetchFlashOffer() {
       try {
         const qCoupons = query(collection(db, "coupons"), where("isActive", "==", true), where("isFlashOffer", "==", true));
@@ -22,11 +28,6 @@ export default function FlashOfferWidget() {
         if (validFlashOffers.length > 0) {
           validFlashOffers.sort((a: any, b: any) => new Date(a.expiresAt).getTime() - new Date(b.expiresAt).getTime());
           setFlashOffer(validFlashOffers[0]);
-          // Auto-expand on first load if not dismissed
-          const dismissed = sessionStorage.getItem("flashOfferDismissed");
-          if (!dismissed) {
-            setTimeout(() => setIsExpanded(true), 2000);
-          }
         }
       } catch (error) {
         console.error("Error fetching flash offers", error);
@@ -49,7 +50,7 @@ export default function FlashOfferWidget() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[100] flex flex-col items-end">
+    <div className="fixed bottom-6 left-6 z-[100] flex flex-col items-start">
       <AnimatePresence>
         {isExpanded && (
           <motion.div
@@ -57,10 +58,10 @@ export default function FlashOfferWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className="mb-4 w-72 sm:w-80 bg-white/90 backdrop-blur-xl border border-pink-200 p-5 rounded-3xl shadow-2xl overflow-hidden relative origin-bottom-right"
+            className="mb-4 w-[340px] sm:w-[380px] bg-white/95 backdrop-blur-xl border border-pink-200 p-6 rounded-3xl shadow-[0_20px_50px_rgba(236,72,153,0.2)] overflow-hidden relative origin-bottom-left"
           >
             {/* Background Glow */}
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+            <div className="absolute -top-10 -left-10 w-32 h-32 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
             
             <button 
               onClick={handleDismiss}
