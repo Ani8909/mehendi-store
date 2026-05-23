@@ -170,6 +170,10 @@ export default function Booking() {
           setCouponError("This coupon is no longer active.");
           return;
         }
+        if (data.isFlashOffer && data.expiresAt && new Date(data.expiresAt).getTime() < Date.now()) {
+          setCouponError("This flash offer has expired.");
+          return;
+        }
         if (data.minAmount && basePrice < data.minAmount) {
           setCouponError(`Minimum booking of ₹${data.minAmount} required.`);
           return;

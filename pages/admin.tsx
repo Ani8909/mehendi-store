@@ -44,6 +44,9 @@ export default function AdminDashboard() {
   const [newCouponDiscount, setNewCouponDiscount] = useState("");
   const [newCouponType, setNewCouponType] = useState("flat");
   const [newCouponMin, setNewCouponMin] = useState("0");
+  const [isFlashOffer, setIsFlashOffer] = useState(false);
+  const [flashBannerText, setFlashBannerText] = useState("");
+  const [flashExpiresAt, setFlashExpiresAt] = useState("");
 
   // Finances States
   const [newTransactionAmount, setNewTransactionAmount] = useState("");
@@ -216,20 +219,29 @@ export default function AdminDashboard() {
     if (!newCouponCode || !newCouponDiscount) return;
     try {
       const codeUpper = newCouponCode.toUpperCase().trim();
+      
       const couponData = {
         code: codeUpper,
         discountAmount: Number(newCouponDiscount),
         discountType: newCouponType,
         minAmount: Number(newCouponMin),
         isActive: true,
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
+        isFlashOffer: isFlashOffer,
+        bannerText: isFlashOffer ? flashBannerText : "",
+        expiresAt: isFlashOffer && flashExpiresAt ? new Date(flashExpiresAt).toISOString() : null,
       };
+
       await setDoc(doc(db, "coupons", codeUpper), couponData);
-      alert("Coupon added successfully!");
+      
+      alert("Coupon added!");
       setNewCouponCode("");
       setNewCouponDiscount("");
       setNewCouponMin("0");
       setNewCouponType("flat");
+      setIsFlashOffer(false);
+      setFlashBannerText("");
+      setFlashExpiresAt("");
     } catch (err: any) {
       console.error(err);
       alert("Failed to add coupon: " + err.message);
@@ -1819,30 +1831,50 @@ export default function AdminDashboard() {
                       Manage Coupons
                     </h3>
                     
-                    <form onSubmit={handleAddCoupon} className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end mb-8 bg-gray-50 p-6 rounded-2xl">
-                      <div className="md:col-span-1">
-                        <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Coupon Code</label>
-                        <input type="text" value={newCouponCode} onChange={e => setNewCouponCode(e.target.value)} placeholder="e.g. DIWALI50" className="w-full p-4 border-2 border-white rounded-xl shadow-sm focus:border-pink-300 transition-all uppercase" required />
+                    <form onSubmit={handleAddCoupon} className="flex flex-col gap-4 mb-8 bg-gray-50 p-6 rounded-2xl">
+                      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                        <div className="md:col-span-1">
+                          <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Coupon Code</label>
+                          <input type="text" value={newCouponCode} onChange={e => setNewCouponCode(e.target.value)} placeholder="e.g. DIWALI50" className="w-full p-4 border-2 border-white rounded-xl shadow-sm focus:border-pink-300 transition-all uppercase" required />
+                        </div>
+                        <div className="md:col-span-1">
+                          <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Type</label>
+                          <select value={newCouponType} onChange={e => setNewCouponType(e.target.value)} className="w-full p-4 border-2 border-white rounded-xl shadow-sm focus:border-pink-300 transition-all bg-white font-bold text-gray-700">
+                            <option value="flat">Flat (₹)</option>
+                            <option value="percent">Percent (%)</option>
+                          </select>
+                        </div>
+                        <div className="md:col-span-1">
+                          <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Discount</label>
+                          <input type="number" value={newCouponDiscount} onChange={e => setNewCouponDiscount(e.target.value)} placeholder={newCouponType === 'flat' ? "₹ Amount" : "% Amount"} className="w-full p-4 border-2 border-white rounded-xl shadow-sm focus:border-pink-300 transition-all" required />
+                        </div>
+                        <div className="md:col-span-1">
+                          <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Min. Booking</label>
+                          <input type="number" value={newCouponMin} onChange={e => setNewCouponMin(e.target.value)} placeholder="0" className="w-full p-4 border-2 border-white rounded-xl shadow-sm focus:border-pink-300 transition-all" />
+                        </div>
+                        <div className="md:col-span-1">
+                          <button type="submit" className="w-full bg-[var(--color-primary)] text-white p-4 rounded-xl font-bold shadow-md hover:bg-[var(--color-header)] hover:-translate-y-0.5 transition-all">
+                            + Add Coupon
+                          </button>
+                        </div>
                       </div>
-                      <div className="md:col-span-1">
-                        <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Type</label>
-                        <select value={newCouponType} onChange={e => setNewCouponType(e.target.value)} className="w-full p-4 border-2 border-white rounded-xl shadow-sm focus:border-pink-300 transition-all bg-white font-bold text-gray-700">
-                          <option value="flat">Flat (₹)</option>
-                          <option value="percent">Percent (%)</option>
-                        </select>
-                      </div>
-                      <div className="md:col-span-1">
-                        <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Discount</label>
-                        <input type="number" value={newCouponDiscount} onChange={e => setNewCouponDiscount(e.target.value)} placeholder={newCouponType === 'flat' ? "₹ Amount" : "% Amount"} className="w-full p-4 border-2 border-white rounded-xl shadow-sm focus:border-pink-300 transition-all" required />
-                      </div>
-                      <div className="md:col-span-1">
-                        <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Min. Booking</label>
-                        <input type="number" value={newCouponMin} onChange={e => setNewCouponMin(e.target.value)} placeholder="0" className="w-full p-4 border-2 border-white rounded-xl shadow-sm focus:border-pink-300 transition-all" />
-                      </div>
-                      <div className="md:col-span-1">
-                        <button type="submit" className="w-full bg-[var(--color-primary)] text-white p-4 rounded-xl font-bold shadow-md hover:bg-[var(--color-header)] hover:-translate-y-0.5 transition-all">
-                          + Add Coupon
-                        </button>
+                      <div className="border-t border-gray-200 pt-4 mt-2">
+                        <label className="flex items-center space-x-3 cursor-pointer mb-4">
+                          <input type="checkbox" checked={isFlashOffer} onChange={e => setIsFlashOffer(e.target.checked)} className="w-5 h-5 accent-pink-500 rounded" />
+                          <span className="font-bold text-gray-700">Make this a Limited Time Flash Offer?</span>
+                        </label>
+                        {isFlashOffer && (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-pink-50/50 p-4 rounded-xl border border-pink-100">
+                            <div>
+                              <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Banner Title</label>
+                              <input type="text" value={flashBannerText} onChange={e => setFlashBannerText(e.target.value)} placeholder="e.g. Navratri Special 20% Off!" className="w-full p-3 border-2 border-white rounded-xl focus:border-pink-300" required />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Expiration Date & Time</label>
+                              <input type="datetime-local" value={flashExpiresAt} onChange={e => setFlashExpiresAt(e.target.value)} className="w-full p-3 border-2 border-white rounded-xl focus:border-pink-300" required />
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </form>
 
@@ -1850,8 +1882,9 @@ export default function AdminDashboard() {
                       {coupons.map((coupon) => (
                         <div key={coupon.id} className={`p-6 rounded-2xl border-2 transition-all relative ${coupon.isActive ? 'border-pink-200 bg-white shadow-sm' : 'border-gray-200 bg-gray-50 opacity-70'}`}>
                           <div className="flex justify-between items-start mb-4">
-                            <div>
+                            <div className="flex items-center flex-wrap gap-2">
                               <span className="bg-pink-100 text-[var(--color-primary)] text-xs font-black tracking-widest uppercase px-3 py-1 rounded-full">{coupon.code}</span>
+                              {coupon.isFlashOffer && <span className="bg-amber-100 text-amber-700 text-[10px] font-black uppercase px-2 py-1 rounded">Flash Offer</span>}
                             </div>
                             <button 
                               onClick={() => setDeleteModal({ isOpen: true, col: "coupons", id: coupon.id })}

@@ -3,9 +3,10 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiCheckCircle, FiClock, FiCreditCard, FiMapPin, FiCheck, FiTruck, FiAward, FiHeart, FiStar, FiShoppingBag, FiArrowRight, FiEdit2, FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { useEffect, useState } from "react";
-import { collection, getDocs, limit, query, addDoc, serverTimestamp, orderBy } from "firebase/firestore";
+import { collection, getDocs, limit, query, addDoc, serverTimestamp, orderBy, where } from "firebase/firestore";
 import { SkeletonCard, SkeletonReview } from "@/components/Loader";
 import { db } from "@/lib/firebase";
+import CountdownTimer from "@/components/CountdownTimer";
 import { useAuth } from "@/lib/authContext";
 import seedReviewsData from "@/data/reviews.json";
 
@@ -38,6 +39,7 @@ export default function Home() {
   const [reviews, setReviews] = useState<any[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [flashOffer, setFlashOffer] = useState<any>(null);
 
   // Review Modal State
   const { user, userData } = useAuth();
@@ -112,6 +114,18 @@ export default function Home() {
         
         // Merge fetched and seed reviews
         setReviews([...fetchedReviews, ...seedReviews]);
+
+        // Fetch Flash Offers
+        const qCoupons = query(collection(db, "coupons"), where("isActive", "==", true), where("isFlashOffer", "==", true));
+        const couponsSnap = await getDocs(qCoupons);
+        const validFlashOffers = couponsSnap.docs
+          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .filter((c: any) => c.expiresAt && new Date(c.expiresAt).getTime() > Date.now());
+        
+        if (validFlashOffers.length > 0) {
+          validFlashOffers.sort((a: any, b: any) => new Date(a.expiresAt).getTime() - new Date(b.expiresAt).getTime());
+          setFlashOffer(validFlashOffers[0]);
+        }
 
       } catch (error) {
         console.error("Error fetching data", error);
@@ -245,6 +259,28 @@ export default function Home() {
               <div className="absolute inset-0 flex items-center justify-center text-center p-4 sm:p-6 z-10">
                 <div className="max-w-4xl flex flex-col items-center">
                   
+                  {/* Flash Offer Top Banner */}
+                  {flashOffer && (
+                    <motion.div
+                      initial={{ y: -50, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.1, duration: 0.8 }}
+                      className="mb-8 w-full max-w-2xl mx-auto flex flex-col items-center"
+                    >
+                      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white drop-shadow-[0_0_15px_rgba(236,72,153,0.8)] mb-4 text-center">
+                        {flashOffer.bannerText || `Special Flash Offer: ${flashOffer.discountType === 'percent' ? flashOffer.discountAmount + '%' : '₹' + flashOffer.discountAmount} OFF`}
+                      </h2>
+                      <CountdownTimer 
+                        targetDate={flashOffer.expiresAt} 
+                        onExpire={() => setFlashOffer(null)} 
+                        theme="pink"
+                      />
+                      <p className="mt-3 text-xs sm:text-sm text-pink-200 font-bold tracking-widest uppercase bg-black/50 px-4 py-1 rounded-full border border-pink-500/30 shadow-[0_0_10px_rgba(236,72,153,0.3)]">
+                        Use Code: <span className="text-white text-base font-black">{flashOffer.code}</span>
+                      </p>
+                    </motion.div>
+                  )}
+
                   {/* Glassmorphic Top Badge with Line Reveal */}
                   <div className="overflow-hidden mb-6">
                     <motion.div

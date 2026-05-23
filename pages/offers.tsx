@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { FiTag, FiGift, FiScissors, FiCheckCircle } from "react-icons/fi";
 import Link from "next/link";
 import Head from "next/head";
+import CountdownTimer from "@/components/CountdownTimer";
 
 export default function Offers() {
   const [coupons, setCoupons] = useState<any[]>([]);
@@ -72,29 +73,72 @@ export default function Offers() {
           </div>
           
           <div className="max-w-4xl mx-auto text-center relative z-10">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center justify-center bg-white/20 backdrop-blur-sm text-white px-6 py-2 rounded-full mb-6 font-bold tracking-widest text-sm uppercase"
-            >
-              <FiGift className="mr-2" size={18} /> Exclusive Deals in Agra
-            </motion.div>
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-4xl md:text-6xl font-black font-serif text-white mb-6 leading-tight drop-shadow-md"
-            >
-              Unlock Royal Savings on Agra's Best Mehndi
-            </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-pink-100 text-lg max-w-2xl mx-auto leading-relaxed font-medium"
-            >
-              Looking for the finest bridal designer in Agra? Because your special moments deserve to be celebrated without compromise. Use these active promo codes during checkout for instant discounts.
-            </motion.p>
+            {(() => {
+              const flashOffers = coupons.filter(c => c.isFlashOffer && c.expiresAt && new Date(c.expiresAt).getTime() > Date.now());
+              const flashOffer = flashOffers.length > 0 ? flashOffers.sort((a, b) => new Date(a.expiresAt).getTime() - new Date(b.expiresAt).getTime())[0] : null;
+
+              return (
+                <>
+                  {flashOffer ? (
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="mb-10 bg-white/10 backdrop-blur-md border border-white/20 p-6 sm:p-8 rounded-3xl shadow-2xl relative overflow-hidden"
+                    >
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
+                      <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-rose-400 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+                      
+                      <h2 className="text-2xl sm:text-4xl font-black text-white drop-shadow-md mb-6 font-serif relative z-10">
+                        {flashOffer.bannerText || `Flash Offer: ${flashOffer.discountType === 'percent' ? flashOffer.discountAmount + '%' : '₹' + flashOffer.discountAmount} OFF!`}
+                      </h2>
+                      
+                      <div className="relative z-10">
+                        <CountdownTimer 
+                          targetDate={flashOffer.expiresAt} 
+                          theme="light" 
+                          className="mb-6 shadow-xl"
+                        />
+                      </div>
+                      
+                      <p className="mt-2 text-sm sm:text-base text-pink-100 font-medium relative z-10">
+                        Use Promo Code: <span className="bg-white text-[var(--color-primary)] font-black px-4 py-2 rounded-full tracking-widest ml-2 border border-pink-200">{flashOffer.code}</span>
+                      </p>
+                      {flashOffer.minAmount > 0 && (
+                        <p className="text-xs text-white/70 mt-3 font-medium relative z-10">Valid on minimum booking of ₹{flashOffer.minAmount}</p>
+                      )}
+                    </motion.div>
+                  ) : (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="inline-flex items-center justify-center bg-white/20 backdrop-blur-sm text-white px-6 py-2 rounded-full mb-6 font-bold tracking-widest text-sm uppercase"
+                    >
+                      <FiGift className="mr-2" size={18} /> Exclusive Deals in Agra
+                    </motion.div>
+                  )}
+
+                  {!flashOffer && (
+                    <motion.h1 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 }}
+                      className="text-4xl md:text-6xl font-black font-serif text-white mb-6 leading-tight drop-shadow-md"
+                    >
+                      Unlock Royal Savings on Agra's Best Mehndi
+                    </motion.h1>
+                  )}
+                  
+                  <motion.p 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="text-pink-100 text-lg max-w-2xl mx-auto leading-relaxed font-medium"
+                  >
+                    Looking for the finest bridal designer in Agra? Because your special moments deserve to be celebrated without compromise. Use these active promo codes during checkout for instant discounts.
+                  </motion.p>
+                </>
+              );
+            })()}
           </div>
         </div>
 
