@@ -7,9 +7,10 @@ interface CountdownTimerProps {
   onExpire?: () => void;
   className?: string;
   theme?: "light" | "dark" | "pink";
+  compact?: boolean;
 }
 
-export default function CountdownTimer({ targetDate, onExpire, className = "", theme = "pink" }: CountdownTimerProps) {
+export default function CountdownTimer({ targetDate, onExpire, className = "", theme = "pink", compact = false }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState<{ days: number, hours: number, minutes: number, seconds: number } | null>(null);
   const [isExpired, setIsExpired] = useState(false);
 
@@ -77,28 +78,28 @@ export default function CountdownTimer({ targetDate, onExpire, className = "", t
   };
 
   return (
-    <div className={`inline-flex items-center p-2 sm:p-3 md:p-4 rounded-xl sm:rounded-2xl md:rounded-3xl shadow-lg border backdrop-blur-md ${themes[theme]} ${className}`}>
-      <div className="flex items-center justify-center bg-white/40 p-1.5 sm:p-2.5 rounded-full mr-1 sm:mr-3 shadow-inner border border-white/50 backdrop-blur-md shrink-0">
-        <img src="/logo.png" alt="Jyoti Mehendi Logo" className="w-5 h-5 sm:w-8 sm:h-8 object-contain animate-pulse drop-shadow-sm" />
+    <div className={`inline-flex items-center ${compact ? 'p-2' : 'p-2 sm:p-3 md:p-4'} rounded-xl sm:rounded-2xl md:rounded-3xl shadow-lg border backdrop-blur-md ${themes[theme]} ${className}`}>
+      <div className={`flex items-center justify-center bg-white/40 ${compact ? 'p-1.5 mr-2' : 'p-1.5 sm:p-2.5 mr-1 sm:mr-3'} rounded-full shadow-inner border border-white/50 backdrop-blur-md shrink-0`}>
+        <img src="/logo.png" alt="Jyoti Mehendi Logo" className={`${compact ? 'w-5 h-5' : 'w-5 h-5 sm:w-8 sm:h-8'} object-contain animate-pulse drop-shadow-sm`} />
       </div>
       
-      <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4">
-        <TimeBlock value={timeLeft.days} label="Days" blockTheme={blockThemes[theme]} labelTheme={labelThemes[theme]} />
-        <span className="text-lg sm:text-xl md:text-2xl font-bold opacity-50 mb-3 sm:mb-4">:</span>
-        <TimeBlock value={timeLeft.hours} label="Hours" blockTheme={blockThemes[theme]} labelTheme={labelThemes[theme]} />
-        <span className="text-lg sm:text-xl md:text-2xl font-bold opacity-50 mb-3 sm:mb-4">:</span>
-        <TimeBlock value={timeLeft.minutes} label="Mins" blockTheme={blockThemes[theme]} labelTheme={labelThemes[theme]} />
-        <span className="text-lg sm:text-xl md:text-2xl font-bold opacity-50 mb-3 sm:mb-4 animate-pulse">:</span>
-        <TimeBlock value={timeLeft.seconds} label="Secs" blockTheme={blockThemes[theme]} labelTheme={labelThemes[theme]} />
+      <div className={`flex items-center ${compact ? 'space-x-1' : 'space-x-1 sm:space-x-2 md:space-x-4'}`}>
+        <TimeBlock value={timeLeft.days} label="Days" blockTheme={blockThemes[theme]} labelTheme={labelThemes[theme]} compact={compact} />
+        <span className={`${compact ? 'text-lg mb-3' : 'text-lg sm:text-xl md:text-2xl mb-3 sm:mb-4'} font-bold opacity-50`}>:</span>
+        <TimeBlock value={timeLeft.hours} label="Hours" blockTheme={blockThemes[theme]} labelTheme={labelThemes[theme]} compact={compact} />
+        <span className={`${compact ? 'text-lg mb-3' : 'text-lg sm:text-xl md:text-2xl mb-3 sm:mb-4'} font-bold opacity-50`}>:</span>
+        <TimeBlock value={timeLeft.minutes} label="Mins" blockTheme={blockThemes[theme]} labelTheme={labelThemes[theme]} compact={compact} />
+        <span className={`${compact ? 'text-lg mb-3' : 'text-lg sm:text-xl md:text-2xl mb-3 sm:mb-4'} font-bold opacity-50 animate-pulse`}>:</span>
+        <TimeBlock value={timeLeft.seconds} label="Secs" blockTheme={blockThemes[theme]} labelTheme={labelThemes[theme]} compact={compact} />
       </div>
     </div>
   );
 }
 
-function TimeBlock({ value, label, blockTheme, labelTheme }: { value: number, label: string, blockTheme: string, labelTheme: string }) {
+function TimeBlock({ value, label, blockTheme, labelTheme, compact }: { value: number, label: string, blockTheme: string, labelTheme: string, compact: boolean }) {
   return (
     <div className="flex flex-col items-center">
-      <div className={`w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center rounded-lg sm:rounded-xl shadow-inner font-mono text-base sm:text-xl md:text-3xl font-black tracking-tighter ${blockTheme} relative overflow-hidden`}>
+      <div className={`${compact ? 'w-10 h-10 text-base rounded-lg' : 'w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg sm:rounded-xl text-base sm:text-xl md:text-3xl'} flex items-center justify-center shadow-inner font-mono font-black tracking-tighter ${blockTheme} relative overflow-hidden`}>
         <AnimatePresence mode="popLayout">
           <motion.span
             key={value}
@@ -112,7 +113,7 @@ function TimeBlock({ value, label, blockTheme, labelTheme }: { value: number, la
           </motion.span>
         </AnimatePresence>
       </div>
-      <span className={`text-[8px] sm:text-[9px] md:text-[11px] font-bold uppercase tracking-widest mt-1.5 sm:mt-2 ${labelTheme}`}>
+      <span className={`${compact ? 'text-[8px] mt-1' : 'text-[8px] sm:text-[9px] md:text-[11px] mt-1.5 sm:mt-2'} font-bold uppercase tracking-widest ${labelTheme}`}>
         {label}
       </span>
     </div>

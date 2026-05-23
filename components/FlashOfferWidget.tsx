@@ -105,6 +105,7 @@ export default function FlashOfferWidget() {
                 targetDate={flashOffer.expiresAt} 
                 onExpire={() => setFlashOffer(null)} 
                 theme="light"
+                compact={true}
                 className="!p-2 shadow-none border-none bg-transparent"
               />
             </div>
