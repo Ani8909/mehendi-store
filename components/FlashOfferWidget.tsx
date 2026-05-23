@@ -100,7 +100,7 @@ export default function FlashOfferWidget() {
               </h3>
             </div>
 
-            <div className="bg-gray-50 rounded-2xl p-3 mb-3 border border-gray-100 flex justify-center scale-90 origin-center -mx-2">
+            <div className="bg-gray-50 rounded-2xl p-1.5 sm:p-3 mb-3 border border-gray-100 flex justify-center w-full overflow-visible">
               <CountdownTimer 
                 targetDate={flashOffer.expiresAt} 
                 onExpire={() => setFlashOffer(null)} 
