@@ -6,4 +6,4 @@ Disallow: /partner
 Disallow: /login
 
 # Help Google find the dynamic sitemap
-Sitemap: https://www.jyotimehendi.com/sitemap.xml
+Sitemap: https://jyotimehendi.in/sitemap.xml
