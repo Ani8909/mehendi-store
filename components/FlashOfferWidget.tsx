@@ -85,8 +85,9 @@ export default function FlashOfferWidget() {
 
             {/* Branding Header */}
             <div className="flex items-center justify-center mb-5 mt-1">
-              <span className="text-[9px] font-black uppercase tracking-[0.25em] text-pink-600 bg-pink-50/80 px-4 py-1.5 rounded-full border border-pink-100 shadow-sm flex items-center gap-1.5">
-                <span className="text-amber-500 text-xs">✨</span> Jyoti Mehndi Exclusive
+              <span className="text-[9px] font-black uppercase tracking-[0.25em] text-pink-600 bg-pink-50/80 px-4 py-1.5 rounded-full border border-pink-100 shadow-sm flex items-center gap-2">
+                <img src="/logo.png" alt="Jyoti Mehendi Logo" className="w-4 h-4 object-contain" />
+                Jyoti Mehndi Exclusive
               </span>
             </div>
 
