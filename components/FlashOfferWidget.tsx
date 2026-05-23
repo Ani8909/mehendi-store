@@ -55,15 +55,15 @@ export default function FlashOfferWidget() {
   };
 
   return (
-    <div className="fixed bottom-[90px] sm:bottom-6 left-4 sm:left-6 z-[100] flex flex-col items-start">
+    <div className="fixed top-24 left-0 z-[100] flex flex-col items-start">
       <AnimatePresence>
         {isExpanded && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            initial={{ opacity: 0, x: -20, scale: 0.9 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9, x: -20 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className="mb-4 w-[340px] sm:w-[380px] bg-white/95 backdrop-blur-xl border border-pink-200 p-6 rounded-3xl shadow-[0_20px_50px_rgba(236,72,153,0.2)] overflow-hidden relative origin-bottom-left"
+            className="ml-4 mt-2 mb-4 w-[320px] sm:w-[380px] bg-white/95 backdrop-blur-xl border border-pink-200 p-6 rounded-3xl shadow-[0_20px_50px_rgba(236,72,153,0.2)] overflow-hidden relative origin-top-left"
           >
             {/* Background Glow */}
             <div className="absolute -top-10 -left-10 w-32 h-32 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
@@ -114,22 +114,27 @@ export default function FlashOfferWidget() {
         )}
       </AnimatePresence>
 
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={handleToggle}
-        className="relative group bg-gradient-to-r from-[var(--color-primary)] to-pink-600 text-white p-4 rounded-full shadow-[0_0_20px_rgba(236,72,153,0.4)] flex items-center justify-center border-2 border-white"
-      >
-        <div className="absolute -inset-1 bg-gradient-to-r from-pink-600 to-pink-300 rounded-full blur opacity-40 group-hover:opacity-70 transition duration-500"></div>
-        <FiGift size={24} className={!isExpanded ? "animate-pulse relative z-10" : "relative z-10"} />
-        
+      <AnimatePresence>
         {!isExpanded && (
-          <span className="absolute -top-1 -right-1 flex h-4 w-4">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-4 w-4 bg-amber-500 border-2 border-white"></span>
-          </span>
+          <motion.button
+            initial={{ x: -50 }}
+            animate={{ x: 0 }}
+            exit={{ x: -50 }}
+            whileHover={{ scale: 1.05, x: 5 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleToggle}
+            className="relative bg-gradient-to-r from-[var(--color-primary)] to-pink-600 text-white py-3 pl-2 pr-4 rounded-r-full shadow-[5px_0_20px_rgba(236,72,153,0.4)] flex items-center justify-center border-y-2 border-r-2 border-white"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-pink-600 to-pink-300 rounded-r-full blur opacity-40 group-hover:opacity-70 transition duration-500"></div>
+            <FiGift size={22} className="animate-pulse relative z-10" />
+            
+            <span className="absolute -top-1 -right-1 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500 border-2 border-white"></span>
+            </span>
+          </motion.button>
         )}
-      </motion.button>
+      </AnimatePresence>
     </div>
   );
 }
