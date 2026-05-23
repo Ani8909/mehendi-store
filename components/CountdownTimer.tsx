@@ -97,8 +97,8 @@ export default function CountdownTimer({ targetDate, onExpire, className = "", t
 
 function TimeBlock({ value, label, blockTheme, labelTheme }: { value: number, label: string, blockTheme: string, labelTheme: string }) {
   return (
-    <div className="flex flex-col items-center min-w-[36px] sm:min-w-[48px] md:min-w-[60px]">
-      <div className={`w-full flex items-center justify-center h-10 sm:h-12 md:h-14 rounded-lg sm:rounded-xl shadow-inner font-mono text-lg sm:text-2xl md:text-3xl font-black tracking-tighter ${blockTheme} relative overflow-hidden`}>
+    <div className="flex flex-col items-center">
+      <div className={`w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 flex items-center justify-center rounded-lg sm:rounded-xl shadow-inner font-mono text-base sm:text-xl md:text-3xl font-black tracking-tighter ${blockTheme} relative overflow-hidden`}>
         <AnimatePresence mode="popLayout">
           <motion.span
             key={value}
