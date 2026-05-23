@@ -58,7 +58,15 @@ export default function FlashOfferWidget() {
     <div className="fixed top-24 left-0 z-[100]">
       <AnimatePresence>
         {isExpanded && (
-          <motion.div
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              onClick={() => setIsExpanded(false)} 
+              className="fixed inset-0 w-screen h-screen z-[-1]" 
+            />
+            <motion.div
             initial={{ opacity: 0, x: -20, scale: 0.9 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9, x: -20 }}
@@ -111,6 +119,7 @@ export default function FlashOfferWidget() {
               </Link>
             </div>
           </motion.div>
+          </>
         )}
       </AnimatePresence>
 
@@ -123,9 +132,9 @@ export default function FlashOfferWidget() {
             whileHover={{ scale: 1.05, x: 5 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleToggle}
-            className="absolute left-0 top-0 bg-gradient-to-r from-[var(--color-primary)] to-pink-600 text-white py-3 pl-2 pr-4 rounded-r-full shadow-[5px_0_20px_rgba(236,72,153,0.4)] flex items-center justify-center border-y-2 border-r-2 border-white group"
+            className="absolute left-0 top-0 bg-gradient-to-r from-[var(--color-primary)] to-pink-600 text-white py-3.5 pl-3 pr-5 rounded-r-2xl shadow-[8px_0_20px_rgba(236,72,153,0.3)] flex items-center justify-center group"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-pink-600 to-pink-300 rounded-r-full blur opacity-40 group-hover:opacity-70 transition duration-500"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-pink-600 to-pink-300 rounded-r-2xl blur opacity-40 group-hover:opacity-70 transition duration-500"></div>
             <FiGift size={22} className="animate-pulse relative z-10" />
             
             <span className="absolute -top-1 -right-1 flex h-3 w-3">
