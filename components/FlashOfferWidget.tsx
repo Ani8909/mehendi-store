@@ -55,7 +55,7 @@ export default function FlashOfferWidget() {
   };
 
   return (
-    <div className="fixed top-24 left-0 z-[100] flex flex-col items-start">
+    <div className="fixed top-24 left-0 z-[100]">
       <AnimatePresence>
         {isExpanded && (
           <motion.div
@@ -63,7 +63,7 @@ export default function FlashOfferWidget() {
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9, x: -20 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className="ml-4 mt-2 mb-4 w-[320px] sm:w-[380px] bg-white/95 backdrop-blur-xl border border-pink-200 p-6 rounded-3xl shadow-[0_20px_50px_rgba(236,72,153,0.2)] overflow-hidden relative origin-top-left"
+            className="absolute left-4 top-2 w-[320px] sm:w-[380px] bg-white/95 backdrop-blur-xl border border-pink-200 p-6 rounded-3xl shadow-[0_20px_50px_rgba(236,72,153,0.2)] overflow-hidden origin-top-left"
           >
             {/* Background Glow */}
             <div className="absolute -top-10 -left-10 w-32 h-32 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
@@ -123,7 +123,7 @@ export default function FlashOfferWidget() {
             whileHover={{ scale: 1.05, x: 5 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleToggle}
-            className="relative bg-gradient-to-r from-[var(--color-primary)] to-pink-600 text-white py-3 pl-2 pr-4 rounded-r-full shadow-[5px_0_20px_rgba(236,72,153,0.4)] flex items-center justify-center border-y-2 border-r-2 border-white"
+            className="absolute left-0 top-0 bg-gradient-to-r from-[var(--color-primary)] to-pink-600 text-white py-3 pl-2 pr-4 rounded-r-full shadow-[5px_0_20px_rgba(236,72,153,0.4)] flex items-center justify-center border-y-2 border-r-2 border-white group"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-pink-600 to-pink-300 rounded-r-full blur opacity-40 group-hover:opacity-70 transition duration-500"></div>
             <FiGift size={22} className="animate-pulse relative z-10" />
