@@ -9,13 +9,11 @@ import Link from "next/link";
 export default function FlashOfferWidget() {
   const [flashOffer, setFlashOffer] = useState<any>(null);
   const [isExpanded, setIsExpanded] = useState(true);
-  const [isDismissed, setIsDismissed] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     // Check if dismissed in this session
     if (sessionStorage.getItem("flashOfferDismissed")) {
-      setIsDismissed(true);
       setIsExpanded(false);
     }
 
@@ -38,12 +36,11 @@ export default function FlashOfferWidget() {
     fetchFlashOffer();
   }, []);
 
-  if (!flashOffer || isDismissed) return null;
+  if (!flashOffer) return null;
 
   const handleDismiss = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsExpanded(false);
-    setIsDismissed(true);
     sessionStorage.setItem("flashOfferDismissed", "true");
   };
 
