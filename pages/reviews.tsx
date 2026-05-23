@@ -1,16 +1,28 @@
 import SEO from "@/components/SEO";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FiStar, FiArrowLeft, FiEdit2 } from "react-icons/fi";
+import { FiStar, FiArrowLeft, FiEdit2, FiX } from "react-icons/fi";
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { useAuth } from "@/lib/authContext";
+import { AnimatePresence } from "framer-motion";
 import seedReviewsData from "@/data/reviews.json";
 
 export default function Reviews() {
   const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(30);
+  
+  const { user, userData } = useAuth();
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [newReview, setNewReview] = useState({
+    name: "",
+    area: "",
+    rating: 5,
+    comment: ""
+  });
 
   useEffect(() => {
     async function fetchReviews() {
@@ -29,6 +41,33 @@ export default function Reviews() {
     }
     fetchReviews();
   }, []);
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmittingReview(true);
+    try {
+      const reviewData = {
+        name: user ? userData?.name : newReview.name,
+        area: newReview.area,
+        rating: newReview.rating,
+        text: newReview.comment,
+        role: "Verified Client",
+        createdAt: serverTimestamp()
+      };
+
+      const docRef = await addDoc(collection(db, "reviews"), reviewData);
+      
+      setReviews([{ id: docRef.id, ...reviewData }, ...reviews]);
+      setShowReviewModal(false);
+      setNewReview({ name: "", area: "", rating: 5, comment: "" });
+      alert("Thank you for your review!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to submit review.");
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
 
   return (
     <>
@@ -49,9 +88,18 @@ export default function Reviews() {
           <div className="text-center mb-16">
             <h1 className="text-4xl md:text-5xl font-serif font-bold text-[var(--color-header)] mb-4">What Our Clients Say</h1>
             <p className="text-gray-500 max-w-2xl mx-auto">Read thousands of reviews from our happy customers across Agra.</p>
-            <div className="mt-6 flex justify-center items-center space-x-2">
-              <div className="flex text-amber-400 text-2xl"><FiStar fill="currentColor" /><FiStar fill="currentColor" /><FiStar fill="currentColor" /><FiStar fill="currentColor" /><FiStar fill="currentColor" /></div>
-              <span className="font-bold text-gray-800 text-2xl">4.9/5</span>
+            <div className="mt-6 flex flex-col items-center space-y-4">
+              <div className="flex items-center space-x-3">
+                <div className="flex text-amber-400 text-2xl"><FiStar fill="currentColor" /><FiStar fill="currentColor" /><FiStar fill="currentColor" /><FiStar fill="currentColor" /><FiStar fill="currentColor" /></div>
+                <span className="font-bold text-gray-800 text-2xl">4.9/5</span>
+                <span className="text-gray-400 text-lg">(2k+ reviews)</span>
+              </div>
+              <button 
+                onClick={() => setShowReviewModal(true)}
+                className="flex items-center space-x-2 bg-pink-50 text-[var(--color-primary)] px-6 py-2 rounded-full font-bold hover:bg-pink-100 transition-colors border border-pink-200 shadow-sm"
+              >
+                <FiEdit2 /> <span>Write a Review</span>
+              </button>
             </div>
           </div>
 
@@ -154,6 +202,106 @@ export default function Reviews() {
           )}
         </div>
       </div>
+
+      {/* Review Submission Modal */}
+      <AnimatePresence>
+        {showReviewModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              onClick={() => setShowReviewModal(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            ></motion.div>
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }} 
+              animate={{ opacity: 1, scale: 1, y: 0 }} 
+              exit={{ opacity: 0, scale: 0.9, y: 20 }} 
+              className="bg-white rounded-3xl p-8 max-w-md w-full relative z-10 shadow-2xl"
+            >
+              <button 
+                onClick={() => setShowReviewModal(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:bg-gray-100 p-2 rounded-full transition-colors"
+              >
+                <FiX size={24} />
+              </button>
+              
+              <h3 className="text-2xl font-serif font-bold text-[var(--color-header)] mb-2">Share Your Experience</h3>
+              <p className="text-gray-500 text-sm mb-6">Your feedback helps us grow and serve Agra better.</p>
+              
+              <form onSubmit={handleReviewSubmit} className="space-y-4">
+                {!user && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                    <input 
+                      type="text" 
+                      required 
+                      value={newReview.name}
+                      onChange={(e) => setNewReview({...newReview, name: e.target.value})}
+                      className="w-full p-3 border border-gray-200 rounded-xl focus:ring-[var(--color-primary)]"
+                      placeholder="e.g. Anjali"
+                    />
+                  </div>
+                )}
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Area in Agra (Optional)</label>
+                  <input 
+                    type="text" 
+                    value={newReview.area}
+                    onChange={(e) => setNewReview({...newReview, area: e.target.value})}
+                    className="w-full p-3 border border-gray-200 rounded-xl focus:ring-[var(--color-primary)]"
+                    placeholder="e.g. Dayalbagh"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                  <div className="flex space-x-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setNewReview({...newReview, rating: star})}
+                        className="text-3xl focus:outline-none transition-transform hover:scale-110"
+                      >
+                        <FiStar fill={star <= newReview.rating ? "#FBBF24" : "none"} className={star <= newReview.rating ? "text-amber-400" : "text-gray-300"} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Your Review</label>
+                  <textarea 
+                    required 
+                    rows={4}
+                    value={newReview.comment}
+                    onChange={(e) => setNewReview({...newReview, comment: e.target.value})}
+                    className="w-full p-3 border border-gray-200 rounded-xl focus:ring-[var(--color-primary)]"
+                    placeholder="Tell us what you loved..."
+                  ></textarea>
+                </div>
+                
+                <button 
+                  type="submit" 
+                  disabled={submittingReview}
+                  className="w-full bg-[var(--color-primary)] text-white font-bold py-4 rounded-xl shadow-md hover:bg-[var(--color-header)] transition-colors disabled:opacity-70 flex justify-center items-center space-x-2 mt-4"
+                >
+                  {submittingReview ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <span>Posting...</span>
+                    </>
+                  ) : "Post Review"}
+                </button>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

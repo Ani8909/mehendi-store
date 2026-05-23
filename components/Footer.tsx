@@ -57,6 +57,7 @@ export default function Footer() {
                 { name: "Our Services", href: "/services" },
                 { name: "Design Gallery", href: "/gallery" },
                 { name: "Luxury Packages", href: "/packages" },
+                { name: "Special Offers", href: "/offers" },
                 { name: "Book Appointment", href: "/booking" },
               ].map((link, idx) => (
                 <li key={idx}>
@@ -113,8 +114,36 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* Featured On */}
+        <div className="mt-12 pt-10 pb-4 border-t border-pink-100/60 flex flex-col items-center justify-center relative z-10">
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-6">Also Featured & Verified On</p>
+          <div className="flex flex-wrap justify-center gap-8 md:gap-12 items-center px-4">
+            <a href="#" className="grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all duration-500 transform hover:-translate-y-1">
+              <div className="flex items-center">
+                <span className="font-black text-2xl tracking-tighter text-[#FF6A00]">Just</span>
+                <span className="font-black text-2xl tracking-tighter text-gray-800">dial</span>
+              </div>
+            </a>
+            <a href="#" className="grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all duration-500 transform hover:-translate-y-1">
+              <span className="font-bold text-2xl tracking-tight text-[#0A58A3] font-serif italic">Sulekha</span>
+            </a>
+            <a href="#" className="grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all duration-500 transform hover:-translate-y-1">
+              <span className="font-bold text-2xl tracking-tight text-[#E72E77]">WedMeGood</span>
+            </a>
+            <a href="#" className="grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all duration-500 transform hover:-translate-y-1">
+              <div className="flex items-center">
+                <span className="font-bold text-2xl tracking-tight text-[#E43144]">Wedding</span>
+                <span className="font-bold text-2xl tracking-tight text-gray-800">Wire</span>
+              </div>
+            </a>
+            <a href="#" className="grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all duration-500 transform hover:-translate-y-1">
+              <span className="font-bold text-2xl tracking-tight text-[#5DB6A5] italic">Zankyou</span>
+            </a>
+          </div>
+        </div>
+
         {/* Delicate Bottom Divider */}
-        <div className="mt-12 pt-8 border-t border-pink-100/60 flex flex-col md:flex-row justify-between items-center relative z-10 text-xs md:text-sm text-gray-400">
+        <div className="mt-6 pt-8 border-t border-pink-100/60 flex flex-col md:flex-row justify-between items-center relative z-10 text-xs md:text-sm text-gray-400">
           <p className="text-center md:text-left">
             &copy; {new Date().getFullYear()} Jyoti Mehendi Artist. Handcrafted in Agra with ❤️
           </p>

@@ -191,17 +191,35 @@ export default function BookingSlip() {
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-gray-900 font-bold text-lg">₹{booking.price}.00</p>
+                  <p className="text-gray-900 font-bold text-lg">₹{booking.originalPrice || booking.price}.00</p>
                 </div>
               </div>
             </div>
 
+            {/* Discounts */}
+            {((booking.couponDiscount && booking.couponDiscount > 0) || (booking.returningDiscount && booking.returningDiscount > 0)) && (
+              <div className="border-b-[3px] border-double border-gray-300 pb-4 pt-2 space-y-2">
+                {booking.returningDiscount > 0 && (
+                  <div className="flex justify-between items-center text-green-600">
+                    <span className="text-[10px] uppercase tracking-widest font-bold">Loyalty Discount</span>
+                    <span className="font-bold">-₹{booking.returningDiscount}.00</span>
+                  </div>
+                )}
+                {booking.couponDiscount > 0 && (
+                  <div className="flex justify-between items-center text-green-600">
+                    <span className="text-[10px] uppercase tracking-widest font-bold">Coupon ({booking.couponCode})</span>
+                    <span className="font-bold">-₹{booking.couponDiscount}.00</span>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Total */}
-            <div className="flex justify-between items-center pt-2">
+            <div className="flex justify-between items-center pt-4">
               <span className="text-gray-900 uppercase font-black tracking-widest">Total</span>
               <span className="text-gray-900 font-black text-2xl">₹{booking.price}.00</span>
             </div>
-            <div className="flex justify-between items-center pb-8">
+            <div className="flex justify-between items-center pb-8 mt-2">
               <span className="text-gray-500 uppercase text-[10px] tracking-widest">Payment Method</span>
               <span className="text-gray-900 font-bold text-xs uppercase">Offline (Cash/UPI)</span>
             </div>

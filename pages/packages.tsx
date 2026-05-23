@@ -1,5 +1,6 @@
 import SEO from "@/components/SEO";
 import Link from "next/link";
+import { SkeletonCard } from "@/components/Loader";
 import { motion } from "framer-motion";
 import { FiCheck, FiArrowLeft } from "react-icons/fi";
 import { useEffect, useState } from "react";
@@ -28,8 +29,8 @@ export default function Packages() {
   return (
     <>
       <SEO 
-        title="Mehndi Packages & Pricing Agra | Affordable Bridal Henna"
-        description="View our affordable Mehndi packages in Agra. Choose from Basic, Premium, and Royal Bridal packages starting at just ₹500. Book online instantly!"
+        title="Event & Bridal Mehndi Packages Agra | Jyoti Mehendi"
+        description="Book affordable Mehndi event packages for weddings, sangeet, and parties in Agra. Group bookings and royal bridal contracts by Jyoti Mehendi."
         schema={JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Service",
@@ -62,16 +63,7 @@ export default function Packages() {
             <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]"></div>
           </motion.div>
 
-          {/* Floating Back to Home Button */}
-          <div className="absolute top-6 left-6 z-20">
-            <Link 
-              href="/" 
-              className="flex items-center text-white/95 hover:text-white bg-white/10 hover:bg-white/20 backdrop-blur-md px-4 py-2 rounded-xl text-sm font-bold border border-white/20 shadow-lg transition-all"
-            >
-              <FiArrowLeft className="mr-2" /> Back to Home
-            </Link>
-          </div>
-          
+          {/* Hero Section Content */}
           <div className="relative z-10 text-center px-4">
             <motion.span 
               initial={{ opacity: 0, y: 20 }}
@@ -102,8 +94,10 @@ export default function Packages() {
         <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
 
           {loading ? (
-            <div className="flex justify-center items-center py-24">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--color-primary)]"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3].map(i => (
+                <SkeletonCard key={i} />
+              ))}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

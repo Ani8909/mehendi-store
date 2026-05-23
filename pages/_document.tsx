@@ -8,7 +8,7 @@ export default function Document() {
         <link rel="shortcut icon" href="/favicon.ico?v=3" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#FF69B4" />
-        <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3254/3254507.png" />
+        <link rel="apple-touch-icon" href="/favicon.png?v=3" />
       </Head>
       <body className="antialiased">
         <Main />

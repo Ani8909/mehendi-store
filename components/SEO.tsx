@@ -13,7 +13,7 @@ interface SEOProps {
 export default function SEO({ 
   title, 
   description, 
-  keywords = "Mehndi artist Agra, Bridal Mehndi, Arabic Mehndi, Jyoti Mehendi Artist, Best Henna Agra, Mehndi booking", 
+  keywords = "Best Mehndi Artist in Agra, Jyoti Mehendi Agra, Top Bridal Mehndi Designer Agra, Home Service Mehndi Agra, Arabic Mehndi Artist", 
   ogImage = "https://jyotimehendi.in/logo.png",
   ogType = "website",
   schema

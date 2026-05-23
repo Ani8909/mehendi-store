@@ -1,4 +1,5 @@
 import SEO from "@/components/SEO";
+import { SkeletonGallery } from "@/components/Loader";
 import { useEffect, useState } from "react";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -11,7 +12,7 @@ export default function Gallery() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const categories = ["All", "Bridal", "Arabic", "Feet", "Party"];
+  const categories = ["All", "Bridal", "Arabic", "Fusion", "Mandala", "Geometric", "Minimalist", "Guest", "Modern"];
 
   useEffect(() => {
     async function fetchGallery() {
@@ -38,13 +39,13 @@ export default function Gallery() {
   return (
     <>
       <SEO 
-        title="Mehndi Design Gallery | Jyoti Mehendi Artist Agra"
-        description="Browse our extensive gallery of Bridal, Arabic, and custom Mehndi designs. Get inspired for your next event in Agra with Jyoti Mehendi Artist."
+        title="Latest Mehndi Design Gallery 2026 Agra | Jyoti Mehendi"
+        description="Browse the best mehndi design gallery in Agra. See Jyoti Mehendi's portfolio of Bridal, Arabic, Mandala, and modern henna masterpieces."
       />
 
       <div className="bg-[var(--color-background)] min-h-screen">
         {/* Hero Section */}
-        <div className="relative h-[35vh] md:h-[40vh] flex items-center justify-center overflow-hidden">
+        <div className="relative pt-20 pb-6 md:pt-28 md:pb-10 flex items-center justify-center overflow-hidden">
           <motion.div 
             initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}
@@ -92,15 +93,21 @@ export default function Gallery() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="flex flex-wrap justify-center gap-3 mb-16"
+            className="flex overflow-x-auto md:flex-wrap md:justify-center gap-3 mb-16 pb-2 px-1"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
+            <style jsx>{`
+              div::-webkit-scrollbar {
+                display: none;
+              }
+            `}</style>
             {categories.map(category => (
               <button
                 key={category}
                 onClick={() => setActiveCategory(category)}
-                className={`px-8 py-3 rounded-2xl text-sm font-bold transition-all duration-300 tracking-wide ${
+                className={`flex-shrink-0 whitespace-nowrap px-8 py-3 rounded-full text-sm font-bold transition-all duration-300 tracking-wide ${
                   activeCategory === category 
-                    ? "bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white shadow-[0_10px_20px_-5px_rgba(219,39,119,0.3)] scale-105" 
+                    ? "bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white shadow-[0_10px_20px_-5px_rgba(219,39,119,0.3)] md:scale-105" 
                     : "bg-white text-gray-500 hover:bg-pink-50 hover:text-[var(--color-primary)] shadow-sm"
                 }`}
               >
@@ -112,9 +119,9 @@ export default function Gallery() {
           {/* Masonry Grid */}
           {loading ? (
             <div className="columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6">
-              {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                <div key={i} className="animate-pulse bg-white rounded-3xl p-4 shadow-sm" style={{ height: `${Math.floor(Math.random() * 200) + 250}px` }}>
-                  <div className="w-full h-full bg-gray-100 rounded-2xl"></div>
+              {[250, 320, 280, 400, 300, 350, 260, 380].map((h, i) => (
+                <div key={i} className="break-inside-avoid shadow-sm" style={{ height: `${h}px` }}>
+                  <SkeletonGallery className="w-full h-full" />
                 </div>
               ))}
             </div>

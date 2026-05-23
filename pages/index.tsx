@@ -1,9 +1,10 @@
 import SEO from "@/components/SEO";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiCheckCircle, FiClock, FiCreditCard, FiMapPin, FiCheck, FiTruck, FiAward, FiHeart, FiStar, FiShoppingBag, FiArrowRight, FiEdit2, FiX } from "react-icons/fi";
+import { FiCheckCircle, FiClock, FiCreditCard, FiMapPin, FiCheck, FiTruck, FiAward, FiHeart, FiStar, FiShoppingBag, FiArrowRight, FiEdit2, FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import { collection, getDocs, limit, query, addDoc, serverTimestamp, orderBy } from "firebase/firestore";
+import { SkeletonCard, SkeletonReview } from "@/components/Loader";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/lib/authContext";
 import seedReviewsData from "@/data/reviews.json";
@@ -160,8 +161,8 @@ export default function Home() {
   return (
     <>
       <SEO 
-        title="Jyoti Mehendi Artist Agra | Best Bridal & Arabic Henna Designs"
-        description="Looking for the best Mehndi artist in Agra? Book Jyoti Mehendi for stunning Bridal, Arabic, and custom henna designs. Affordable packages & home service available."
+        title="Jyoti Mehendi Agra | #1 Best Bridal & Arabic Mehndi Artist in Agra"
+        description="Looking for the best Mehndi artist in Agra? Jyoti Mehendi offers top-rated Bridal, Arabic, and custom henna designs with express 20-min home service in Agra."
         schema={JSON.stringify({
           "@context": "https://schema.org",
           "@type": "LocalBusiness",
@@ -175,6 +176,12 @@ export default function Home() {
             "addressCountry": "IN"
           },
           "url": "https://jyotimehendi.in",
+          "sameAs": [
+            "https://www.instagram.com/mehndi_artist__jyoti?igsh=M200NHNncnZjOWQz",
+            "https://www.facebook.com/share/1AwpsjFKnh/",
+            "https://pin.it/2ZoiasFlN",
+            "https://youtube.com/@jyotimehndiartist-m9g?si=a_nUhTHsi0zv-4nX"
+          ],
           "priceRange": "₹500 - ₹5100",
           "openingHoursSpecification": [
             {
@@ -188,7 +195,18 @@ export default function Home() {
       />
 
       {/* Animated Hero Section */}
-      <section className="relative h-[85vh] min-h-[600px] w-full overflow-hidden bg-black">
+      {/* Animated Hero Section */}
+      <section 
+        className="relative h-[85vh] min-h-[600px] w-full overflow-hidden bg-black flex items-center justify-center cursor-default group"
+        onMouseMove={(e) => {
+          const { currentTarget, clientX, clientY } = e;
+          const { left, top, width, height } = currentTarget.getBoundingClientRect();
+          const x = (clientX - left) / width;
+          const y = (clientY - top) / height;
+          currentTarget.style.setProperty('--mouse-x', `${x * 100}%`);
+          currentTarget.style.setProperty('--mouse-y', `${y * 100}%`);
+        }}
+      >
         <AnimatePresence>
           {heroSlides.length > 0 ? (
             <motion.div
@@ -203,62 +221,88 @@ export default function Home() {
               <img
                 src={heroSlides[currentSlide].image}
                 alt={heroSlides[currentSlide].title}
-                className="hidden md:block w-full h-full object-cover animate-ken-burns"
+                className="hidden md:block w-full h-full object-cover animate-ken-burns transform-gpu"
               />
               {/* Mobile Image */}
               <img
                 src={heroSlides[currentSlide].mobileImage || heroSlides[currentSlide].image}
                 alt={heroSlides[currentSlide].title}
-                className="block md:hidden w-full h-full object-cover animate-ken-burns"
+                className="block md:hidden w-full h-full object-cover animate-ken-burns transform-gpu"
               />
               
-              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')] opacity-20 mix-blend-overlay"></div>
-              <div className="absolute inset-0 bg-gradient-to-b from-pink-500/20 via-transparent to-[var(--color-header)]/60 mix-blend-overlay"></div>
-              <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-header)]/90 via-black/30 to-transparent"></div>
+              {/* Elegant Vignette & Pink Overlays */}
+              <div className="absolute inset-0 bg-gradient-to-b from-pink-900/10 via-black/40 to-black/90"></div>
+              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')] opacity-[0.15] mix-blend-overlay"></div>
               
-              <div className="absolute inset-0 flex items-center justify-center text-center p-4 sm:p-6">
-                <div className="max-w-3xl flex flex-col items-center transform -translate-y-4 md:translate-y-0">
-                  {/* Premium gold branding tag */}
-                  <motion.span
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                    className="text-[9px] sm:text-xs md:text-sm font-bold uppercase tracking-[0.25em] text-amber-400 mb-3 md:mb-4 bg-black/55 backdrop-blur-md px-3.5 py-1.5 sm:px-5 sm:py-2.5 rounded-full border border-amber-500/20 shadow-lg flex items-center space-x-2"
-                  >
-                    <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-amber-500"></span>
-                    </span>
-                    <span>👑 AGRA'S PREMIER MEHNDI BOUTIQUE</span>
-                  </motion.span>
+              {/* Dynamic Interactive Hover Glow (Mouse Tracking) */}
+              <div 
+                className="absolute inset-0 z-0 pointer-events-none opacity-0 md:group-hover:opacity-100 mix-blend-screen transition-opacity duration-1000"
+                style={{
+                  background: 'radial-gradient(circle 500px at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(236, 72, 153, 0.4), transparent 70%)'
+                }}
+              ></div>
 
-                  <motion.h1
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                    className="text-2xl sm:text-4xl md:text-6xl font-serif font-bold text-white mb-3 md:mb-5 drop-shadow-[0_8px_30px_rgba(0,0,0,0.6)] leading-tight tracking-wide"
-                  >
-                    {heroSlides[currentSlide].title}
-                  </motion.h1>
+              <div className="absolute inset-0 flex items-center justify-center text-center p-4 sm:p-6 z-10">
+                <div className="max-w-4xl flex flex-col items-center">
+                  
+                  {/* Glassmorphic Top Badge with Line Reveal */}
+                  <div className="overflow-hidden mb-6">
+                    <motion.div
+                      initial={{ y: "100%" }}
+                      animate={{ y: "0%" }}
+                      transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                      className="inline-flex items-center space-x-2 bg-pink-900/30 backdrop-blur-xl px-5 sm:px-8 py-2.5 rounded-full border border-pink-400/20 shadow-[0_0_20px_rgba(236,72,153,0.3)]"
+                    >
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-pink-500"></span>
+                      </span>
+                      <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.3em] text-pink-100">
+                        Agra's Premier Mehndi Boutique
+                      </span>
+                    </motion.div>
+                  </div>
 
-                  <motion.p
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.7 }}
-                    className="text-xs sm:text-sm md:text-lg text-white/95 mb-6 md:mb-8 max-w-2xl mx-auto drop-shadow-md leading-relaxed bg-black/45 backdrop-blur-[4px] py-2 px-3.5 sm:py-3.5 sm:px-6 rounded-xl sm:rounded-2xl border border-white/10"
-                  >
-                    {heroSlides[currentSlide].subtitle}
-                  </motion.p>
+                  {/* Mask Reveal Title */}
+                  <div className="overflow-hidden mb-6 pb-2 px-4">
+                    <motion.h1
+                      initial={{ y: "100%" }}
+                      animate={{ y: "0%" }}
+                      transition={{ delay: 0.4, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                      className="text-4xl sm:text-5xl md:text-7xl font-serif font-bold text-white leading-[1.1] drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)]"
+                    >
+                      {heroSlides[currentSlide].title}
+                    </motion.h1>
+                  </div>
 
-                  <motion.div
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.9 }}
-                  >
-                    <Link href="/booking" className="bg-[var(--color-primary)] text-white px-6 py-3 sm:px-8 sm:py-4 rounded-full font-bold text-sm sm:text-lg hover:bg-[var(--color-header)] transition-all shadow-xl hover:scale-105 active:scale-95 border border-white/15 hover:border-pink-200 inline-block">
-                      Book Your Slot Now
-                    </Link>
-                  </motion.div>
+                  {/* Mask Reveal Subtitle */}
+                  <div className="overflow-hidden mb-12 max-w-2xl mx-auto px-4">
+                    <motion.p
+                      initial={{ y: "100%", opacity: 0 }}
+                      animate={{ y: "0%", opacity: 1 }}
+                      transition={{ delay: 0.6, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                      className="text-sm sm:text-base md:text-lg text-white/80 leading-relaxed font-light drop-shadow-md"
+                    >
+                      {heroSlides[currentSlide].subtitle}
+                    </motion.p>
+                  </div>
+
+                  {/* Shimmering Reveal Button */}
+                  <div className="overflow-hidden rounded-full p-[2px]">
+                    <motion.div
+                      initial={{ y: "100%", opacity: 0 }}
+                      animate={{ y: "0%", opacity: 1 }}
+                      transition={{ delay: 0.7, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                      className="relative group cursor-pointer"
+                    >
+                      <div className="absolute -inset-1 bg-gradient-to-r from-pink-600 to-pink-300 rounded-full blur opacity-50 group-hover:opacity-80 transition duration-500"></div>
+                      <Link href="/booking" className="relative flex items-center justify-center gap-3 bg-gradient-to-r from-[var(--color-primary)] to-pink-700 text-white px-10 py-4 sm:py-5 rounded-full font-bold text-base sm:text-lg transition-all border border-pink-400/40 overflow-hidden shadow-2xl hover:scale-105 active:scale-95">
+                        <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-shimmer pointer-events-none"></div>
+                        <span className="tracking-widest uppercase text-sm">Reserve Your Slot</span>
+                        <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                    </motion.div>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -267,16 +311,7 @@ export default function Home() {
           )}
         </AnimatePresence>
 
-        {/* Slider Indicators */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex space-x-3 z-20">
-          {heroSlides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              className={`h-2 transition-all rounded-full ${currentSlide === index ? "w-8 bg-white" : "w-2 bg-white/50"}`}
-            ></button>
-          ))}
-        </div>
+
       </section>
 
       {/* Agra Branding Strip */}
@@ -339,13 +374,7 @@ export default function Home() {
               );
             }) : (
               [1, 2, 3].map((i) => (
-                <div key={i} className="animate-pulse bg-white rounded-2xl overflow-hidden shadow-sm p-4">
-                  <div className="h-48 bg-gray-200 rounded-xl mb-4"></div>
-                  <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/2 mb-6"></div>
-                  <div className="h-10 bg-gray-200 rounded-full w-full"></div>
-                </div>
+                <SkeletonCard key={i} />
               ))
             )}
           </div>
@@ -560,18 +589,7 @@ export default function Home() {
               </motion.div>
             )) : (
               [1, 2].map((i) => (
-                <div key={i} className="animate-pulse bg-white rounded-[40px] shadow-2xl border border-pink-100 flex flex-col overflow-hidden h-[500px]">
-                  <div className="h-32 bg-amber-50 rounded-t-[40px]"></div>
-                  <div className="p-10 space-y-6">
-                    <div className="h-8 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-full"></div>
-                    <div className="space-y-4 pt-6">
-                      <div className="h-4 bg-gray-200 rounded w-full"></div>
-                      <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                      <div className="h-4 bg-gray-200 rounded w-4/5"></div>
-                    </div>
-                  </div>
-                </div>
+                <SkeletonCard key={i} />
               ))
             )}
           </div>
@@ -610,7 +628,9 @@ export default function Home() {
 
           {/* Horizontal scrollable container for reviews */}
           <div className="flex overflow-x-auto pb-8 -mx-4 px-4 snap-x snap-mandatory gap-6 hide-scrollbar">
-            {reviews.length > 0 ? reviews.map((t, i) => (
+            {loading ? (
+              [1, 2, 3].map(i => <div key={i} className="break-inside-avoid mb-6"><SkeletonReview /></div>)
+            ) : reviews.length > 0 ? reviews.map((t, i) => (
               <motion.div 
                 key={t.id || i}
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -635,7 +655,7 @@ export default function Home() {
                 </div>
               </motion.div>
             )) : (
-              <div className="w-full text-center py-12 text-gray-400">Loading reviews...</div>
+              <div className="w-full text-center py-12 text-gray-400">No reviews yet.</div>
             )}
           </div>
           

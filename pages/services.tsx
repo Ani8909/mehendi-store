@@ -1,5 +1,6 @@
 import SEO from "@/components/SEO";
 import Link from "next/link";
+import { SkeletonCard } from "@/components/Loader";
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -27,15 +28,19 @@ export default function Services() {
   return (
     <>
       <SEO 
-        title="Mehndi Services in Agra | Bridal, Party & Traditional Henna"
-        description="Explore our premium Mehndi services in Agra. From intricate bridal mehndi to quick party designs, our professional artists deliver perfection."
+        title="Bridal & Arabic Mehndi Services in Agra | Jyoti Mehendi"
+        description="Explore premium Mehndi services by Jyoti Mehendi Artist in Agra. Affordable pricing for Bridal, Arabic, Fusion, and minimal guest mehndi designs."
         schema={JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Service",
           "serviceType": "Mehndi Design",
           "provider": {
             "@type": "LocalBusiness",
-            "name": "Jyoti Mehendi Artist"
+            "name": "Jyoti Mehendi Artist",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Agra"
+            }
           },
           "areaServed": {
             "@type": "City",
@@ -43,7 +48,7 @@ export default function Services() {
           },
           "hasOfferCatalog": {
             "@type": "OfferCatalog",
-            "name": "Mehndi Services",
+            "name": "Mehndi Services in Agra",
             "itemListElement": [
               {
                 "@type": "Offer",
@@ -113,13 +118,7 @@ export default function Services() {
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="animate-pulse bg-white rounded-2xl p-4">
-                  <div className="bg-gray-200 h-48 rounded-xl mb-4"></div>
-                  <div className="bg-gray-200 h-6 w-2/3 rounded mb-2"></div>
-                  <div className="bg-gray-200 h-4 w-full rounded mb-2"></div>
-                  <div className="bg-gray-200 h-4 w-1/2 rounded mb-6"></div>
-                  <div className="bg-gray-200 h-10 w-full rounded-full"></div>
-                </div>
+                <SkeletonCard key={i} />
               ))}
             </div>
           ) : (

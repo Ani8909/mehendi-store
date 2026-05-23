@@ -2,7 +2,7 @@ import SEO from "@/components/SEO";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
-import { collection, getDocs, addDoc, query, where, serverTimestamp } from "firebase/firestore";
+import { collection, getDocs, addDoc, query, where, serverTimestamp, doc, getDoc } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { db, storage } from "@/lib/firebase";
 import { useAuth } from "@/lib/authContext";
@@ -23,6 +23,11 @@ export default function Booking() {
   const [imageURL, setImageURL] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [stepError, setStepError] = useState("");
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [couponError, setCouponError] = useState("");
+  const [isReturningCustomer, setIsReturningCustomer] = useState(false);
+  const [verifyingCoupon, setVerifyingCoupon] = useState(false);
 
   const { register, handleSubmit, watch, setValue, trigger, formState: { errors } } = useForm({
     defaultValues: {
@@ -68,6 +73,7 @@ export default function Booking() {
           if (router.query.package) setValue("packageName", router.query.package as string);
           if (router.query.price) setValue("packagePrice", router.query.price as string);
           if (router.query.area) setValue("address", `${router.query.area}, Agra`);
+          if (router.query.coupon) setCouponCode(router.query.coupon as string);
         }
       } catch (err) {
         console.error(err);
@@ -130,6 +136,56 @@ export default function Booking() {
     }
   };
 
+  const basePrice = Number(watch("packagePrice") || selectedService?.price || 0);
+  let finalPrice = basePrice;
+  let returningDiscount = 0;
+  let couponDiscount = 0;
+
+  if (isReturningCustomer && basePrice > 5000) {
+    returningDiscount = 100;
+    finalPrice -= returningDiscount;
+  }
+  
+  if (appliedCoupon) {
+    if (appliedCoupon.discountType === 'flat') {
+      couponDiscount = appliedCoupon.discountAmount;
+    } else if (appliedCoupon.discountType === 'percent') {
+      couponDiscount = (basePrice * appliedCoupon.discountAmount) / 100;
+    }
+    finalPrice -= couponDiscount;
+  }
+  if (finalPrice < 0) finalPrice = 0;
+
+  const applyCoupon = async () => {
+    if (!couponCode) return;
+    setVerifyingCoupon(true);
+    setCouponError("");
+    try {
+      const codeUpper = couponCode.toUpperCase().trim();
+      const docRef = doc(db, "coupons", codeUpper);
+      const snap = await getDoc(docRef);
+      if (snap.exists()) {
+        const data = snap.data();
+        if (!data.isActive) {
+          setCouponError("This coupon is no longer active.");
+          return;
+        }
+        if (data.minAmount && basePrice < data.minAmount) {
+          setCouponError(`Minimum booking of ₹${data.minAmount} required.`);
+          return;
+        }
+        setAppliedCoupon(data);
+        setCouponError("");
+      } else {
+        setCouponError("Invalid coupon code.");
+      }
+    } catch (e) {
+      setCouponError("Error verifying coupon.");
+    } finally {
+      setVerifyingCoupon(false);
+    }
+  };
+
   const onSubmit = async (data: any) => {
     if (step < 4) {
       setStep(step + 1);
@@ -148,7 +204,11 @@ export default function Booking() {
         address: data.address,
         serviceId: data.serviceId || "package",
         serviceTitle: data.packageName || selectedService?.title,
-        price: data.packagePrice || selectedService?.price,
+        price: finalPrice,
+        originalPrice: basePrice,
+        couponCode: appliedCoupon?.code || null,
+        couponDiscount: couponDiscount,
+        returningDiscount: returningDiscount,
         isPackage: !!data.packageName,
         additionalNotes: data.additionalNotes,
         inspirationPhoto: imageURL,
@@ -198,6 +258,19 @@ export default function Booking() {
     if (step === 3) {
       const isValid = await trigger(["name", "phone", "address", "additionalNotes"]);
       if (!isValid) return;
+      
+      // Check for returning customer
+      try {
+        const q = query(collection(db, "bookings"), where("phone", "==", watch("phone")));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          setIsReturningCustomer(true);
+        } else {
+          setIsReturningCustomer(false);
+        }
+      } catch (e) {
+        console.error("Error checking returning customer status:", e);
+      }
     }
     setStep(step + 1);
   };
@@ -214,8 +287,8 @@ export default function Booking() {
   return (
     <>
       <SEO 
-        title="Book Appointment | Jyoti Mehendi Artist Agra"
-        description="Book your Mehndi artist appointment online. Instant confirmation for bridal, party, and custom henna designs in Agra."
+        title="Book Best Mehndi Artist in Agra | Jyoti Mehendi Appointments"
+        description="Book your Mehndi appointment with Agra's favorite artist, Jyoti Mehendi. Available for home service in Kamla Nagar, Dayalbagh, Tajganj and more."
       />
 
       <div className="bg-[var(--color-background)] min-h-[90vh] py-12 px-4 sm:px-6 lg:px-8">
@@ -345,19 +418,41 @@ export default function Booking() {
                           <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center"><FiClock className="mr-2"/> Select Time Slot</label>
                           <div className="grid grid-cols-2 gap-3">
                             {timeSlots.map(slot => {
-                              const isBlocked = blockedSlots.includes(slot);
+                              // Check database blocked slots
+                              let isBlocked = blockedSlots.includes(slot);
+                              let blockReason = "Booked";
+                              
+                              // Check 12-hour advance booking rule
+                              if (!isBlocked && selectedDate) {
+                                const startTimeStr = slot.split(" - ")[0]; // "09:00 AM"
+                                const [timePart, period] = startTimeStr.split(" ");
+                                let [hours, minutes] = timePart.split(":").map(Number);
+                                if (period === "PM" && hours !== 12) hours += 12;
+                                if (period === "AM" && hours === 12) hours = 0;
+                                
+                                const [year, month, day] = selectedDate.split("-").map(Number);
+                                const slotDate = new Date(year, month - 1, day, hours, minutes, 0, 0);
+                                const now = new Date();
+                                
+                                const diffHours = (slotDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+                                if (diffHours < 12) {
+                                  isBlocked = true;
+                                  blockReason = "Needs 12h notice";
+                                }
+                              }
+
                               const isSelected = watch("timeSlot") === slot;
                               return (
                                 <div 
                                   key={slot}
                                   onClick={() => !isBlocked && setValue("timeSlot", slot)}
                                   className={`p-3 rounded-lg text-center text-sm font-medium transition-all ${
-                                    isBlocked ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 
+                                    isBlocked ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200' : 
                                     isSelected ? 'bg-[var(--color-primary)] text-white shadow-md cursor-pointer' : 
                                     'bg-white border border-gray-200 text-gray-600 hover:border-[var(--color-primary)] cursor-pointer'
                                   }`}
                                 >
-                                  {slot} {isBlocked && "(Booked)"}
+                                  {slot} {isBlocked && <span className="block text-[10px] mt-0.5 text-gray-400">({blockReason})</span>}
                                 </div>
                               );
                             })}
@@ -471,10 +566,53 @@ export default function Booking() {
                           <span className="font-semibold text-gray-800 text-right w-1/2 line-clamp-1" title={watch("address")}>{watch("address") || "N/A"}</span>
                         </div>
                         <div className="pt-3 mt-3 border-t border-pink-200 flex justify-between items-center">
-                          <span className="text-gray-600 font-medium">Total Amount</span>
-                          <span className="text-2xl font-bold text-[var(--color-primary)]">₹{watch("packagePrice") || selectedService?.price || 0}</span>
+                          <span className="text-gray-600 font-medium">Subtotal</span>
+                          <span className="text-lg font-bold text-gray-800">₹{basePrice}</span>
+                        </div>
+                        
+                        {/* Discount Display */}
+                        {returningDiscount > 0 && (
+                          <div className="flex justify-between items-center text-green-600">
+                            <span className="font-medium text-xs">Loyalty Discount (Returning)</span>
+                            <span className="font-bold text-sm">-₹{returningDiscount}</span>
+                          </div>
+                        )}
+                        {couponDiscount > 0 && (
+                          <div className="flex justify-between items-center text-green-600">
+                            <span className="font-medium text-xs">Coupon ({appliedCoupon?.code})</span>
+                            <span className="font-bold text-sm">-₹{couponDiscount}</span>
+                          </div>
+                        )}
+                        
+                        <div className="pt-3 mt-3 border-t border-pink-200 flex justify-between items-center">
+                          <span className="text-gray-800 font-bold">Final Amount</span>
+                          <span className="text-2xl font-bold text-[var(--color-primary)]">₹{finalPrice}</span>
                         </div>
                       </div>
+                    </div>
+                    
+                    {/* Coupon Input Area */}
+                    <div className="bg-white border border-gray-200 rounded-xl p-4 mb-6 shadow-sm">
+                      <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Have a Coupon Code?</label>
+                      <div className="flex space-x-2">
+                        <input 
+                          type="text" 
+                          value={couponCode}
+                          onChange={e => setCouponCode(e.target.value.toUpperCase())}
+                          placeholder="ENTER CODE" 
+                          className="flex-1 p-3 border border-gray-200 rounded-lg text-sm font-bold uppercase focus:border-[var(--color-primary)] outline-none"
+                          disabled={!!appliedCoupon}
+                        />
+                        {appliedCoupon ? (
+                          <button type="button" onClick={() => { setAppliedCoupon(null); setCouponCode(""); }} className="px-4 py-2 bg-red-50 text-red-600 font-bold text-sm rounded-lg border border-red-100 hover:bg-red-100 transition-colors">Remove</button>
+                        ) : (
+                          <button type="button" onClick={applyCoupon} disabled={verifyingCoupon || !couponCode} className="px-6 py-2 bg-[var(--color-header)] text-white font-bold text-sm rounded-lg hover:bg-[var(--color-primary)] transition-colors disabled:opacity-50">
+                            {verifyingCoupon ? "..." : "Apply"}
+                          </button>
+                        )}
+                      </div>
+                      {couponError && <p className="text-red-500 text-xs mt-2 font-medium">{couponError}</p>}
+                      {appliedCoupon && <p className="text-green-600 text-xs mt-2 font-bold">Coupon applied successfully!</p>}
                     </div>
                     
                     <div className="bg-pink-50 text-[var(--color-primary)] border border-pink-100/50 text-sm p-4 rounded-2xl flex items-start space-x-3 mb-6 font-semibold">

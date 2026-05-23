@@ -17,7 +17,7 @@ import {
   Legend,
   ArcElement
 } from "chart.js";
-import { FiUsers, FiCalendar, FiDollarSign, FiLogOut, FiImage, FiLayout, FiPieChart, FiX, FiUploadCloud, FiClock, FiCheck, FiActivity } from "react-icons/fi";
+import { FiUsers, FiCalendar, FiDollarSign, FiLogOut, FiImage, FiLayout, FiPieChart, FiX, FiUploadCloud, FiClock, FiCheck, FiActivity, FiTag } from "react-icons/fi";
 import { FullScreenLoader } from "@/components/Loader";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
@@ -26,7 +26,7 @@ export default function AdminDashboard() {
   const { user, userData, loading: authLoading, signOut } = useAuth();
   const router = useRouter();
 
-  const [activeTab, setActiveTab] = useState<"bookings" | "partners" | "reports" | "gallery" | "hero" | "express" | "packages" | "services">("bookings");
+  const [activeTab, setActiveTab] = useState<"bookings" | "partners" | "reports" | "gallery" | "hero" | "express" | "packages" | "finances" | "services" | "coupons">("bookings");
   const [bookings, setBookings] = useState<any[]>([]);
   const [partners, setPartners] = useState<any[]>([]);
   const [services, setServices] = useState<any[]>([]);
@@ -35,7 +35,20 @@ export default function AdminDashboard() {
   const [expressZones, setExpressZones] = useState<any[]>([]);
   const [eventPackages, setEventPackages] = useState<any[]>([]);
   const [packageEnquiries, setPackageEnquiries] = useState<any[]>([]);
+  const [revenueTransactions, setRevenueTransactions] = useState<any[]>([]);
+  const [coupons, setCoupons] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Coupon States
+  const [newCouponCode, setNewCouponCode] = useState("");
+  const [newCouponDiscount, setNewCouponDiscount] = useState("");
+  const [newCouponType, setNewCouponType] = useState("flat");
+  const [newCouponMin, setNewCouponMin] = useState("0");
+
+  // Finances States
+  const [newTransactionAmount, setNewTransactionAmount] = useState("");
+  const [newTransactionReason, setNewTransactionReason] = useState("");
+
 
   // Upload States
   const [uploading, setUploading] = useState(false);
@@ -129,6 +142,19 @@ export default function AdminDashboard() {
     }, (err) => console.error("Services sync error:", err));
     unsubscribes.push(unsubServices);
 
+    // 10. Live Revenue Transactions Listener
+    const revenueQuery = query(collection(db, "revenue_transactions"), orderBy("createdAt", "desc"));
+    const unsubRevenue = onSnapshot(revenueQuery, (snapshot) => {
+      setRevenueTransactions(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+    }, (err) => console.error("Revenue sync error:", err));
+    unsubscribes.push(unsubRevenue);
+
+    // 11. Live Coupons Listener
+    const unsubCoupons = onSnapshot(collection(db, "coupons"), (snapshot) => {
+      setCoupons(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+    }, (err) => console.error("Coupons sync error:", err));
+    unsubscribes.push(unsubCoupons);
+
     // Clean up all active listeners on unmount or session switch
     return () => {
       unsubscribes.forEach(unsub => unsub());
@@ -183,6 +209,48 @@ export default function AdminDashboard() {
         setUploading(false);
       }
     };
+  };
+
+  const handleAddCoupon = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCouponCode || !newCouponDiscount) return;
+    try {
+      const codeUpper = newCouponCode.toUpperCase().trim();
+      const couponData = {
+        code: codeUpper,
+        discountAmount: Number(newCouponDiscount),
+        discountType: newCouponType,
+        minAmount: Number(newCouponMin),
+        isActive: true,
+        createdAt: serverTimestamp()
+      };
+      await setDoc(doc(db, "coupons", codeUpper), couponData);
+      alert("Coupon added successfully!");
+      setNewCouponCode("");
+      setNewCouponDiscount("");
+      setNewCouponMin("0");
+      setNewCouponType("flat");
+    } catch (err: any) {
+      console.error(err);
+      alert("Failed to add coupon: " + err.message);
+    }
+  };
+
+  const handleToggleCoupon = async (couponId: string, currentStatus: boolean) => {
+    try {
+      await updateDoc(doc(db, "coupons", couponId), { isActive: !currentStatus });
+    } catch (err) {
+      alert("Failed to toggle coupon status");
+    }
+  };
+
+  const handleDeleteCoupon = async (couponId: string) => {
+    if (!confirm("Are you sure you want to delete this coupon?")) return;
+    try {
+      await deleteDoc(doc(db, "coupons", couponId));
+    } catch (err) {
+      alert("Failed to delete coupon");
+    }
   };
 
   const handleAddPartner = async (e: React.FormEvent) => {
@@ -520,9 +588,54 @@ export default function AdminDashboard() {
   if (authLoading || loading) return <FullScreenLoader />;
   if (!user || userData?.role !== "admin") return null;
 
+  const handleAddRevenueTransaction = async (type: 'manual_adjustment' | 'reset', amount: number, reason: string) => {
+    try {
+      await addDoc(collection(db, "revenue_transactions"), {
+        type,
+        amount,
+        reason,
+        addedBy: userData?.email || "Admin",
+        createdAt: serverTimestamp()
+      });
+      if (type === 'manual_adjustment') {
+        setNewTransactionAmount("");
+        setNewTransactionReason("");
+        alert("Transaction added successfully!");
+      } else {
+        alert("Revenue reset successfully!");
+      }
+    } catch (err: any) {
+      alert("Failed to add transaction: " + err.message);
+    }
+  };
+
+  const handleDownloadTransactions = () => {
+    const headers = ["Date", "Type", "Amount", "Reason", "Added By"];
+    const rows = revenueTransactions.map(tx => [
+      tx.createdAt ? new Date(tx.createdAt.seconds * 1000).toLocaleString() : "Pending",
+      tx.type,
+      tx.amount,
+      tx.reason,
+      tx.addedBy
+    ]);
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "revenue_transactions.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // Chart Data preparation
+  const bookingRevenue = bookings.reduce((a, b) => a + Number(b.price || 0), 0);
+  const manualRevenue = revenueTransactions.reduce((a, tx) => a + Number(tx.amount || 0), 0);
+  const totalRevenue = bookingRevenue + manualRevenue;
+
   const revenueByStatus = bookings.reduce((acc, curr) => {
-    acc[curr.status] = (acc[curr.status] || 0) + (curr.price || 0);
+    acc[curr.status] = (acc[curr.status] || 0) + Number(curr.price || 0);
     return acc;
   }, {} as Record<string, number>);
 
@@ -587,7 +700,7 @@ export default function AdminDashboard() {
             </div>
             <div className="bg-white rounded-xl md:rounded-2xl shadow-sm p-3 md:p-6 border border-gray-100 flex flex-col md:flex-row items-center md:items-center space-y-2 md:space-y-0 md:space-x-4 text-center md:text-left">
               <div className="w-10 h-10 md:w-14 md:h-14 bg-green-50 text-green-500 rounded-lg md:rounded-xl flex items-center justify-center text-lg md:text-2xl"><FiDollarSign /></div>
-              <div><p className="text-gray-400 md:text-gray-500 text-[9px] md:text-sm font-bold uppercase tracking-wider md:normal-case">Revenue</p><p className="text-base md:text-2xl font-black text-gray-800">₹{bookings.reduce((a, b) => a + (b.price || 0), 0)}</p></div>
+              <div><p className="text-gray-400 md:text-gray-500 text-[9px] md:text-sm font-bold uppercase tracking-wider md:normal-case">Revenue</p><p className="text-base md:text-2xl font-black text-gray-800">₹{totalRevenue}</p></div>
             </div>
             <div className="bg-white rounded-xl md:rounded-2xl shadow-sm p-3 md:p-6 border border-gray-100 flex flex-col md:flex-row items-center md:items-center space-y-2 md:space-y-0 md:space-x-4 text-center md:text-left">
               <div className="w-10 h-10 md:w-14 md:h-14 bg-purple-50 text-purple-500 rounded-lg md:rounded-xl flex items-center justify-center text-lg md:text-2xl"><FiUsers /></div>
@@ -598,10 +711,22 @@ export default function AdminDashboard() {
           <div className="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden min-h-[60vh]">
             
             {/* Tabs */}
-            <div className="flex border-b border-gray-200 overflow-x-auto scrollbar-none scroll-smooth" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            <div className="flex border-b border-gray-200 overflow-x-auto scroll-smooth custom-scrollbar pb-1">
               <style jsx>{`
-                div::-webkit-scrollbar {
-                  display: none;
+                .custom-scrollbar::-webkit-scrollbar {
+                  height: 8px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                  background: #fdf2f8; 
+                  border-radius: 8px;
+                  margin: 0 4px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                  background: #fbcfe8; 
+                  border-radius: 8px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                  background: #f472b6; 
                 }
               `}</style>
               {[
@@ -612,6 +737,8 @@ export default function AdminDashboard() {
                 { id: "hero", label: "Hero Slider", icon: <FiLayout/> },
                 { id: "express", label: "Express Zones", icon: <FiClock/> },
                 { id: "packages", label: "Event Packages", icon: <FiUsers/> },
+                { id: "coupons", label: "Coupons", icon: <FiTag/> },
+                { id: "finances", label: "Finances", icon: <FiDollarSign/> },
                 { id: "reports", label: "Reports", icon: <FiPieChart/> },
               ].map((tab) => (
                 <button
@@ -1314,8 +1441,12 @@ export default function AdminDashboard() {
                         <select value={newCategory} onChange={(e) => setNewCategory(e.target.value)} className="w-full p-2.5 border border-gray-300 rounded-lg text-sm bg-white">
                           <option>Bridal</option>
                           <option>Arabic</option>
-                          <option>Party</option>
-                          <option>Feet</option>
+                          <option>Fusion</option>
+                          <option>Mandala</option>
+                          <option>Geometric</option>
+                          <option>Minimalist</option>
+                          <option>Guest</option>
+                          <option>Modern</option>
                         </select>
                       </div>
                       <button 
@@ -1678,6 +1809,202 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               )}
+
+              {/* COUPONS TAB */}
+              {activeTab === "coupons" && (
+                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-pink-100/50">
+                    <h3 className="text-2xl font-bold text-[var(--color-header)] font-serif mb-6 flex items-center">
+                      <FiTag className="mr-3 text-[var(--color-primary)]" />
+                      Manage Coupons
+                    </h3>
+                    
+                    <form onSubmit={handleAddCoupon} className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end mb-8 bg-gray-50 p-6 rounded-2xl">
+                      <div className="md:col-span-1">
+                        <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Coupon Code</label>
+                        <input type="text" value={newCouponCode} onChange={e => setNewCouponCode(e.target.value)} placeholder="e.g. DIWALI50" className="w-full p-4 border-2 border-white rounded-xl shadow-sm focus:border-pink-300 transition-all uppercase" required />
+                      </div>
+                      <div className="md:col-span-1">
+                        <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Type</label>
+                        <select value={newCouponType} onChange={e => setNewCouponType(e.target.value)} className="w-full p-4 border-2 border-white rounded-xl shadow-sm focus:border-pink-300 transition-all bg-white font-bold text-gray-700">
+                          <option value="flat">Flat (₹)</option>
+                          <option value="percent">Percent (%)</option>
+                        </select>
+                      </div>
+                      <div className="md:col-span-1">
+                        <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Discount</label>
+                        <input type="number" value={newCouponDiscount} onChange={e => setNewCouponDiscount(e.target.value)} placeholder={newCouponType === 'flat' ? "₹ Amount" : "% Amount"} className="w-full p-4 border-2 border-white rounded-xl shadow-sm focus:border-pink-300 transition-all" required />
+                      </div>
+                      <div className="md:col-span-1">
+                        <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Min. Booking</label>
+                        <input type="number" value={newCouponMin} onChange={e => setNewCouponMin(e.target.value)} placeholder="0" className="w-full p-4 border-2 border-white rounded-xl shadow-sm focus:border-pink-300 transition-all" />
+                      </div>
+                      <div className="md:col-span-1">
+                        <button type="submit" className="w-full bg-[var(--color-primary)] text-white p-4 rounded-xl font-bold shadow-md hover:bg-[var(--color-header)] hover:-translate-y-0.5 transition-all">
+                          + Add Coupon
+                        </button>
+                      </div>
+                    </form>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {coupons.map((coupon) => (
+                        <div key={coupon.id} className={`p-6 rounded-2xl border-2 transition-all relative ${coupon.isActive ? 'border-pink-200 bg-white shadow-sm' : 'border-gray-200 bg-gray-50 opacity-70'}`}>
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                              <span className="bg-pink-100 text-[var(--color-primary)] text-xs font-black tracking-widest uppercase px-3 py-1 rounded-full">{coupon.code}</span>
+                            </div>
+                            <button 
+                              onClick={() => setDeleteModal({ type: "coupon", id: coupon.id })}
+                              className="text-gray-400 hover:text-red-500 transition-colors p-2 bg-white rounded-full shadow-sm"
+                            >
+                              <FiX />
+                            </button>
+                          </div>
+                          
+                          <div className="mb-4">
+                            <span className="text-3xl font-black text-gray-800">
+                              {coupon.discountType === 'flat' ? `₹${coupon.discountAmount}` : `${coupon.discountAmount}%`}
+                            </span>
+                            <span className="text-sm font-bold text-gray-500 ml-1">OFF</span>
+                          </div>
+                          
+                          <p className="text-xs text-gray-500 mb-4 font-medium">
+                            Min. Booking: <strong className="text-gray-800">₹{coupon.minAmount || 0}</strong>
+                          </p>
+
+                          <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
+                            <span className="text-xs font-bold text-gray-500 uppercase">Status:</span>
+                            <button 
+                              onClick={() => handleToggleCoupon(coupon.id, coupon.isActive)}
+                              className={`text-xs font-bold px-4 py-2 rounded-lg transition-colors ${coupon.isActive ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}`}
+                            >
+                              {coupon.isActive ? "ACTIVE" : "INACTIVE"}
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                      {coupons.length === 0 && (
+                        <div className="col-span-full py-12 text-center text-gray-400 border-2 border-dashed border-gray-200 rounded-2xl">
+                          <FiTag className="mx-auto text-4xl mb-3 opacity-20" />
+                          <p>No coupons created yet</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* FINANCES TAB */}
+              {activeTab === "finances" && (
+                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-xl font-bold text-gray-800 font-serif">Revenue & Finances</h3>
+                      <button 
+                        onClick={() => {
+                          if (confirm("Are you sure you want to reset revenue? This will add a negative transaction to zero out the total.")) {
+                            handleAddRevenueTransaction('reset', -totalRevenue, 'Revenue Reset');
+                          }
+                        }}
+                        className="text-xs bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1 rounded-lg transition-colors font-bold border border-red-200"
+                      >
+                        Reset Revenue
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                      <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 text-center">
+                        <p className="text-gray-500 text-sm font-bold uppercase tracking-widest mb-2">Booking Revenue</p>
+                        <p className="text-3xl font-black text-gray-800">₹{bookingRevenue}</p>
+                      </div>
+                      <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 text-center">
+                        <p className="text-gray-500 text-sm font-bold uppercase tracking-widest mb-2">Adjustments</p>
+                        <p className="text-3xl font-black text-gray-800">₹{manualRevenue}</p>
+                      </div>
+                      <div className="bg-green-50 p-6 rounded-2xl border border-green-100 text-center shadow-sm">
+                        <p className="text-green-600 text-sm font-bold uppercase tracking-widest mb-2">Net Total Revenue</p>
+                        <p className="text-4xl font-black text-green-700">₹{totalRevenue}</p>
+                      </div>
+                    </div>
+
+                    <div className="bg-pink-50/50 p-6 rounded-2xl border border-pink-100 mb-8">
+                      <h4 className="font-bold text-gray-800 mb-4">Add Manual Adjustment</h4>
+                      <div className="flex flex-col md:flex-row gap-4">
+                        <input 
+                          type="number" 
+                          value={newTransactionAmount}
+                          onChange={(e) => setNewTransactionAmount(e.target.value)}
+                          placeholder="Amount (e.g. 500 or -500)"
+                          className="flex-1 p-3 border border-white bg-white rounded-xl focus:ring-[var(--color-primary)] outline-none shadow-sm"
+                        />
+                        <input 
+                          type="text" 
+                          value={newTransactionReason}
+                          onChange={(e) => setNewTransactionReason(e.target.value)}
+                          placeholder="Reason (e.g. Offline Payment, Refund)"
+                          className="flex-[2] p-3 border border-white bg-white rounded-xl focus:ring-[var(--color-primary)] outline-none shadow-sm"
+                        />
+                        <button 
+                          onClick={() => {
+                            if (!newTransactionAmount || !newTransactionReason) return alert("Please fill both amount and reason");
+                            handleAddRevenueTransaction('manual_adjustment', Number(newTransactionAmount), newTransactionReason);
+                          }}
+                          className="bg-[var(--color-primary)] text-white px-8 py-3 rounded-xl font-bold hover:bg-[var(--color-header)] transition-all shadow-md"
+                        >
+                          Add Record
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="flex justify-between items-center mb-4">
+                        <h4 className="font-bold text-gray-800">Transaction History</h4>
+                        <button 
+                          onClick={handleDownloadTransactions}
+                          className="flex items-center gap-2 text-xs font-bold text-[var(--color-primary)] hover:underline"
+                        >
+                          <FiUploadCloud /> Download CSV
+                        </button>
+                      </div>
+                      <div className="overflow-x-auto bg-white border border-gray-100 rounded-xl">
+                        <table className="w-full text-left text-sm">
+                          <thead className="bg-gray-50 text-gray-500">
+                            <tr>
+                              <th className="p-4 font-medium">Date</th>
+                              <th className="p-4 font-medium">Type</th>
+                              <th className="p-4 font-medium">Amount</th>
+                              <th className="p-4 font-medium">Reason</th>
+                              <th className="p-4 font-medium">Added By</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {revenueTransactions.map(tx => (
+                              <tr key={tx.id} className="hover:bg-gray-50">
+                                <td className="p-4 text-xs text-gray-500">{tx.createdAt ? new Date(tx.createdAt.seconds * 1000).toLocaleString() : "Just now"}</td>
+                                <td className="p-4">
+                                  <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${tx.type === 'reset' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'}`}>
+                                    {tx.type.replace('_', ' ')}
+                                  </span>
+                                </td>
+                                <td className={`p-4 font-bold ${tx.amount < 0 ? 'text-red-500' : 'text-green-500'}`}>
+                                  {tx.amount > 0 ? '+' : ''}₹{tx.amount}
+                                </td>
+                                <td className="p-4 text-gray-700">{tx.reason}</td>
+                                <td className="p-4 text-xs text-gray-500">{tx.addedBy}</td>
+                              </tr>
+                            ))}
+                            {revenueTransactions.length === 0 && (
+                              <tr>
+                                <td colSpan={5} className="p-8 text-center text-gray-400">No manual transactions yet.</td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1745,8 +2072,12 @@ export default function AdminDashboard() {
                     <select value={editModal.data.category || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, category: e.target.value } })} className="w-full p-3 border rounded-xl">
                       <option>Bridal</option>
                       <option>Arabic</option>
-                      <option>Party</option>
-                      <option>Feet</option>
+                      <option>Fusion</option>
+                      <option>Mandala</option>
+                      <option>Geometric</option>
+                      <option>Minimalist</option>
+                      <option>Guest</option>
+                      <option>Modern</option>
                     </select>
                   </div>
                 )}
@@ -1903,6 +2234,36 @@ export default function AdminDashboard() {
                     <div>
                       <label className="block text-sm font-bold text-gray-700 mb-1">Description</label>
                       <textarea value={editModal.data.description || ""} onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, description: e.target.value } })} className="w-full p-3 border rounded-xl" rows={3} required />
+                    </div>
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <label className="block text-sm font-bold text-gray-700">Features (Key Points)</label>
+                        <button type="button" onClick={() => {
+                          const newFeatures = editModal.data.features ? [...editModal.data.features] : [];
+                          newFeatures.push("");
+                          setEditModal({ ...editModal, data: { ...editModal.data, features: newFeatures } });
+                        }} className="text-xs bg-amber-500 text-white px-2 py-1 rounded font-bold">+ Add</button>
+                      </div>
+                      <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
+                        {(editModal.data.features || []).map((feat: string, idx: number) => (
+                          <div key={idx} className="flex gap-2">
+                            <input 
+                              type="text" 
+                              value={feat} 
+                              onChange={(e) => {
+                                const newFeatures = [...editModal.data.features];
+                                newFeatures[idx] = e.target.value;
+                                setEditModal({ ...editModal, data: { ...editModal.data, features: newFeatures } });
+                              }} 
+                              className="flex-1 p-2 border rounded-lg text-sm" 
+                            />
+                            <button type="button" onClick={() => {
+                              const newFeatures = editModal.data.features.filter((_: string, i: number) => i !== idx);
+                              setEditModal({ ...editModal, data: { ...editModal.data, features: newFeatures } });
+                            }} className="text-red-500 hover:text-red-700 font-bold px-2">X</button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </>
                 )}
