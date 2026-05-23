@@ -4,11 +4,13 @@ import { FiGift, FiX, FiTag } from "react-icons/fi";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import CountdownTimer from "./CountdownTimer";
+import Link from "next/link";
 
 export default function FlashOfferWidget() {
   const [flashOffer, setFlashOffer] = useState<any>(null);
   const [isExpanded, setIsExpanded] = useState(true);
   const [isDismissed, setIsDismissed] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     // Check if dismissed in this session
@@ -45,12 +47,18 @@ export default function FlashOfferWidget() {
     sessionStorage.setItem("flashOfferDismissed", "true");
   };
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(flashOffer.code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const handleToggle = () => {
     setIsExpanded(!isExpanded);
   };
 
   return (
-    <div className="fixed bottom-6 left-6 z-[100] flex flex-col items-start">
+    <div className="fixed bottom-[90px] sm:bottom-6 left-4 sm:left-6 z-[100] flex flex-col items-start">
       <AnimatePresence>
         {isExpanded && (
           <motion.div
@@ -90,9 +98,20 @@ export default function FlashOfferWidget() {
 
             <div className="flex flex-col items-center">
               <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Use Promo Code</p>
-              <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white w-full py-2.5 rounded-xl text-center font-black tracking-widest shadow-md">
-                {flashOffer.code}
-              </div>
+              <button 
+                onClick={handleCopy}
+                className="bg-gradient-to-r from-pink-500 to-rose-500 text-white w-full py-2.5 rounded-xl text-center font-black tracking-widest shadow-md hover:opacity-90 active:scale-95 transition-all"
+              >
+                {copied ? "COPIED!" : flashOffer.code}
+              </button>
+              
+              <Link 
+                href={`/booking?coupon=${flashOffer.code}`}
+                onClick={() => setIsExpanded(false)}
+                className="mt-3 bg-black text-white w-full py-3 rounded-xl text-center font-bold text-sm shadow-lg hover:bg-gray-800 transition-colors uppercase tracking-wider"
+              >
+                Claim This Offer
+              </Link>
             </div>
           </motion.div>
         )}
