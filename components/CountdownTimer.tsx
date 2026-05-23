@@ -78,8 +78,8 @@ export default function CountdownTimer({ targetDate, onExpire, className = "", t
 
   return (
     <div className={`inline-flex items-center p-3 md:p-4 rounded-2xl md:rounded-3xl shadow-lg border backdrop-blur-md ${themes[theme]} ${className}`}>
-      <div className="hidden sm:flex items-center justify-center bg-white/20 p-3 rounded-full mr-4 shadow-inner">
-        <FiClock className="text-2xl animate-pulse" />
+      <div className="hidden sm:flex items-center justify-center bg-white/40 p-2.5 rounded-full mr-4 shadow-inner border border-white/50 backdrop-blur-md">
+        <img src="/logo.png" alt="Jyoti Mehendi Logo" className="w-8 h-8 object-contain animate-pulse drop-shadow-sm" />
       </div>
       
       <div className="flex items-center space-x-2 md:space-x-4">
