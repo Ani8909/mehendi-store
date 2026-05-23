@@ -77,18 +77,18 @@ export default function CountdownTimer({ targetDate, onExpire, className = "", t
   };
 
   return (
-    <div className={`inline-flex items-center p-2 sm:p-3 md:p-4 rounded-2xl md:rounded-3xl shadow-lg border backdrop-blur-md ${themes[theme]} ${className}`}>
-      <div className="flex items-center justify-center bg-white/40 p-1.5 sm:p-2.5 rounded-full mr-2 sm:mr-4 shadow-inner border border-white/50 backdrop-blur-md shrink-0">
+    <div className={`inline-flex items-center p-2 sm:p-3 md:p-4 rounded-xl sm:rounded-2xl md:rounded-3xl shadow-lg border backdrop-blur-md ${themes[theme]} ${className}`}>
+      <div className="flex items-center justify-center bg-white/40 p-1.5 sm:p-2.5 rounded-full mr-1 sm:mr-3 shadow-inner border border-white/50 backdrop-blur-md shrink-0">
         <img src="/logo.png" alt="Jyoti Mehendi Logo" className="w-5 h-5 sm:w-8 sm:h-8 object-contain animate-pulse drop-shadow-sm" />
       </div>
       
       <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4">
         <TimeBlock value={timeLeft.days} label="Days" blockTheme={blockThemes[theme]} labelTheme={labelThemes[theme]} />
-        <span className="text-xl md:text-2xl font-bold opacity-50 mb-4">:</span>
+        <span className="text-lg sm:text-xl md:text-2xl font-bold opacity-50 mb-3 sm:mb-4">:</span>
         <TimeBlock value={timeLeft.hours} label="Hours" blockTheme={blockThemes[theme]} labelTheme={labelThemes[theme]} />
-        <span className="text-xl md:text-2xl font-bold opacity-50 mb-4">:</span>
+        <span className="text-lg sm:text-xl md:text-2xl font-bold opacity-50 mb-3 sm:mb-4">:</span>
         <TimeBlock value={timeLeft.minutes} label="Mins" blockTheme={blockThemes[theme]} labelTheme={labelThemes[theme]} />
-        <span className="text-xl md:text-2xl font-bold opacity-50 mb-4 animate-pulse">:</span>
+        <span className="text-lg sm:text-xl md:text-2xl font-bold opacity-50 mb-3 sm:mb-4 animate-pulse">:</span>
         <TimeBlock value={timeLeft.seconds} label="Secs" blockTheme={blockThemes[theme]} labelTheme={labelThemes[theme]} />
       </div>
     </div>
@@ -97,8 +97,8 @@ export default function CountdownTimer({ targetDate, onExpire, className = "", t
 
 function TimeBlock({ value, label, blockTheme, labelTheme }: { value: number, label: string, blockTheme: string, labelTheme: string }) {
   return (
-    <div className="flex flex-col items-center min-w-[50px] md:min-w-[60px]">
-      <div className={`w-full flex items-center justify-center h-12 md:h-14 rounded-xl shadow-inner font-mono text-2xl md:text-3xl font-black tracking-tighter ${blockTheme} relative overflow-hidden`}>
+    <div className="flex flex-col items-center min-w-[36px] sm:min-w-[48px] md:min-w-[60px]">
+      <div className={`w-full flex items-center justify-center h-10 sm:h-12 md:h-14 rounded-lg sm:rounded-xl shadow-inner font-mono text-lg sm:text-2xl md:text-3xl font-black tracking-tighter ${blockTheme} relative overflow-hidden`}>
         <AnimatePresence mode="popLayout">
           <motion.span
             key={value}
@@ -112,7 +112,7 @@ function TimeBlock({ value, label, blockTheme, labelTheme }: { value: number, la
           </motion.span>
         </AnimatePresence>
       </div>
-      <span className={`text-[9px] md:text-[11px] font-bold uppercase tracking-widest mt-2 ${labelTheme}`}>
+      <span className={`text-[8px] sm:text-[9px] md:text-[11px] font-bold uppercase tracking-widest mt-1.5 sm:mt-2 ${labelTheme}`}>
         {label}
       </span>
     </div>
