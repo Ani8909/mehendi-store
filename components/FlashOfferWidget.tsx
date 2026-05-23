@@ -83,6 +83,13 @@ export default function FlashOfferWidget() {
               <FiX size={16} />
             </button>
 
+            {/* Branding Header */}
+            <div className="flex items-center justify-center mb-5 mt-1">
+              <span className="text-[9px] font-black uppercase tracking-[0.25em] text-pink-600 bg-pink-50/80 px-4 py-1.5 rounded-full border border-pink-100 shadow-sm flex items-center gap-1.5">
+                <span className="text-amber-500 text-xs">✨</span> Jyoti Mehndi Exclusive
+              </span>
+            </div>
+
             <div className="flex items-center space-x-2 mb-3">
               <div className="bg-pink-100 text-[var(--color-primary)] p-2 rounded-xl">
                 <FiTag size={16} />
@@ -129,17 +136,17 @@ export default function FlashOfferWidget() {
             initial={{ x: -50 }}
             animate={{ x: 0 }}
             exit={{ x: -50 }}
-            whileHover={{ scale: 1.05, x: 5 }}
+            whileHover={{ scale: 1.05, x: 3 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleToggle}
-            className="absolute left-0 top-0 bg-gradient-to-r from-[var(--color-primary)] to-pink-600 text-white py-3.5 pl-3 pr-5 rounded-r-2xl shadow-[8px_0_20px_rgba(236,72,153,0.3)] flex items-center justify-center group"
+            className="absolute left-0 top-0 bg-gradient-to-r from-[var(--color-primary)] to-pink-500 text-white py-2 pl-1.5 pr-3 rounded-r-full shadow-[4px_0_15px_rgba(236,72,153,0.3)] flex items-center justify-center group"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-pink-600 to-pink-300 rounded-r-2xl blur opacity-40 group-hover:opacity-70 transition duration-500"></div>
-            <FiGift size={22} className="animate-pulse relative z-10" />
+            <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-pink-300 rounded-r-full blur opacity-50 group-hover:opacity-80 transition duration-500"></div>
+            <FiGift size={18} className="animate-pulse relative z-10" />
             
-            <span className="absolute -top-1 -right-1 flex h-3 w-3">
+            <span className="absolute top-0 right-0 flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500 border-2 border-white"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500 border border-white"></span>
             </span>
           </motion.button>
         )}
