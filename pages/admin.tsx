@@ -1854,7 +1854,7 @@ export default function AdminDashboard() {
                               <span className="bg-pink-100 text-[var(--color-primary)] text-xs font-black tracking-widest uppercase px-3 py-1 rounded-full">{coupon.code}</span>
                             </div>
                             <button 
-                              onClick={() => setDeleteModal({ type: "coupon", id: coupon.id })}
+                              onClick={() => setDeleteModal({ isOpen: true, col: "coupons", id: coupon.id })}
                               className="text-gray-400 hover:text-red-500 transition-colors p-2 bg-white rounded-full shadow-sm"
                             >
                               <FiX />
