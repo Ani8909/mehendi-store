@@ -96,7 +96,7 @@ export default function Footer() {
             <ul className="space-y-3.5">
               <li className="flex items-start space-x-3 text-gray-500 text-sm">
                 <FiMapPin className="text-[var(--color-primary)] mt-1 flex-shrink-0" size={16} />
-                <span>5 Pathwari Mandir, Behind of Delhi Public School, <br />Shastripuram, Sikandra, Agra</span>
+                <span>5 Pathwari Mandir, Behind Delhi Public School, <br />Shastripuram, Sikandra, Agra</span>
               </li>
               <li className="flex items-center space-x-3 text-gray-500 text-sm">
                 <FiPhone className="text-[var(--color-primary)] flex-shrink-0" size={16} />
