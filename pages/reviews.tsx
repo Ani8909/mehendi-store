@@ -31,8 +31,12 @@ export default function Reviews() {
         const reviewSnap = await getDocs(qReviews);
         const fetchedReviews = reviewSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         
-        // Use only authentic fetched reviews
-        setReviews(fetchedReviews);
+        // Fallback to seed reviews if no real reviews exist yet
+        if (fetchedReviews.length > 0) {
+          setReviews(fetchedReviews);
+        } else {
+          setReviews(seedReviewsData);
+        }
       } catch (error) {
         console.error("Error fetching reviews", error);
       } finally {
