@@ -114,8 +114,12 @@ export default function Home() {
         const reviewSnap = await getDocs(qReviews);
         const fetchedReviews = reviewSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         
-        // Use only authentic fetched reviews
-        setReviews(fetchedReviews);
+        // Fallback to seed reviews if no real reviews exist yet
+        if (fetchedReviews.length > 0) {
+          setReviews(fetchedReviews);
+        } else {
+          setReviews(seedReviews);
+        }
 
         // Fetch Flash Offers
         const qCoupons = query(collection(db, "coupons"), where("isActive", "==", true), where("isFlashOffer", "==", true));
