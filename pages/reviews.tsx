@@ -31,8 +31,8 @@ export default function Reviews() {
         const reviewSnap = await getDocs(qReviews);
         const fetchedReviews = reviewSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         
-        // Merge fetched and seed reviews
-        setReviews([...fetchedReviews, ...seedReviewsData]);
+        // Use only authentic fetched reviews
+        setReviews(fetchedReviews);
       } catch (error) {
         console.error("Error fetching reviews", error);
       } finally {

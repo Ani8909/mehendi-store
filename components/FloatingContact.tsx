@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaWhatsapp, FaPhone, FaInstagram, FaFacebookF, FaPinterest, FaYoutube } from "react-icons/fa";
 import { FiMessageCircle, FiX } from "react-icons/fi";
@@ -6,10 +7,27 @@ import { FiMessageCircle, FiX } from "react-icons/fi";
 export default function FloatingContact() {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [showFloating, setShowFloating] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    const handleScroll = () => {
+      if (router.pathname === "/") {
+        if (window.scrollY > window.innerHeight * 0.7) {
+          setShowFloating(true);
+        } else {
+          setShowFloating(false);
+          setIsOpen(false);
+        }
+      } else {
+        setShowFloating(true);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [router.pathname]);
 
   // Configuration
   const phone = "7906297942";
@@ -46,7 +64,7 @@ export default function FloatingContact() {
     },
   ];
 
-  if (!mounted) return null;
+  if (!mounted || !showFloating) return null;
 
   return (
     <div className="fixed bottom-24 md:bottom-10 right-6 z-[100] flex flex-col items-center space-y-4">

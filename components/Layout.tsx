@@ -3,6 +3,7 @@ import BottomNav from "./BottomNav";
 import Footer from "./Footer";
 import FloatingContact from "./FloatingContact";
 import { useRouter } from "next/router";
+import RecentActivityPopup from "./RecentActivityPopup";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -21,6 +22,7 @@ export default function Layout({ children }: LayoutProps) {
       {!isAdminOrPartner && <Footer />}
       {!isAdminOrPartner && <BottomNav />}
       {!isAdminOrPartner && <FloatingContact />}
+      {!isAdminOrPartner && <RecentActivityPopup />}
     </div>
   );
 }

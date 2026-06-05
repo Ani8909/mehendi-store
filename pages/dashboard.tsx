@@ -4,7 +4,8 @@ import { useRouter } from "next/router";
 import { collection, query, where, getDocs, orderBy, doc, getDoc, updateDoc, addDoc, serverTimestamp, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/lib/authContext";
-import { FiCalendar, FiClock, FiMapPin, FiStar, FiLogOut, FiCheckCircle, FiXCircle, FiPhone } from "react-icons/fi";
+import { FiCalendar, FiClock, FiMapPin, FiStar, FiLogOut, FiCheckCircle, FiXCircle, FiPhone, FiGift, FiCopy } from "react-icons/fi";
+import { FaWhatsapp } from "react-icons/fa";
 import { FullScreenLoader } from "@/components/Loader";
 
 export default function Dashboard() {
@@ -176,6 +177,65 @@ export default function Dashboard() {
               </div>
             </div>
           )}
+
+          {/* Wallet & Referral Section */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            {/* Wallet Card */}
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden flex flex-col justify-between">
+              <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+              <div>
+                <div className="flex items-center space-x-2 text-gray-400 mb-1">
+                  <FiGift className="text-pink-400" />
+                  <span className="text-sm font-bold uppercase tracking-wider">My Wallet</span>
+                </div>
+                <div className="text-4xl font-bold text-white mb-2">₹{userData?.walletBalance || 0}</div>
+                <p className="text-xs text-gray-400">Available Balance</p>
+              </div>
+              <div className="mt-4 pt-4 border-t border-gray-700 flex justify-between items-center">
+                <div>
+                  <div className="text-sm font-bold text-gray-300">₹{userData?.pendingWalletBalance || 0}</div>
+                  <div className="text-[10px] text-gray-500 uppercase tracking-widest">Pending Unlock</div>
+                </div>
+                <a href="/booking" className="text-xs font-bold bg-pink-500 hover:bg-pink-600 px-4 py-2 rounded-full transition-colors">Use Now</a>
+              </div>
+            </div>
+
+            {/* Refer & Earn Banner */}
+            <div className="md:col-span-2 bg-gradient-to-r from-pink-50 to-pink-100 rounded-3xl p-6 shadow-sm border border-pink-200 relative overflow-hidden flex flex-col md:flex-row items-center md:items-start gap-6">
+              <div className="flex-1 text-center md:text-left">
+                <div className="inline-block px-3 py-1 bg-pink-200 text-pink-700 text-[10px] font-black uppercase tracking-widest rounded-full mb-3">Refer & Earn ₹100</div>
+                <h3 className="text-xl font-bold text-gray-800 font-serif mb-2">Invite Friends & Get Rewarded!</h3>
+                <p className="text-sm text-gray-600 mb-4">Unki pehli booking complete hone par aapko milenge ₹100 seedha aapke wallet mein, aur unhe ₹50 ka instant discount!</p>
+                
+                <div className="flex flex-col sm:flex-row items-center gap-3">
+                  <div className="flex items-center bg-white border border-gray-200 rounded-xl px-4 py-2 w-full sm:w-auto">
+                    <span className="text-gray-500 text-xs mr-2 uppercase">Your Code:</span>
+                    <span className="font-mono font-bold text-gray-800 tracking-wider">{userData?.referralCode || "N/A"}</span>
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText(userData?.referralCode || "");
+                        alert("Referral code copied!");
+                      }} 
+                      className="ml-3 text-gray-400 hover:text-pink-500 transition-colors"
+                      title="Copy Code"
+                    >
+                      <FiCopy />
+                    </button>
+                  </div>
+                  
+                  <a 
+                    href={`https://wa.me/?text=${encodeURIComponent(`Hey! Book the best Mehndi artist from Jyoti Mehendi & get ₹50 OFF on your first booking using my code: *${userData?.referralCode || ""}*\n\nBook here: https://jyotimhendi.in/login?ref=${userData?.referralCode || ""}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1DA851] text-white px-5 py-2.5 rounded-xl font-bold text-sm w-full sm:w-auto transition-colors shadow-sm"
+                  >
+                    <FaWhatsapp size={18} />
+                    <span>Share on WhatsApp</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
 
           {/* Bookings Lists */}
           <div className="space-y-12">

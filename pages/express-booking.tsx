@@ -1,3 +1,4 @@
+import { compressImage } from "@/lib/imageUtils";
 import Head from "next/head";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";

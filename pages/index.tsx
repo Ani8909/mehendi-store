@@ -2,6 +2,7 @@ import SEO from "@/components/SEO";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiCheckCircle, FiClock, FiCreditCard, FiMapPin, FiCheck, FiTruck, FiAward, FiHeart, FiStar, FiShoppingBag, FiArrowRight, FiEdit2, FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { FaWhatsapp, FaPhone } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { collection, getDocs, limit, query, addDoc, serverTimestamp, orderBy, where } from "firebase/firestore";
 import { SkeletonCard, SkeletonReview } from "@/components/Loader";
@@ -38,6 +39,7 @@ export default function Home() {
   const [eventPackages, setEventPackages] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const [loading, setLoading] = useState(true);
   const [flashOffer, setFlashOffer] = useState<any>(null);
 
@@ -112,8 +114,8 @@ export default function Home() {
         const reviewSnap = await getDocs(qReviews);
         const fetchedReviews = reviewSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         
-        // Merge fetched and seed reviews
-        setReviews([...fetchedReviews, ...seedReviews]);
+        // Use only authentic fetched reviews
+        setReviews(fetchedReviews);
 
         // Fetch Flash Offers
         const qCoupons = query(collection(db, "coupons"), where("isActive", "==", true), where("isFlashOffer", "==", true));
@@ -137,12 +139,12 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (heroSlides.length === 0) return;
+    if (heroSlides.length === 0 || isPaused) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, [heroSlides]);
+  }, [heroSlides, isPaused]);
 
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -175,7 +177,7 @@ export default function Home() {
   return (
     <>
       <SEO 
-        title="Jyoti Mehendi Agra | #1 Best Bridal & Arabic Mehndi Artist in Agra"
+        title="Best Bridal Mehndi Artist in Agra | Jyoti Mehndi Artist"
         description="Looking for the best Mehndi artist in Agra? Jyoti Mehendi offers top-rated Bridal, Arabic, and custom henna designs with express 20-min home service in Agra."
         schema={JSON.stringify({
           "@context": "https://schema.org",
@@ -212,6 +214,8 @@ export default function Home() {
       {/* Animated Hero Section */}
       <section 
         className="relative h-[85vh] min-h-[600px] w-full overflow-hidden bg-black flex items-center justify-center cursor-default group"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
         onMouseMove={(e) => {
           const { currentTarget, clientX, clientY } = e;
           const { left, top, width, height } = currentTarget.getBoundingClientRect();
@@ -231,18 +235,15 @@ export default function Home() {
               transition={{ duration: 1.2, ease: "easeInOut" }}
               className="absolute inset-0"
             >
-              {/* Desktop Image */}
-              <img
-                src={heroSlides[currentSlide].image}
-                alt={heroSlides[currentSlide].title}
-                className="hidden md:block w-full h-full object-cover animate-ken-burns transform-gpu"
-              />
-              {/* Mobile Image */}
-              <img
-                src={heroSlides[currentSlide].mobileImage || heroSlides[currentSlide].image}
-                alt={heroSlides[currentSlide].title}
-                className="block md:hidden w-full h-full object-cover animate-ken-burns transform-gpu"
-              />
+              {/* Responsive Image with Picture Tag (Prevents double download) */}
+              <picture className="absolute inset-0 w-full h-full">
+                <source media="(max-width: 767px)" srcSet={heroSlides[currentSlide].mobileImage || heroSlides[currentSlide].image} />
+                <img
+                  src={heroSlides[currentSlide].image}
+                  alt={`Beautiful full hand bridal mehndi by Jyoti Mehndi Artist Agra - ${heroSlides[currentSlide].title}`}
+                  className="w-full h-full object-cover animate-ken-burns transform-gpu"
+                />
+              </picture>
               
               {/* Elegant Vignette & Pink Overlays */}
               <div className="absolute inset-0 bg-gradient-to-b from-pink-900/10 via-black/40 to-black/90"></div>
@@ -279,16 +280,19 @@ export default function Home() {
                     </motion.div>
                   </div>
 
+                  {/* SEO Invisible H1 */}
+                  <h1 className="sr-only">Top-Rated Bridal Mehndi Services in Agra</h1>
+
                   {/* Mask Reveal Title */}
                   <div className="overflow-hidden mb-6 pb-2 px-4">
-                    <motion.h1
+                    <motion.h2
                       initial={{ y: "100%" }}
                       animate={{ y: "0%" }}
                       transition={{ delay: 0.4, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
                       className="text-4xl sm:text-5xl md:text-7xl font-serif font-bold text-white leading-[1.1] drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)]"
                     >
                       {heroSlides[currentSlide].title}
-                    </motion.h1>
+                    </motion.h2>
                   </div>
 
                   {/* Mask Reveal Subtitle */}
@@ -303,20 +307,38 @@ export default function Home() {
                     </motion.p>
                   </div>
 
-                  {/* Shimmering Reveal Button */}
-                  <div className="overflow-hidden rounded-full p-[2px]">
+                  {/* Action Buttons: Booking + WhatsApp + Call */}
+                  <div className="overflow-hidden rounded-[2rem] p-[2px] mt-2 w-full max-w-2xl mx-auto">
                     <motion.div
                       initial={{ y: "100%", opacity: 0 }}
                       animate={{ y: "0%", opacity: 1 }}
                       transition={{ delay: 0.7, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                      className="relative group cursor-pointer"
+                      className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-20"
                     >
-                      <div className="absolute -inset-1 bg-gradient-to-r from-pink-600 to-pink-300 rounded-full blur opacity-50 group-hover:opacity-80 transition duration-500"></div>
-                      <Link href="/booking" className="relative flex items-center justify-center gap-3 bg-gradient-to-r from-[var(--color-primary)] to-pink-700 text-white px-10 py-4 sm:py-5 rounded-full font-bold text-base sm:text-lg transition-all border border-pink-400/40 overflow-hidden shadow-2xl hover:scale-105 active:scale-95">
-                        <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-shimmer pointer-events-none"></div>
-                        <span className="tracking-widest uppercase text-sm">Reserve Your Slot</span>
-                        <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
-                      </Link>
+                      {/* Main Booking Button */}
+                      <div className="relative group cursor-pointer w-full sm:w-auto">
+                        <div className="absolute -inset-1 bg-gradient-to-r from-pink-600 to-pink-300 rounded-full blur opacity-50 group-hover:opacity-80 transition duration-500"></div>
+                        <Link href="/booking" className="relative flex items-center justify-center gap-3 bg-gradient-to-r from-[var(--color-primary)] to-pink-700 text-white px-8 py-3.5 sm:py-4 rounded-full font-bold text-sm transition-all border border-pink-400/40 overflow-hidden shadow-2xl hover:scale-105 active:scale-95">
+                          <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-shimmer pointer-events-none"></div>
+                          <span className="tracking-widest uppercase">Book Online</span>
+                          <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
+                        </Link>
+                      </div>
+
+                      {/* Call & WhatsApp Buttons */}
+                      <div className="flex items-center gap-3 w-full sm:w-auto justify-center">
+                        <a href="https://wa.me/917906297942?text=Hi%20Jyoti%20Mehendi!%20I%20would%20like%20to%20book%20a%20slot." target="_blank" rel="noopener noreferrer" 
+                           className="flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1DA851] text-white px-6 py-3.5 sm:py-4 rounded-full font-bold shadow-lg shadow-[#25D366]/30 border border-white/20 transition-transform hover:scale-105 active:scale-95 group">
+                          <FaWhatsapp size={18} className="group-hover:animate-[whatsapp-bounce_1s_ease-in-out_infinite]" />
+                          <span className="uppercase tracking-wide text-xs">WhatsApp</span>
+                        </a>
+
+                        <a href="tel:+917906297942" 
+                           className="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-6 py-3.5 sm:py-4 rounded-full font-bold shadow-lg border border-white/30 transition-transform hover:scale-105 active:scale-95 group">
+                          <FaPhone size={16} className="group-hover:animate-[wiggle_1s_ease-in-out_infinite]" />
+                          <span className="uppercase tracking-wide text-xs">Call</span>
+                        </a>
+                      </div>
                     </motion.div>
                   </div>
                 </div>
@@ -327,7 +349,36 @@ export default function Home() {
           )}
         </AnimatePresence>
 
+        {/* Slider Navigation Controls */}
+        {heroSlides.length > 1 && (
+          <>
+            <div className="absolute bottom-6 left-0 right-0 flex justify-center items-center space-x-3 z-20">
+              {heroSlides.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentSlide(idx)}
+                  className={`w-3 h-3 rounded-full transition-all duration-300 ${currentSlide === idx ? 'bg-pink-500 scale-125' : 'bg-white/50 hover:bg-white/90'}`}
+                  aria-label={`Go to slide ${idx + 1}`}
+                />
+              ))}
+            </div>
 
+            <button 
+              onClick={() => setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length)}
+              className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-20 bg-black/20 hover:bg-black/50 text-white p-3 rounded-full backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
+              aria-label="Previous Slide"
+            >
+              <FiChevronLeft size={24} />
+            </button>
+            <button 
+              onClick={() => setCurrentSlide((prev) => (prev + 1) % heroSlides.length)}
+              className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-20 bg-black/20 hover:bg-black/50 text-white p-3 rounded-full backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
+              aria-label="Next Slide"
+            >
+              <FiChevronRight size={24} />
+            </button>
+          </>
+        )}
       </section>
 
       {/* Agra Branding Strip */}
@@ -372,8 +423,8 @@ export default function Home() {
                   <img 
                     src={service.image || getDefaultImage(service.title)} 
                     onError={(e) => { e.currentTarget.src = getDefaultImage(service.title); }}
-                    alt={service.title} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    alt={`${service.title} - Best mehndi artist in agra`} 
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" 
                   />
                   <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold text-[var(--color-primary)]">
                     ₹{service.price}
@@ -504,6 +555,13 @@ export default function Home() {
                 <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
+          </div>
+
+          {/* Localities SEO Block */}
+          <div className="mt-16 text-center max-w-4xl mx-auto">
+            <p className="text-gray-500 text-sm md:text-base leading-relaxed">
+              <strong>Serving all major localities in Agra:</strong> We provide professional Mehndi artist services at your doorstep across Sanjay Place, Tajganj, Kamla Nagar, Dayalbagh, Sikandra, Khandari, Sadar Bazar, Shahganj, and all over Agra. Experience the finest Arabic and Bridal mehndi artistry right at your home.
+            </p>
           </div>
         </div>
       </section>

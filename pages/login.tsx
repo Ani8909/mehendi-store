@@ -2,15 +2,15 @@ import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithCustomToken } from "firebase/auth";
+import { doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { useAuth } from "@/lib/authContext";
 import { FiCheckCircle, FiUser, FiMail, FiLock, FiArrowRight } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 
 export default function Login() {
-  const [authMode, setAuthMode] = useState<"LOGIN" | "SIGNUP" | "ADMIN" | "FORGOT_PASSWORD">("LOGIN");
+  const [authMode, setAuthMode] = useState<"LOGIN" | "SIGNUP" | "ADMIN" | "FORGOT_PASSWORD" | "LOGIN_OTP">("LOGIN");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -102,15 +102,74 @@ export default function Login() {
           }, { merge: true });
         }
 
-        await setDoc(userDocRef, {
+        // Check URL for referral code
+        let referredBy = null;
+        if (typeof window !== "undefined") {
+          const urlParams = new URLSearchParams(window.location.search);
+          referredBy = urlParams.get("ref");
+        }
+
+        // Generate referral code
+        const baseName = name.replace(/[^a-zA-Z]/g, '').substring(0, 4).toUpperCase();
+        const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
+        const referralCode = `${baseName}-${randomStr}`;
+
+        const newUserData = {
           uid: userCredential.user.uid,
           name: name,
           email: email,
           role: isPartner ? "partner" : "customer",
           createdAt: new Date(),
-        }, { merge: true });
+          referralCode: referralCode,
+          walletBalance: 0,
+          pendingWalletBalance: 0,
+          referredBy: referredBy || null,
+          isReferralClaimed: false,
+        };
+
+        await setDoc(userDocRef, newUserData, { merge: true });
+
+        // Process Referral Reward if referred
+        if (referredBy) {
+          try {
+            const settingsSnap = await getDoc(doc(db, "settings", "referral"));
+            if (settingsSnap.exists() && settingsSnap.data().isActive) {
+              const settingsData = settingsSnap.data();
+              
+              // Give the new user their welcome discount in their wallet
+              await updateDoc(userDocRef, {
+                walletBalance: settingsData.refereeDiscount || 50
+              });
+
+              const usersRef = collection(db, "users");
+              const q = query(usersRef, where("referralCode", "==", referredBy));
+              const querySnapshot = await getDocs(q);
+              
+              if (!querySnapshot.empty) {
+                const referrerDoc = querySnapshot.docs[0];
+                const referrerData = referrerDoc.data();
+                await updateDoc(doc(db, "users", referrerDoc.id), {
+                  pendingWalletBalance: (referrerData.pendingWalletBalance || 0) + (settingsData.referrerReward || 100)
+                });
+              }
+            }
+          } catch (err) {
+            console.error("Error processing referral:", err);
+          }
+        }
 
         setSuccess("Account created successfully!");
+      }
+      else if (authMode === "LOGIN_OTP") {
+        const res = await fetch("/api/auth/send-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, type: "login" })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        
+        setStep("OTP");
       }
       else if (authMode === "FORGOT_PASSWORD") {
         // Send OTP via our API
@@ -178,15 +237,75 @@ export default function Login() {
           }, { merge: true });
         }
 
-        await setDoc(userDocRef, {
+        // Check URL for referral code
+        let referredBy = null;
+        if (typeof window !== "undefined") {
+          const urlParams = new URLSearchParams(window.location.search);
+          referredBy = urlParams.get("ref");
+        }
+
+        // Generate referral code
+        const baseName = name.replace(/[^a-zA-Z]/g, '').substring(0, 4).toUpperCase();
+        const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
+        const referralCode = `${baseName}-${randomStr}`;
+
+        const newUserData = {
           uid: userCredential.user.uid,
           name: name,
           email: email,
           role: isPartner ? "partner" : "customer",
           createdAt: new Date(),
-        }, { merge: true });
+          referralCode: referralCode,
+          walletBalance: 0,
+          pendingWalletBalance: 0,
+          referredBy: referredBy || null,
+          isReferralClaimed: false,
+        };
+
+        await setDoc(userDocRef, newUserData, { merge: true });
+
+        // Process Referral Reward if referred
+        if (referredBy) {
+          try {
+            const settingsSnap = await getDoc(doc(db, "settings", "referral"));
+            if (settingsSnap.exists() && settingsSnap.data().isActive) {
+              const settingsData = settingsSnap.data();
+
+              // Give the new user their welcome discount in their wallet
+              await updateDoc(userDocRef, {
+                walletBalance: settingsData.refereeDiscount || 50
+              });
+
+              const usersRef = collection(db, "users");
+              const q = query(usersRef, where("referralCode", "==", referredBy));
+              const querySnapshot = await getDocs(q);
+              
+              if (!querySnapshot.empty) {
+                const referrerDoc = querySnapshot.docs[0];
+                const referrerData = referrerDoc.data();
+                await updateDoc(doc(db, "users", referrerDoc.id), {
+                  pendingWalletBalance: (referrerData.pendingWalletBalance || 0) + (settingsData.referrerReward || 100)
+                });
+              }
+            }
+          } catch (err) {
+            console.error("Error processing referral:", err);
+          }
+        }
 
       } 
+      else if (authMode === "LOGIN_OTP") {
+        const res = await fetch("/api/auth/verify-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, otp })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        // Sign in with Custom Token
+        await signInWithCustomToken(auth, data.token);
+      }
       else if (authMode === "FORGOT_PASSWORD") {
         if (newPassword.length < 6) throw new Error("New password must be at least 6 characters");
         
@@ -264,6 +383,13 @@ export default function Login() {
                 >
                   Sign Up
                 </button>
+                <button 
+                  type="button"
+                  onClick={() => { setAuthMode("LOGIN_OTP"); setStep("DETAILS"); setError(""); }}
+                  className={`flex-1 py-2 text-xs font-bold rounded-full transition-colors ${authMode === "LOGIN_OTP" ? "bg-pink-500 text-white" : "text-gray-500"}`}
+                >
+                  Email OTP
+                </button>
               </div>
             )}
           </div>
@@ -318,7 +444,7 @@ export default function Login() {
                   </div>
                 </div>
 
-                {authMode !== "FORGOT_PASSWORD" && (
+                {authMode !== "FORGOT_PASSWORD" && authMode !== "LOGIN_OTP" && (
                   <div>
                     <div className="flex justify-between items-center mb-1">
                       <label className="block text-sm font-medium text-gray-700">Password</label>
@@ -357,6 +483,7 @@ export default function Login() {
                     </>
                   ) : authMode === "LOGIN" || authMode === "ADMIN" ? "Login to Dashboard" 
                     : authMode === "FORGOT_PASSWORD" ? "Send Reset OTP" 
+                    : authMode === "LOGIN_OTP" ? "Send Login OTP"
                     : "Create Account"}
                 </button>
 

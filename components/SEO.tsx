@@ -13,7 +13,7 @@ interface SEOProps {
 export default function SEO({ 
   title, 
   description, 
-  keywords = "Best Mehndi Artist in Agra, Jyoti Mehendi Agra, Top Bridal Mehndi Designer Agra, Home Service Mehndi Agra, Arabic Mehndi Artist", 
+  keywords = "Best mehndi artist in agra, Mehndi artist in agra, Top mehndi artist in agra, Bridal mehndi artist in agra, Agra mehndi artist, Famous bridal mehndi artist in agra, Best bridal mehndi designer in agra, Budget friendly mehndi artist in agra, Mehndi artist in agra near me, Professional mehndi services in agra, Book mehndi artist in agra, Arabic mehndi artist in agra, Marwari mehndi designer in agra, Engagement mehndi artist in agra, Baby shower mehndi in agra", 
   ogImage = "https://jyotimehendi.in/logo.png",
   ogType = "website",
   schema

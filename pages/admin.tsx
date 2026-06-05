@@ -1,9 +1,11 @@
+import { compressImage } from "@/lib/imageUtils";
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion";
-import { collection, getDocs, updateDoc, doc, query, orderBy, addDoc, serverTimestamp, deleteDoc, setDoc, onSnapshot } from "firebase/firestore";
+import { collection, getDocs, updateDoc, doc, query, orderBy, addDoc, serverTimestamp, deleteDoc, setDoc, onSnapshot, getDoc, where } from "firebase/firestore";
+import AdminBlogManager from "@/components/AdminBlogManager";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/lib/authContext";
 import { Bar, Doughnut } from "react-chartjs-2";
@@ -17,7 +19,7 @@ import {
   Legend,
   ArcElement
 } from "chart.js";
-import { FiUsers, FiCalendar, FiDollarSign, FiLogOut, FiImage, FiLayout, FiPieChart, FiX, FiUploadCloud, FiClock, FiCheck, FiActivity, FiTag } from "react-icons/fi";
+import { FiUsers, FiCalendar, FiDollarSign, FiLogOut, FiImage, FiLayout, FiPieChart, FiX, FiUploadCloud, FiClock, FiCheck, FiActivity, FiTag, FiGift, FiEdit3 } from "react-icons/fi";
 import { FullScreenLoader } from "@/components/Loader";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
@@ -26,8 +28,9 @@ export default function AdminDashboard() {
   const { user, userData, loading: authLoading, signOut } = useAuth();
   const router = useRouter();
 
-  const [activeTab, setActiveTab] = useState<"bookings" | "partners" | "reports" | "gallery" | "hero" | "express" | "packages" | "finances" | "services" | "coupons">("bookings");
+  const [activeTab, setActiveTab] = useState<"bookings" | "partners" | "reports" | "gallery" | "hero" | "express" | "packages" | "finances" | "services" | "coupons" | "referrals" | "blogs">("bookings");
   const [bookings, setBookings] = useState<any[]>([]);
+  const [referralSettings, setReferralSettings] = useState<any>(null);
   const [partners, setPartners] = useState<any[]>([]);
   const [services, setServices] = useState<any[]>([]);
   const [galleryItems, setGalleryItems] = useState<any[]>([]);
@@ -158,6 +161,21 @@ export default function AdminDashboard() {
     }, (err) => console.error("Coupons sync error:", err));
     unsubscribes.push(unsubCoupons);
 
+    // 12. Live Referral Settings Listener
+    const unsubReferral = onSnapshot(doc(db, "settings", "referral"), (snapshot) => {
+      if (snapshot.exists()) {
+        setReferralSettings(snapshot.data());
+      } else {
+        setReferralSettings({
+          isActive: false,
+          referrerReward: 100,
+          refereeDiscount: 50,
+          minBookingValue: 500
+        });
+      }
+    }, (err) => console.error("Referral sync error:", err));
+    unsubscribes.push(unsubReferral);
+
     // Clean up all active listeners on unmount or session switch
     return () => {
       unsubscribes.forEach(unsub => unsub());
@@ -175,43 +193,40 @@ export default function AdminDashboard() {
     }
 
     setUploading(true);
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = async () => {
-      try {
-        const res = await fetch("/api/upload", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ image: reader.result }),
-        });
-        
-        if (!res.ok) {
-          const text = await res.text();
-          let errorMessage = "Server Error";
-          try {
-            const json = JSON.parse(text);
-            errorMessage = json.error || json.message || errorMessage;
-          } catch (e) {
-            if (text.includes("Body exceeded")) errorMessage = "Image size is too large for the server.";
-            else errorMessage = text;
-          }
-          throw new Error(errorMessage);
+    try {
+      const compressedBase64 = await compressImage(file);
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: compressedBase64 }),
+      });
+      
+      if (!res.ok) {
+        const text = await res.text();
+        let errorMessage = "Server Error";
+        try {
+          const json = JSON.parse(text);
+          errorMessage = json.error || json.message || errorMessage;
+        } catch (e) {
+          if (text.includes("Body exceeded")) errorMessage = "Image size is too large for the server.";
+          else errorMessage = text;
         }
-
-        const data = await res.json();
-        if (target === "desktop") setNewDesktopImage(data.url);
-        else if (target === "mobile") setNewMobileImage(data.url);
-        else if (target === "gallery") setNewImage(data.url);
-        else if (target === "service") setNewServiceImage(data.url);
-        
-        console.log(`Uploaded to ${target}:`, data.url);
-      } catch (err: any) {
-        console.error("Upload Error:", err);
-        alert("Upload failed: " + err.message);
-      } finally {
-        setUploading(false);
+        throw new Error(errorMessage);
       }
-    };
+
+      const data = await res.json();
+      if (target === "desktop") setNewDesktopImage(data.url);
+      else if (target === "mobile") setNewMobileImage(data.url);
+      else if (target === "gallery") setNewImage(data.url);
+      else if (target === "service") setNewServiceImage(data.url);
+      
+      console.log(`Uploaded to ${target}:`, data.url);
+    } catch (err: any) {
+      console.error("Upload Error:", err);
+      alert("Upload failed: " + err.message);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleAddCoupon = async (e: React.FormEvent) => {
@@ -386,6 +401,51 @@ export default function AdminDashboard() {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ type: "BOOKING_CONFIRMED", data: updateData })
             }).catch(console.error);
+          }
+          if (updateData.status === 'completed') {
+            // Process Referral Unlock
+            if (originalBooking.customerId && originalBooking.customerId !== "guest") {
+              try {
+                const customerDoc = await getDoc(doc(db, "users", originalBooking.customerId));
+                if (customerDoc.exists()) {
+                  const customerData = customerDoc.data();
+                  if (customerData.referredBy && !customerData.isReferralClaimed) {
+                    const settingsSnap = await getDoc(doc(db, "settings", "referral"));
+                    if (settingsSnap.exists() && settingsSnap.data().isActive) {
+                      const settingsData = settingsSnap.data();
+                      
+                      // Check minBookingValue
+                      if (originalBooking.price >= (settingsData.minBookingValue || 0)) {
+                        // Find referrer
+                        const usersRef = collection(db, "users");
+                        const q = query(usersRef, where("referralCode", "==", customerData.referredBy));
+                        const querySnapshot = await getDocs(q);
+                        
+                        if (!querySnapshot.empty) {
+                          const referrerDoc = querySnapshot.docs[0];
+                          const referrerData = referrerDoc.data();
+                          
+                          const rewardAmount = settingsData.referrerReward || 100;
+                          
+                          // Move pending to approved wallet
+                          await updateDoc(doc(db, "users", referrerDoc.id), {
+                            pendingWalletBalance: Math.max(0, (referrerData.pendingWalletBalance || 0) - rewardAmount),
+                            walletBalance: (referrerData.walletBalance || 0) + rewardAmount
+                          });
+                          
+                          // Mark referral claimed for customer
+                          await updateDoc(doc(db, "users", originalBooking.customerId), {
+                            isReferralClaimed: true
+                          });
+                        }
+                      }
+                    }
+                  }
+                }
+              } catch (err) {
+                console.error("Error unlocking referral reward:", err);
+              }
+            }
           }
         }
       }
@@ -597,6 +657,15 @@ export default function AdminDashboard() {
     router.push("/");
   };
 
+  const saveReferralSettings = async () => {
+    try {
+      await setDoc(doc(db, "settings", "referral"), referralSettings, { merge: true });
+      alert("Referral settings updated successfully!");
+    } catch (err: any) {
+      alert("Failed to update referral settings: " + err.message);
+    }
+  };
+
   if (authLoading || loading) return <FullScreenLoader />;
   if (!user || userData?.role !== "admin") return null;
 
@@ -750,6 +819,8 @@ export default function AdminDashboard() {
                 { id: "express", label: "Express Zones", icon: <FiClock/> },
                 { id: "packages", label: "Event Packages", icon: <FiUsers/> },
                 { id: "coupons", label: "Coupons", icon: <FiTag/> },
+                { id: "referrals", label: "Referrals", icon: <FiGift/> },
+                { id: "blogs", label: "Blogs", icon: <FiEdit3/> },
                 { id: "finances", label: "Finances", icon: <FiDollarSign/> },
                 { id: "reports", label: "Reports", icon: <FiPieChart/> },
               ].map((tab) => (
@@ -764,6 +835,79 @@ export default function AdminDashboard() {
             </div>
 
             <div className="p-6">
+              {/* Referrals Tab */}
+              {activeTab === "blogs" && (
+                <AdminBlogManager />
+              )}
+              {activeTab === "referrals" && referralSettings && (
+                <div className="max-w-2xl mx-auto bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                  <div className="flex justify-between items-center mb-6">
+                    <div>
+                      <h2 className="text-xl font-bold font-serif text-gray-800 flex items-center gap-2">
+                        <FiGift className="text-pink-500" /> Referral & Wallet Program
+                      </h2>
+                      <p className="text-sm text-gray-500 mt-1">Configure rewards and rules for the referral system.</p>
+                    </div>
+                    <label className="flex items-center cursor-pointer">
+                      <div className="relative">
+                        <input type="checkbox" className="sr-only" checked={referralSettings.isActive} onChange={(e) => setReferralSettings({...referralSettings, isActive: e.target.checked})} />
+                        <div className={`block w-14 h-8 rounded-full transition-colors ${referralSettings.isActive ? 'bg-green-400' : 'bg-gray-300'}`}></div>
+                        <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${referralSettings.isActive ? 'transform translate-x-6' : ''}`}></div>
+                      </div>
+                    </label>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    <div className="bg-gray-50 p-5 rounded-xl border border-gray-100">
+                      <h3 className="font-bold text-gray-700 mb-4 text-sm uppercase tracking-wider">Reward Settings</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-bold text-gray-500 mb-1">Referrer Reward (₹)</label>
+                          <input 
+                            type="number" 
+                            value={referralSettings.referrerReward || 0} 
+                            onChange={e => setReferralSettings({...referralSettings, referrerReward: Number(e.target.value)})} 
+                            className="w-full p-2 border border-gray-300 rounded-lg text-sm" 
+                          />
+                          <p className="text-[10px] text-gray-400 mt-1">Given to the person who shared the link.</p>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-gray-500 mb-1">Referee Discount (₹)</label>
+                          <input 
+                            type="number" 
+                            value={referralSettings.refereeDiscount || 0} 
+                            onChange={e => setReferralSettings({...referralSettings, refereeDiscount: Number(e.target.value)})} 
+                            className="w-full p-2 border border-gray-300 rounded-lg text-sm" 
+                          />
+                          <p className="text-[10px] text-gray-400 mt-1">Given to the new user instantly in wallet.</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-gray-50 p-5 rounded-xl border border-gray-100">
+                      <h3 className="font-bold text-gray-700 mb-4 text-sm uppercase tracking-wider">Unlock Rules</h3>
+                      <div>
+                        <label className="block text-xs font-bold text-gray-500 mb-1">Minimum Booking Value (₹)</label>
+                        <input 
+                          type="number" 
+                          value={referralSettings.minBookingValue || 0} 
+                          onChange={e => setReferralSettings({...referralSettings, minBookingValue: Number(e.target.value)})} 
+                          className="w-full p-2 border border-gray-300 rounded-lg text-sm" 
+                        />
+                        <p className="text-[10px] text-gray-400 mt-1">Referrer reward unlocks only if referee's first booking value is {">="} this amount.</p>
+                      </div>
+                    </div>
+
+                    <button 
+                      onClick={saveReferralSettings} 
+                      className="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 rounded-xl transition-colors shadow-sm"
+                    >
+                      Save Referral Settings
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Bookings Tab */}
               {activeTab === "bookings" && (
                 <div className="space-y-4">

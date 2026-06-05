@@ -12,6 +12,7 @@ export default function Navbar() {
     { name: "Services", href: "/services" },
     { name: "Packages", href: "/packages" },
     { name: "Gallery", href: "/gallery" },
+    { name: "Blog", href: "/blog" },
   ];
 
   // Determine the correct dashboard link for the logged in user role

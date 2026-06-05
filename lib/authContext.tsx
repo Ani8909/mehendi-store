@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { auth, db } from "./firebase";
 import { onAuthStateChanged, User, signOut as firebaseSignOut } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs } from "firebase/firestore";
 
 interface AuthContextType {
   user: User | null;
@@ -72,7 +72,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             }
           }
 
-          // Create new user record
+          // Check URL for referral code (assuming they came from a referral link and logged in with Google)
+          let referredBy = null;
+          if (typeof window !== "undefined") {
+            const urlParams = new URLSearchParams(window.location.search);
+            referredBy = urlParams.get("ref");
+          }
+
+          // Generate referral code
+          const baseName = (partnerName || "USER").replace(/[^a-zA-Z]/g, '').substring(0, 4).toUpperCase();
+          const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
+          const referralCode = `${baseName}-${randomStr}`;
+
           const isAdminEmail = currentUser.email === "anuj@jyotimhendi.in" || currentUser.email === "singhani5549@gmail.com";
           const newUserData = {
             uid: currentUser.uid,
@@ -81,8 +92,48 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             email: currentUser.email || "",
             role: isAdminEmail ? "admin" : (isPartner ? "partner" : "customer"),
             createdAt: new Date(),
+            referralCode: isAdminEmail ? "ADMIN" : referralCode,
+            walletBalance: 0,
+            pendingWalletBalance: 0,
+            referredBy: referredBy || null,
+            isReferralClaimed: false,
           };
+          
           await setDoc(userDocRef, newUserData);
+          
+          // Process Referral Reward if referred
+          if (referredBy) {
+            try {
+              // Get referral settings
+              const settingsSnap = await getDoc(doc(db, "settings", "referral"));
+              if (settingsSnap.exists() && settingsSnap.data().isActive) {
+                const settingsData = settingsSnap.data();
+                
+                // Give the new user their welcome discount in their wallet
+                await updateDoc(userDocRef, {
+                  walletBalance: settingsData.refereeDiscount || 50
+                });
+                
+                // Find referrer
+                const usersRef = collection(db, "users");
+                const q = query(usersRef, where("referralCode", "==", referredBy));
+                const querySnapshot = await getDocs(q);
+                
+                if (!querySnapshot.empty) {
+                  const referrerDoc = querySnapshot.docs[0];
+                  const referrerData = referrerDoc.data();
+                  
+                  // Add reward to referrer's pending balance
+                  await updateDoc(doc(db, "users", referrerDoc.id), {
+                    pendingWalletBalance: (referrerData.pendingWalletBalance || 0) + (settingsData.referrerReward || 100)
+                  });
+                }
+              }
+            } catch (err) {
+              console.error("Error processing referral:", err);
+            }
+          }
+          
           setUserData(newUserData);
         }
       } else {

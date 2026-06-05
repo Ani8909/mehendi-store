@@ -1,3 +1,4 @@
+import { compressImage } from "@/lib/imageUtils";
 import Head from "next/head";
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";

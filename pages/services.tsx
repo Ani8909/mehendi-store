@@ -28,8 +28,8 @@ export default function Services() {
   return (
     <>
       <SEO 
-        title="Bridal & Arabic Mehndi Services in Agra | Jyoti Mehendi"
-        description="Explore premium Mehndi services by Jyoti Mehendi Artist in Agra. Affordable pricing for Bridal, Arabic, Fusion, and minimal guest mehndi designs."
+        title="Best Bridal Mehndi Designer in Agra | Arabic & Marwari Mehndi"
+        description="Looking for professional mehndi services in Agra? Jyoti Mehendi Artist offers the best bridal, Arabic, Marwari, and engagement mehndi designs in Agra."
         schema={JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Service",
@@ -98,17 +98,17 @@ export default function Services() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-5xl md:text-7xl font-bold text-white font-serif mb-6 drop-shadow-lg"
+              className="text-4xl md:text-6xl font-bold text-white font-serif mb-6 drop-shadow-lg"
             >
-              Exquisite Services
+              Professional Mehndi Services in Agra
             </motion.h1>
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-gray-200 max-w-2xl mx-auto text-lg md:text-xl font-light leading-relaxed"
+              className="text-gray-200 max-w-3xl mx-auto text-lg md:text-xl font-light leading-relaxed"
             >
-              From intricate bridal masterpieces to modern party designs, we craft beauty for every moment.
+              From intricate bridal masterpieces to modern Arabic and Marwari designs, we craft beauty for every moment. Whether it's an engagement, baby shower, or traditional wedding, book the top mehndi artist in Agra.
             </motion.p>
           </div>
         </div>
@@ -146,7 +146,7 @@ export default function Services() {
                     <img 
                       src={service.image || getDefaultImage(service.title)} 
                       onError={(e) => { e.currentTarget.src = getDefaultImage(service.title); }}
-                      alt={service.title} 
+                      alt={`${service.title} - Mehndi Artist in Agra`} 
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" 
                     />
                     <div className="absolute top-4 left-4">

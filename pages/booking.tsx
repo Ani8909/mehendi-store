@@ -1,10 +1,12 @@
+import { compressImage } from "@/lib/imageUtils";
 import SEO from "@/components/SEO";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
-import { collection, getDocs, addDoc, query, where, serverTimestamp, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, addDoc, query, where, serverTimestamp, doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { db, storage } from "@/lib/firebase";
+import { auth, db, storage } from "@/lib/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useAuth } from "@/lib/authContext";
 import { FiCheck, FiUploadCloud, FiMapPin, FiCalendar, FiClock, FiChevronDown } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
@@ -28,6 +30,12 @@ export default function Booking() {
   const [couponError, setCouponError] = useState("");
   const [isReturningCustomer, setIsReturningCustomer] = useState(false);
   const [verifyingCoupon, setVerifyingCoupon] = useState(false);
+  const [applyWallet, setApplyWallet] = useState(false);
+  const [referralInput, setReferralInput] = useState("");
+  const [appliedReferral, setAppliedReferral] = useState<string | null>(null);
+  const [referralError, setReferralError] = useState("");
+  const [verifyingReferral, setVerifyingReferral] = useState(false);
+  const [referralDiscountAmount, setReferralDiscountAmount] = useState(0);
 
   const { register, handleSubmit, watch, setValue, trigger, formState: { errors } } = useForm({
     defaultValues: {
@@ -38,6 +46,8 @@ export default function Booking() {
       timeSlot: "",
       name: userData?.name || "",
       phone: userData?.phone || user?.phoneNumber || "",
+      email: userData?.email || user?.email || "",
+      password: "",
       address: userData?.address || "",
       additionalNotes: "",
     }
@@ -156,6 +166,12 @@ export default function Booking() {
   }
   if (finalPrice < 0) finalPrice = 0;
 
+  let walletDeduction = 0;
+  if (applyWallet && userData?.walletBalance > 0) {
+    walletDeduction = Math.min(finalPrice, userData.walletBalance);
+    finalPrice -= walletDeduction;
+  }
+
   const applyCoupon = async () => {
     if (!couponCode) return;
     setVerifyingCoupon(true);
@@ -190,6 +206,46 @@ export default function Booking() {
     }
   };
 
+  
+  const applyReferralCode = async () => {
+    if (!referralInput) return;
+    setVerifyingReferral(true);
+    setReferralError("");
+    try {
+      if (user && userData?.isReferralClaimed) {
+        setReferralError("You have already used a referral code.");
+        return;
+      }
+      
+      const q = query(collection(db, "users"), where("referralCode", "==", referralInput.toUpperCase()));
+      const snap = await getDocs(q);
+      
+      if (snap.empty) {
+        setReferralError("Invalid referral code.");
+        return;
+      }
+      
+      const referrer = snap.docs[0].data();
+      if (referrer.uid === user?.uid) {
+        setReferralError("You cannot use your own referral code.");
+        return;
+      }
+      
+      const settingsSnap = await getDoc(doc(db, "settings", "referral"));
+      let discount = 50;
+      if (settingsSnap.exists() && settingsSnap.data().isActive) {
+        discount = settingsSnap.data().refereeDiscount || 50;
+      }
+      
+      setAppliedReferral(referralInput.toUpperCase());
+      setReferralDiscountAmount(discount);
+    } catch (e) {
+      setReferralError("Error verifying referral.");
+    } finally {
+      setVerifyingReferral(false);
+    }
+  };
+
   const onSubmit = async (data: any) => {
     if (step < 4) {
       setStep(step + 1);
@@ -199,6 +255,104 @@ export default function Booking() {
     // Final Step - Create Booking (Bypassing Razorpay for offline payments)
     setLoading(true);
     try {
+      let finalCustomerId = user?.uid || "guest";
+      let finalUserEmail = user?.email || data.email;
+      let finalWalletBalance = userData?.walletBalance || 0;
+
+      // Auto-Signup for Guests
+      if (!user) {
+        try {
+          const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+          finalCustomerId = userCredential.user.uid;
+          
+          let referredBy = appliedReferral || null;
+
+          const baseName = data.name.replace(/[^a-zA-Z]/g, '').substring(0, 4).toUpperCase();
+          const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
+          const referralCode = `${baseName}-${randomStr}`;
+
+          let welcomeBalance = 0;
+
+          // Process Referral Reward if referred
+          if (referredBy) {
+            try {
+              const settingsSnap = await getDoc(doc(db, "settings", "referral"));
+              if (settingsSnap.exists() && settingsSnap.data().isActive) {
+                const settingsData = settingsSnap.data();
+                welcomeBalance = settingsData.refereeDiscount || 50;
+
+                const usersRef = collection(db, "users");
+                const q = query(usersRef, where("referralCode", "==", referredBy));
+                const querySnapshot = await getDocs(q);
+                
+                if (!querySnapshot.empty) {
+                  const referrerDoc = querySnapshot.docs[0];
+                  const referrerData = referrerDoc.data();
+                  await updateDoc(doc(db, "users", referrerDoc.id), {
+                    pendingWalletBalance: (referrerData.pendingWalletBalance || 0) + (settingsData.referrerReward || 100)
+                  });
+                }
+              }
+            } catch (err) {
+              console.error("Error processing referral:", err);
+            }
+          }
+
+          finalWalletBalance = welcomeBalance;
+
+          const newUserData = {
+            uid: finalCustomerId,
+            name: data.name,
+            email: data.email,
+            phone: data.phone,
+            role: "customer",
+            createdAt: serverTimestamp(),
+            referralCode: referralCode,
+            walletBalance: welcomeBalance,
+            pendingWalletBalance: 0,
+            referredBy: referredBy || null,
+            isReferralClaimed: !!referredBy,
+          };
+
+          await setDoc(doc(db, "users", finalCustomerId), newUserData);
+
+        } catch (authErr: any) {
+          console.error("Signup error during booking:", authErr);
+          if (authErr.code === "auth/email-already-in-use") {
+            setStepError("This email is already registered. Please log in first to book.");
+          } else {
+            setStepError("Failed to create account: " + authErr.message);
+          }
+          setLoading(false);
+          return; // Stop booking if account creation fails
+        }
+      } else {
+        // If user is logged in but used a referral code during this checkout
+        if (appliedReferral && !userData?.isReferralClaimed) {
+          try {
+             const settingsSnap = await getDoc(doc(db, "settings", "referral"));
+             if (settingsSnap.exists() && settingsSnap.data().isActive) {
+                const settingsData = settingsSnap.data();
+                const usersRef = collection(db, "users");
+                const q = query(usersRef, where("referralCode", "==", appliedReferral));
+                const querySnapshot = await getDocs(q);
+                
+                if (!querySnapshot.empty) {
+                  const referrerDoc = querySnapshot.docs[0];
+                  const referrerData = referrerDoc.data();
+                  await updateDoc(doc(db, "users", referrerDoc.id), {
+                    pendingWalletBalance: (referrerData.pendingWalletBalance || 0) + (settingsData.referrerReward || 100)
+                  });
+                  await updateDoc(doc(db, "users", finalCustomerId), {
+                    isReferralClaimed: true,
+                    referredBy: appliedReferral
+                  });
+                }
+             }
+          } catch(e) { console.error(e) }
+        }
+      }
+
       const bRef = "JM-" + Math.random().toString(36).substring(2, 8).toUpperCase();
       const bookingData = {
         bookingRef: bRef,
@@ -226,6 +380,13 @@ export default function Booking() {
       };
 
       const docRef = await addDoc(collection(db, "bookings"), bookingData);
+
+      // Deduct wallet balance
+      if (walletDeduction > 0 && finalCustomerId !== "guest") {
+        await updateDoc(doc(db, "users", finalCustomerId), {
+          walletBalance: finalWalletBalance - walletDeduction
+        });
+      }
       
       // Send Email Notification
       await fetch("/api/notify", {
@@ -235,12 +396,12 @@ export default function Booking() {
           type: "NEW_BOOKING", 
           data: {
             ...bookingData,
-            email: user?.email || ""
+            email: finalUserEmail
           }
         })
       });
 
-      router.push(`/booking-slip/${docRef.id}`);
+      router.push(`/dashboard?bookingSuccess=true`);
     } catch (err) {
       console.error(err);
       alert("Booking failed. Please try again.");
@@ -504,6 +665,42 @@ export default function Booking() {
                         {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message as string}</p>}
                       </div>
                       <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                        <input 
+                          type="email" 
+                          placeholder="your@email.com" 
+                          {...register("email", { 
+                            required: "Email is required",
+                            pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Please enter a valid email address" }
+                          })} 
+                          className={`w-full p-4 bg-gray-50/50 border ${errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-[var(--color-primary)]'} rounded-xl focus:ring-2 focus:border-transparent transition-all shadow-sm`} 
+                        />
+                        {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message as string}</p>}
+                      </div>
+
+                      {!user && (
+                        <div className="bg-pink-50/50 p-4 rounded-xl border border-pink-100 mt-4">
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">Create Password</label>
+                          <p className="text-[10px] text-gray-500 mb-3 italic">Create an account to track your booking and earn wallet rewards!</p>
+                          <input 
+                            type="password" 
+                            placeholder="Create a password (min 6 chars)" 
+                            {...register("password", { 
+                              required: "Password is required to create an account",
+                              minLength: { value: 6, message: "Password must be at least 6 characters" }
+                            })} 
+                            className={`w-full p-4 bg-white border ${errors.password ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-[var(--color-primary)]'} rounded-xl focus:ring-2 focus:border-transparent transition-all shadow-sm`} 
+                          />
+                          {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message as string}</p>}
+                          
+                          <div className="mt-4 text-center">
+                            <span className="text-xs text-gray-500">Already have an account? </span>
+                            <a href="/login" className="text-xs font-bold text-[var(--color-primary)] hover:underline">Log in here</a>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="mt-4">
                         <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center"><FiMapPin className="mr-1 text-[var(--color-primary)]"/> Complete Address (Agra Only)</label>
                         <textarea 
                           {...register("address", { 
@@ -588,6 +785,32 @@ export default function Booking() {
                           </div>
                         )}
                         
+                        {/* Referral Display */}
+                        {appliedReferral && (
+                          <div className="flex justify-between items-center text-green-600">
+                            <span className="font-medium text-xs">Referral Applied ({appliedReferral})</span>
+                            <span className="font-bold text-sm">Reward Unlocked!</span>
+                          </div>
+                        )}
+                        
+                        {/* Wallet Section */}
+                        {userData?.walletBalance > 0 && (
+                          <div className="py-3 border-t border-dashed border-gray-200">
+                            <label className="flex items-center justify-between cursor-pointer group">
+                              <div className="flex items-center space-x-2">
+                                <input 
+                                  type="checkbox" 
+                                  checked={applyWallet} 
+                                  onChange={(e) => setApplyWallet(e.target.checked)}
+                                  className="w-4 h-4 text-pink-500 rounded border-gray-300 focus:ring-pink-500"
+                                />
+                                <span className="font-bold text-sm text-gray-700">Use Wallet Balance (₹{userData.walletBalance})</span>
+                              </div>
+                              {applyWallet && <span className="font-bold text-sm text-green-600">-₹{walletDeduction}</span>}
+                            </label>
+                          </div>
+                        )}
+                        
                         <div className="pt-3 mt-3 border-t border-pink-200 flex justify-between items-center">
                           <span className="text-gray-800 font-bold">Final Amount</span>
                           <span className="text-2xl font-bold text-[var(--color-primary)]">₹{finalPrice}</span>
@@ -596,29 +819,57 @@ export default function Booking() {
                     </div>
                     
                     {/* Coupon Input Area */}
-                    <div className="bg-white border border-gray-200 rounded-xl p-4 mb-6 shadow-sm">
-                      <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Have a Coupon Code?</label>
-                      <div className="flex space-x-2">
-                        <input 
-                          type="text" 
-                          value={couponCode}
-                          onChange={e => setCouponCode(e.target.value.toUpperCase())}
-                          placeholder="ENTER CODE" 
-                          className="flex-1 p-3 border border-gray-200 rounded-lg text-sm font-bold uppercase focus:border-[var(--color-primary)] outline-none"
-                          disabled={!!appliedCoupon}
-                        />
-                        {appliedCoupon ? (
-                          <button type="button" onClick={() => { setAppliedCoupon(null); setCouponCode(""); }} className="px-4 py-2 bg-red-50 text-red-600 font-bold text-sm rounded-lg border border-red-100 hover:bg-red-100 transition-colors">Remove</button>
-                        ) : (
-                          <button type="button" onClick={applyCoupon} disabled={verifyingCoupon || !couponCode} className="px-6 py-2 bg-[var(--color-header)] text-white font-bold text-sm rounded-lg hover:bg-[var(--color-primary)] transition-colors disabled:opacity-50">
-                            {verifyingCoupon ? "..." : "Apply"}
-                          </button>
-                        )}
+                    <div className="bg-white border border-gray-200 rounded-xl p-4 mb-6 shadow-sm flex flex-col md:flex-row gap-4">
+                      
+                      <div className="flex-1">
+                        <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Have a Coupon Code?</label>
+                        <div className="flex space-x-2">
+                          <input 
+                            type="text" 
+                            value={couponCode}
+                            onChange={e => setCouponCode(e.target.value.toUpperCase())}
+                            placeholder="ENTER CODE" 
+                            className="flex-1 p-3 border border-gray-200 rounded-lg text-sm font-bold uppercase focus:border-[var(--color-primary)] outline-none"
+                            disabled={!!appliedCoupon}
+                          />
+                          {appliedCoupon ? (
+                            <button type="button" onClick={() => { setAppliedCoupon(null); setCouponCode(""); }} className="px-4 py-2 bg-red-50 text-red-600 font-bold text-sm rounded-lg border border-red-100 hover:bg-red-100 transition-colors">Remove</button>
+                          ) : (
+                            <button type="button" onClick={applyCoupon} disabled={verifyingCoupon || !couponCode} className="px-6 py-2 bg-[var(--color-header)] text-white font-bold text-sm rounded-lg hover:bg-[var(--color-primary)] transition-colors disabled:opacity-50">
+                              {verifyingCoupon ? "..." : "Apply"}
+                            </button>
+                          )}
+                        </div>
+                        {couponError && <p className="text-red-500 text-xs mt-2 font-medium">{couponError}</p>}
+                        {appliedCoupon && <p className="text-green-600 text-xs mt-2 font-bold">Coupon applied successfully!</p>}
                       </div>
-                      {couponError && <p className="text-red-500 text-xs mt-2 font-medium">{couponError}</p>}
-                      {appliedCoupon && <p className="text-green-600 text-xs mt-2 font-bold">Coupon applied successfully!</p>}
+
+                      {(!user || !userData?.isReferralClaimed) && (
+                      <div className="flex-1">
+                        <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Have a Referral Code?</label>
+                        <div className="flex space-x-2">
+                          <input 
+                            type="text" 
+                            value={referralInput}
+                            onChange={e => setReferralInput(e.target.value.toUpperCase())}
+                            placeholder="REFERRAL CODE" 
+                            className="flex-1 p-3 border border-gray-200 rounded-lg text-sm font-bold uppercase focus:border-[var(--color-primary)] outline-none"
+                            disabled={!!appliedReferral}
+                          />
+                          {appliedReferral ? (
+                            <button type="button" onClick={() => { setAppliedReferral(null); setReferralInput(""); setReferralDiscountAmount(0); }} className="px-4 py-2 bg-red-50 text-red-600 font-bold text-sm rounded-lg border border-red-100 hover:bg-red-100 transition-colors">Remove</button>
+                          ) : (
+                            <button type="button" onClick={applyReferralCode} disabled={verifyingReferral || !referralInput} className="px-6 py-2 bg-pink-600 text-white font-bold text-sm rounded-lg hover:bg-pink-700 transition-colors disabled:opacity-50">
+                              {verifyingReferral ? "..." : "Apply"}
+                            </button>
+                          )}
+                        </div>
+                        {referralError && <p className="text-red-500 text-xs mt-2 font-medium">{referralError}</p>}
+                        {appliedReferral && <p className="text-green-600 text-xs mt-2 font-bold">Referral applied! ₹50 reward unlocked on completion.</p>}
+                      </div>
+                      )}
                     </div>
-                    
+
                     <div className="bg-pink-50 text-[var(--color-primary)] border border-pink-100/50 text-sm p-4 rounded-2xl flex items-start space-x-3 mb-6 font-semibold">
                       <FiCheck className="mt-0.5 flex-shrink-0 text-xl" />
                       <p>Aapki booking instantly confirm ho jayegi! Payment online dene ki zaroorat nahi hai—aap artist ko service complete hone ke baad cash ya UPI (Offline) de sakte hain.</p>
