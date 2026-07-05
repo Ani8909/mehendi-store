@@ -8,7 +8,8 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { auth, db, storage } from "@/lib/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useAuth } from "@/lib/authContext";
-import { FiCheck, FiUploadCloud, FiMapPin, FiCalendar, FiClock, FiChevronDown } from "react-icons/fi";
+import { slugify } from "@/lib/slugify";
+import { FiCheck, FiUploadCloud, FiMapPin, FiCalendar, FiClock, FiChevronDown, FiCheckCircle } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import Loader from "@/components/Loader";
 
@@ -36,6 +37,24 @@ export default function Booking() {
   const [referralError, setReferralError] = useState("");
   const [verifyingReferral, setVerifyingReferral] = useState(false);
   const [referralDiscountAmount, setReferralDiscountAmount] = useState(0);
+  const [giftCardInput, setGiftCardInput] = useState("");
+  const [appliedGiftCard, setAppliedGiftCard] = useState<any | null>(null);
+  const [verifyingGiftCard, setVerifyingGiftCard] = useState(false);
+  const [giftCardError, setGiftCardError] = useState("");
+  const [isVIPPass, setIsVIPPass] = useState(false);
+  const [onlinePayAmount, setOnlinePayAmount] = useState<number>(0);
+
+  // Load Razorpay Script dynamically on mount
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
 
   const { register, handleSubmit, watch, setValue, trigger, formState: { errors } } = useForm({
     defaultValues: {
@@ -166,11 +185,30 @@ export default function Booking() {
   }
   if (finalPrice < 0) finalPrice = 0;
 
+  let giftCardDeduction = 0;
+  if (appliedGiftCard && appliedGiftCard.balance > 0) {
+    giftCardDeduction = Math.min(finalPrice, appliedGiftCard.balance);
+    finalPrice -= giftCardDeduction;
+  }
+
   let walletDeduction = 0;
   if (applyWallet && userData?.walletBalance > 0) {
     walletDeduction = Math.min(finalPrice, userData.walletBalance);
     finalPrice -= walletDeduction;
   }
+
+  const minDeposit = isVIPPass ? Math.min(200, finalPrice) : Math.round(finalPrice * 0.05);
+
+  useEffect(() => {
+    const minDep = isVIPPass ? Math.min(200, finalPrice) : Math.round(finalPrice * 0.05);
+    setOnlinePayAmount(prev => {
+      if (isVIPPass) return minDep;
+      if (prev < minDep) return minDep;
+      if (prev > finalPrice) return finalPrice;
+      return prev;
+    });
+  }, [finalPrice, isVIPPass]);
+
 
   const applyCoupon = async () => {
     if (!couponCode) return;
@@ -203,6 +241,39 @@ export default function Booking() {
       setCouponError("Error verifying coupon.");
     } finally {
       setVerifyingCoupon(false);
+    }
+  };
+
+  const applyGiftCard = async () => {
+    if (!giftCardInput) return;
+    setVerifyingGiftCard(true);
+    setGiftCardError("");
+    try {
+      const codeUpper = giftCardInput.toUpperCase().trim();
+      const q = query(collection(db, "gift_cards"), where("code", "==", codeUpper));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        const giftCardDoc = snap.docs[0];
+        const giftCardData = giftCardDoc.data();
+        
+        if (!giftCardData.isActive) {
+          setGiftCardError("This Gift Card is inactive.");
+          return;
+        }
+        if ((giftCardData.balance || 0) <= 0) {
+          setGiftCardError("This Gift Card balance is 0.");
+          return;
+        }
+        setAppliedGiftCard({ id: giftCardDoc.id, ...giftCardData });
+        setGiftCardError("");
+      } else {
+        setGiftCardError("Invalid Gift Card code.");
+      }
+    } catch (e) {
+      console.error(e);
+      setGiftCardError("Error verifying Gift Card.");
+    } finally {
+      setVerifyingGiftCard(false);
     }
   };
 
@@ -246,13 +317,40 @@ export default function Booking() {
     }
   };
 
+  const processSharedServiceReferral = async (bookedServiceTitle: string) => {
+    try {
+      const sharedRef = localStorage.getItem("sharedServiceReferral");
+      const sharedSlug = localStorage.getItem("sharedServiceSlug");
+      if (sharedRef && sharedSlug && bookedServiceTitle) {
+        const expectedSlug = slugify(bookedServiceTitle);
+        if (sharedSlug === expectedSlug) {
+          const usersRef = collection(db, "users");
+          const q = query(usersRef, where("referralCode", "==", sharedRef));
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+            const referrerDoc = querySnapshot.docs[0];
+            const referrerData = referrerDoc.data();
+            const currentWallet = referrerData.walletBalance || 0;
+            await updateDoc(doc(db, "users", referrerDoc.id), {
+              walletBalance: currentWallet + 20
+            });
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Error processing shared service referral credit:", err);
+    } finally {
+      localStorage.removeItem("sharedServiceReferral");
+      localStorage.removeItem("sharedServiceSlug");
+    }
+  };
+
   const onSubmit = async (data: any) => {
     if (step < 4) {
       setStep(step + 1);
       return;
     }
 
-    // Final Step - Create Booking (Bypassing Razorpay for offline payments)
     setLoading(true);
     try {
       let finalCustomerId = user?.uid || "guest";
@@ -354,54 +452,209 @@ export default function Booking() {
       }
 
       const bRef = "JM-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-      const bookingData = {
-        bookingRef: bRef,
-        customerId: user?.uid || "guest",
-        customerName: data.name,
-        phone: data.phone,
-        address: data.address,
-        serviceId: data.serviceId || "package",
-        serviceTitle: data.packageName || selectedService?.title,
-        price: finalPrice,
-        originalPrice: basePrice,
-        couponCode: appliedCoupon?.code || null,
-        couponDiscount: couponDiscount,
-        returningDiscount: returningDiscount,
-        isPackage: !!data.packageName,
-        additionalNotes: data.additionalNotes,
-        inspirationPhoto: imageURL,
-        bookingDateString: data.bookingDate,
-        bookingDate: new Date(data.bookingDate),
-        timeSlot: data.timeSlot,
-        status: "pending",
-        paymentStatus: "offline",
-        paymentId: "offline_cash",
-        createdAt: serverTimestamp(),
-      };
 
-      const docRef = await addDoc(collection(db, "bookings"), bookingData);
+      // If finalPrice is 0 (due to full discount/wallet deduction), skip Razorpay
+      if (finalPrice === 0) {
+        const bookingData = {
+          bookingRef: bRef,
+          customerId: finalCustomerId,
+          customerName: data.name,
+          phone: data.phone,
+          address: data.address,
+          serviceId: data.serviceId || "package",
+          serviceTitle: data.packageName || selectedService?.title,
+          price: finalPrice,
+          originalPrice: basePrice,
+          couponCode: appliedCoupon?.code || null,
+          couponDiscount: couponDiscount,
+          returningDiscount: returningDiscount,
+          isPackage: !!data.packageName,
+          additionalNotes: data.additionalNotes,
+          inspirationPhoto: imageURL,
+          bookingDateString: data.bookingDate,
+          bookingDate: new Date(data.bookingDate),
+          timeSlot: data.timeSlot,
+          status: "confirmed",
+          paymentStatus: "paid",
+          paymentId: "free_booking",
+          amountPaidOnline: 0,
+          balanceDue: 0,
+          isVIPPass: isVIPPass,
+          giftCardUsed: appliedGiftCard?.code || null,
+          giftCardDiscount: giftCardDeduction,
+          createdAt: serverTimestamp(),
+        };
 
-      // Deduct wallet balance
-      if (walletDeduction > 0 && finalCustomerId !== "guest") {
-        await updateDoc(doc(db, "users", finalCustomerId), {
-          walletBalance: finalWalletBalance - walletDeduction
+        await addDoc(collection(db, "bookings"), bookingData);
+
+        // Process shared service referral reward
+        await processSharedServiceReferral(bookingData.serviceTitle);
+
+        // Deduct Gift Card balance
+        if (giftCardDeduction > 0 && appliedGiftCard) {
+          const newGiftCardBalance = Math.max(0, appliedGiftCard.balance - giftCardDeduction);
+          await updateDoc(doc(db, "gift_cards", appliedGiftCard.id), {
+            balance: newGiftCardBalance,
+            isActive: newGiftCardBalance > 0
+          });
+        }
+
+        // Deduct wallet balance
+        if (walletDeduction > 0 && finalCustomerId !== "guest") {
+          await updateDoc(doc(db, "users", finalCustomerId), {
+            walletBalance: finalWalletBalance - walletDeduction
+          });
+        }
+        
+        // Send Email Notification
+        await fetch("/api/notify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            type: "NEW_BOOKING", 
+            data: {
+              ...bookingData,
+              email: finalUserEmail
+            }
+          })
         });
-      }
-      
-      // Send Email Notification
-      await fetch("/api/notify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          type: "NEW_BOOKING", 
-          data: {
-            ...bookingData,
-            email: finalUserEmail
-          }
-        })
-      });
 
-      router.push(`/dashboard?bookingSuccess=true`);
+        router.push(`/dashboard?bookingSuccess=true`);
+        return;
+      }
+
+      // Initiate Razorpay payment
+      try {
+        const orderRes = await fetch("/api/razorpay/create-order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            amount: onlinePayAmount,
+            receipt: bRef,
+          }),
+        });
+
+        if (!orderRes.ok) {
+          throw new Error("Failed to initialize payment gateway");
+        }
+
+        const orderData = await orderRes.json();
+
+        const options = {
+          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
+          amount: orderData.amount,
+          currency: orderData.currency,
+          name: "Jyoti Mehendi Artist",
+          description: `Booking deposit for ${data.packageName || selectedService?.title}`,
+          image: "https://jyotimehendi.in/logo.png",
+          order_id: orderData.id,
+          handler: async function (response: any) {
+            setLoading(true);
+            try {
+              const bookingData = {
+                bookingRef: bRef,
+                customerId: finalCustomerId,
+                customerName: data.name,
+                phone: data.phone,
+                address: data.address,
+                serviceId: data.serviceId || "package",
+                serviceTitle: data.packageName || selectedService?.title,
+                price: finalPrice,
+                originalPrice: basePrice,
+                couponCode: appliedCoupon?.code || null,
+                couponDiscount: couponDiscount,
+                returningDiscount: returningDiscount,
+                isPackage: !!data.packageName,
+                additionalNotes: data.additionalNotes,
+                inspirationPhoto: imageURL,
+                bookingDateString: data.bookingDate,
+                bookingDate: new Date(data.bookingDate),
+                timeSlot: data.timeSlot,
+                status: "confirmed",
+                paymentStatus: onlinePayAmount === finalPrice ? "paid" : "advance_paid",
+                paymentId: response.razorpay_payment_id,
+                razorpayOrderId: response.razorpay_order_id,
+                razorpaySignature: response.razorpay_signature,
+                amountPaidOnline: onlinePayAmount,
+                balanceDue: finalPrice - onlinePayAmount,
+                isVIPPass: isVIPPass,
+                giftCardUsed: appliedGiftCard?.code || null,
+                giftCardDiscount: giftCardDeduction,
+                createdAt: serverTimestamp(),
+              };
+
+              await addDoc(collection(db, "bookings"), bookingData);
+
+              // Process shared service referral reward
+              await processSharedServiceReferral(bookingData.serviceTitle);
+
+              // Deduct Gift Card balance
+              if (giftCardDeduction > 0 && appliedGiftCard) {
+                const newGiftCardBalance = Math.max(0, appliedGiftCard.balance - giftCardDeduction);
+                await updateDoc(doc(db, "gift_cards", appliedGiftCard.id), {
+                  balance: newGiftCardBalance,
+                  isActive: newGiftCardBalance > 0
+                });
+              }
+
+              // Deduct wallet balance
+              if (walletDeduction > 0 && finalCustomerId !== "guest") {
+                await updateDoc(doc(db, "users", finalCustomerId), {
+                  walletBalance: finalWalletBalance - walletDeduction
+                });
+              }
+              
+              // Send Email Notification
+              await fetch("/api/notify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                  type: "NEW_BOOKING", 
+                  data: {
+                    ...bookingData,
+                    email: finalUserEmail
+                  }
+                })
+              });
+
+              router.push(`/dashboard?bookingSuccess=true`);
+            } catch (err: any) {
+              console.error("Firestore booking creation error:", err);
+              alert("Payment was successful, but we failed to record your booking. Please contact support immediately with your Payment ID: " + response.razorpay_payment_id);
+              setLoading(false);
+            }
+          },
+          prefill: {
+            name: data.name,
+            email: data.email,
+            contact: data.phone,
+          },
+          notes: {
+            bookingRef: bRef,
+            customerAddress: data.address,
+          },
+          theme: {
+            color: "#C2185B",
+          },
+          modal: {
+            ondismiss: function () {
+              setLoading(false);
+              setStepError("Payment cancelled. Please pay the advance deposit to confirm your booking.");
+            }
+          }
+        };
+
+        const rzp = new (window as any).Razorpay(options);
+        rzp.on('payment.failed', function (resp: any) {
+          setLoading(false);
+          setStepError("Payment failed: " + resp.error.description);
+        });
+        rzp.open();
+      } catch (gatewayErr: any) {
+        console.error("Payment initialization failed:", gatewayErr);
+        setStepError("Payment initialization failed: " + (gatewayErr.message || "Please check connection."));
+        setLoading(false);
+      }
     } catch (err) {
       console.error(err);
       alert("Booking failed. Please try again.");
@@ -793,6 +1046,14 @@ export default function Booking() {
                           </div>
                         )}
                         
+                        {/* Gift Card Display */}
+                        {giftCardDeduction > 0 && (
+                          <div className="flex justify-between items-center text-green-600">
+                            <span className="font-medium text-xs">Gift Card Applied ({appliedGiftCard?.code})</span>
+                            <span className="font-bold text-sm">-₹{giftCardDeduction}</span>
+                          </div>
+                        )}
+
                         {/* Wallet Section */}
                         {userData?.walletBalance > 0 && (
                           <div className="py-3 border-t border-dashed border-gray-200">
@@ -870,9 +1131,91 @@ export default function Booking() {
                       )}
                     </div>
 
-                    <div className="bg-pink-50 text-[var(--color-primary)] border border-pink-100/50 text-sm p-4 rounded-2xl flex items-start space-x-3 mb-6 font-semibold">
-                      <FiCheck className="mt-0.5 flex-shrink-0 text-xl" />
-                      <p>Aapki booking instantly confirm ho jayegi! Payment online dene ki zaroorat nahi hai—aap artist ko service complete hone ke baad cash ya UPI (Offline) de sakte hain.</p>
+                    {/* Gift Card Input Area */}
+                    <div className="bg-white border border-gray-200 rounded-xl p-4 mb-6 shadow-sm">
+                      <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Have a Gift Card Voucher?</label>
+                      <div className="flex space-x-2">
+                        <input 
+                          type="text" 
+                          value={giftCardInput}
+                          onChange={e => setGiftCardInput(e.target.value.toUpperCase())}
+                          placeholder="ENTER GIFT CARD CODE" 
+                          className="flex-1 p-3 border border-gray-200 rounded-lg text-sm font-bold uppercase focus:border-[var(--color-primary)] outline-none"
+                          disabled={!!appliedGiftCard}
+                        />
+                        {appliedGiftCard ? (
+                          <button type="button" onClick={() => { setAppliedGiftCard(null); setGiftCardInput(""); }} className="px-4 py-2 bg-red-50 text-red-600 font-bold text-sm rounded-lg border border-red-100 hover:bg-red-100 transition-colors">Remove</button>
+                        ) : (
+                          <button type="button" onClick={applyGiftCard} disabled={verifyingGiftCard || !giftCardInput} className="px-6 py-2 bg-pink-600 text-white font-bold text-sm rounded-lg hover:bg-pink-700 transition-colors disabled:opacity-50">
+                            {verifyingGiftCard ? "..." : "Apply"}
+                          </button>
+                        )}
+                      </div>
+                      {giftCardError && <p className="text-red-500 text-xs mt-2 font-medium">{giftCardError}</p>}
+                      {appliedGiftCard && <p className="text-green-600 text-xs mt-2 font-bold">Gift Card verified! ₹{appliedGiftCard.balance} balance available.</p>}
+                    </div>
+
+                    <div className="bg-pink-50 border border-pink-100 text-sm p-5 rounded-2xl mb-6 shadow-inner space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-[var(--color-primary)] font-bold">
+                          <FiCheckCircle size={18} />
+                          <span>Secure Online Advance Deposit</span>
+                        </div>
+                        {/* VIP Switch Toggle */}
+                        <label className="flex items-center gap-2 cursor-pointer bg-white py-1.5 px-3 rounded-full border border-pink-200 shadow-sm text-xs font-bold text-pink-700 select-none">
+                          <input 
+                            type="checkbox" 
+                            checked={isVIPPass}
+                            onChange={(e) => setIsVIPPass(e.target.checked)}
+                            className="w-4 h-4 text-pink-500 rounded border-gray-300 focus:ring-pink-500"
+                          />
+                          <span>✨ VIP Priority (₹200 lock)</span>
+                        </label>
+                      </div>
+                      
+                      {isVIPPass ? (
+                        <p className="text-xs text-gray-500 leading-relaxed font-medium">
+                          🌟 **VIP Priority Booking Activated**: Humne aapki priority booking ke liye online deposit ko exactly ₹{minDeposit} par fix kar diya hai. Baaki bacha hua amount post-service adjust ho jayega. Hum aapko VIP status assign karenge!
+                        </p>
+                      ) : (
+                        <p className="text-xs text-gray-500 leading-relaxed font-medium">
+                          Apni booking confirm karne ke liye aapko kam se kam 5% advance payment online karna hoga. Baaki bacha hua amount aap service complete hone ke baad artist ko de sakte hain. Aap chaho to zyaada amount (100% tak) bhi abhi online pay kar sakte hain.
+                        </p>
+                      )}
+
+                      <div className="bg-white p-4 rounded-xl border border-pink-100 mt-2">
+                        <div className="flex justify-between items-center mb-3">
+                          <span className="text-xs font-extrabold text-gray-400 uppercase tracking-wider">Online Advance to Pay Now:</span>
+                          <span className="text-xl font-black text-[var(--color-primary)]">₹{onlinePayAmount}</span>
+                        </div>
+
+                        {!isVIPPass ? (
+                          <>
+                            <input 
+                              type="range"
+                              min={minDeposit}
+                              max={finalPrice}
+                              value={onlinePayAmount}
+                              onChange={(e) => setOnlinePayAmount(Number(e.target.value))}
+                              className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-pink-600 mb-3"
+                            />
+                            <div className="flex justify-between text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                              <span>Min: ₹{minDeposit} (5%)</span>
+                              <span>Max: ₹{finalPrice} (100%)</span>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="text-[10px] text-pink-500 font-bold uppercase tracking-wider text-center py-2 bg-pink-50/50 rounded-lg border border-pink-100">
+                            🔒 Amount locked to VIP Priority Deposit of ₹{minDeposit}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Remaining Balance display */}
+                      <div className="flex justify-between items-center text-xs font-bold text-gray-600 border-t border-dashed border-pink-200 pt-3">
+                        <span>Remaining Balance Due (Post-Service):</span>
+                        <span className="text-sm font-extrabold text-gray-800">₹{finalPrice - onlinePayAmount}</span>
+                      </div>
                     </div>
                   </motion.div>
                 )}
@@ -904,10 +1247,10 @@ export default function Booking() {
                     {loading ? (
                       <>
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        <span>Confirming...</span>
+                        <span>Processing...</span>
                       </>
                     ) : (
-                      `Confirm Booking (Pay Offline)`
+                      `Pay & Confirm Booking`
                     )}
                   </button>
                 )}

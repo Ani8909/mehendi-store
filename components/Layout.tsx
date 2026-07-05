@@ -22,7 +22,6 @@ export default function Layout({ children }: LayoutProps) {
       {!isAdminOrPartner && <Footer />}
       {!isAdminOrPartner && <BottomNav />}
       {!isAdminOrPartner && <FloatingContact />}
-      {!isAdminOrPartner && <RecentActivityPopup />}
     </div>
   );
 }

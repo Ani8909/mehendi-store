@@ -13,6 +13,7 @@ export default function Navbar() {
     { name: "Packages", href: "/packages" },
     { name: "Gallery", href: "/gallery" },
     { name: "Blog", href: "/blog" },
+    { name: "Gift Cards", href: "/gift-cards" },
   ];
 
   // Determine the correct dashboard link for the logged in user role

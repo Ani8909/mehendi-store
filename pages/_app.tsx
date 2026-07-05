@@ -1,6 +1,6 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
-import { Playfair_Display, Poppins } from "next/font/google";
+import { Playfair_Display, Poppins, Great_Vibes } from "next/font/google";
 import Layout from "@/components/Layout";
 import { AuthProvider } from "@/lib/authContext";
 import { useState, useEffect } from "react";
@@ -18,6 +18,12 @@ const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
   subsets: ["latin"],
   variable: "--font-poppins",
+});
+
+const greatVibes = Great_Vibes({
+  weight: ["400"],
+  subsets: ["latin"],
+  variable: "--font-great-vibes",
 });
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -41,7 +47,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <AuthProvider>
-      <main className={`${playfair.variable} ${poppins.variable} font-sans`}>
+      <main className={`${playfair.variable} ${poppins.variable} ${greatVibes.variable} font-sans`}>
         <Layout>
           <FlashOfferWidget />
           <AnimatePresence mode="wait">

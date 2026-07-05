@@ -10,6 +10,7 @@
 
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-playfair), ui-serif, Georgia, serif;
+  --font-love: var(--font-great-vibes), cursive;
   
   --size-7xl: 1440px; /* Redefine 7xl size to 1440px for wider premium layouts */
 }

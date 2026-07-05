@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion";
 import { collection, getDocs, updateDoc, doc, query, orderBy, addDoc, serverTimestamp, deleteDoc, setDoc, onSnapshot, getDoc, where } from "firebase/firestore";
 import AdminBlogManager from "@/components/AdminBlogManager";
+import AdminAssistantManager from "@/components/AdminAssistantManager";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/lib/authContext";
 import { Bar, Doughnut } from "react-chartjs-2";
@@ -19,7 +20,7 @@ import {
   Legend,
   ArcElement
 } from "chart.js";
-import { FiUsers, FiCalendar, FiDollarSign, FiLogOut, FiImage, FiLayout, FiPieChart, FiX, FiUploadCloud, FiClock, FiCheck, FiActivity, FiTag, FiGift, FiEdit3 } from "react-icons/fi";
+import { FiUsers, FiCalendar, FiDollarSign, FiLogOut, FiImage, FiLayout, FiPieChart, FiX, FiUploadCloud, FiClock, FiCheck, FiActivity, FiTag, FiGift, FiEdit3, FiCpu } from "react-icons/fi";
 import { FullScreenLoader } from "@/components/Loader";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
@@ -28,7 +29,7 @@ export default function AdminDashboard() {
   const { user, userData, loading: authLoading, signOut } = useAuth();
   const router = useRouter();
 
-  const [activeTab, setActiveTab] = useState<"bookings" | "partners" | "reports" | "gallery" | "hero" | "express" | "packages" | "finances" | "services" | "coupons" | "referrals" | "blogs">("bookings");
+  const [activeTab, setActiveTab] = useState<"bookings" | "partners" | "reports" | "gallery" | "hero" | "express" | "packages" | "finances" | "services" | "coupons" | "referrals" | "blogs" | "giftcards" | "assistant">("bookings");
   const [bookings, setBookings] = useState<any[]>([]);
   const [referralSettings, setReferralSettings] = useState<any>(null);
   const [partners, setPartners] = useState<any[]>([]);
@@ -40,6 +41,14 @@ export default function AdminDashboard() {
   const [packageEnquiries, setPackageEnquiries] = useState<any[]>([]);
   const [revenueTransactions, setRevenueTransactions] = useState<any[]>([]);
   const [coupons, setCoupons] = useState<any[]>([]);
+  // Gift Card States
+  const [giftCards, setGiftCards] = useState<any[]>([]);
+  const [newGcAmount, setNewGcAmount] = useState("");
+  const [newGcReceiver, setNewGcReceiver] = useState("");
+  const [newGcPhone, setNewGcPhone] = useState("");
+  const [newGcEmail, setNewGcEmail] = useState("");
+  const [newGcReason, setNewGcReason] = useState("");
+  const [gcSearchQuery, setGcSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
   // Coupon States
@@ -71,6 +80,7 @@ export default function AdminDashboard() {
   const [newServiceDuration, setNewServiceDuration] = useState("");
   const [newServiceDesc, setNewServiceDesc] = useState("");
   const [newServiceImage, setNewServiceImage] = useState("");
+  const [newServiceTrending, setNewServiceTrending] = useState(false);
 
   // Partner State
   const [newPartnerName, setNewPartnerName] = useState("");
@@ -176,6 +186,13 @@ export default function AdminDashboard() {
     }, (err) => console.error("Referral sync error:", err));
     unsubscribes.push(unsubReferral);
 
+    // 13. Live Gift Cards Listener
+    const giftCardsQuery = query(collection(db, "gift_cards"), orderBy("createdAt", "desc"));
+    const unsubGiftCards = onSnapshot(giftCardsQuery, (snapshot) => {
+      setGiftCards(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+    }, (err) => console.error("Gift Cards sync error:", err));
+    unsubscribes.push(unsubGiftCards);
+
     // Clean up all active listeners on unmount or session switch
     return () => {
       unsubscribes.forEach(unsub => unsub());
@@ -277,6 +294,65 @@ export default function AdminDashboard() {
       await deleteDoc(doc(db, "coupons", couponId));
     } catch (err) {
       alert("Failed to delete coupon");
+    }
+  };
+
+  const handleIssueGiftCard = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newGcAmount || !newGcReceiver || !newGcPhone) return alert("Please fill all required fields");
+    const amountVal = Number(newGcAmount);
+    if (amountVal < 500) return alert("Minimum amount is ₹500");
+
+    try {
+      const block1 = Math.random().toString(36).substring(2, 6).toUpperCase();
+      const block2 = Math.random().toString(36).substring(2, 6).toUpperCase();
+      const giftCardCode = `GC-${block1}-${block2}`;
+
+      const giftCardData = {
+        code: giftCardCode,
+        amount: amountVal,
+        balance: amountVal,
+        senderName: "ADMIN (Complimentary)",
+        senderEmail: "admin@jyotimehendi.in",
+        receiverName: newGcReceiver,
+        receiverEmail: newGcEmail || "N/A",
+        receiverPhone: newGcPhone,
+        message: newGcReason || "Complimentary VIP gift voucher issued by Jyoti Mehendi",
+        paymentId: "admin_issued",
+        paymentStatus: "paid",
+        isActive: true,
+        createdAt: serverTimestamp(),
+        usedAt: null
+      };
+
+      await addDoc(collection(db, "gift_cards"), giftCardData);
+
+      alert(`Gift card generated successfully! Code: ${giftCardCode}`);
+      setNewGcAmount("");
+      setNewGcReceiver("");
+      setNewGcPhone("");
+      setNewGcEmail("");
+      setNewGcReason("");
+    } catch (err: any) {
+      console.error(err);
+      alert("Failed to issue gift card: " + err.message);
+    }
+  };
+
+  const handleToggleGiftCard = async (gcId: string, currentStatus: boolean) => {
+    try {
+      await updateDoc(doc(db, "gift_cards", gcId), { isActive: !currentStatus });
+    } catch (err) {
+      alert("Failed to toggle Gift Card status");
+    }
+  };
+
+  const handleDeleteGiftCard = async (gcId: string) => {
+    if (!confirm("Are you sure you want to delete this Gift Card?")) return;
+    try {
+      await deleteDoc(doc(db, "gift_cards", gcId));
+    } catch (err) {
+      alert("Failed to delete Gift Card");
     }
   };
 
@@ -524,6 +600,7 @@ export default function AdminDashboard() {
   const [newPkgPrice, setNewPkgPrice] = useState("");
   const [newPkgDesc, setNewPkgDesc] = useState("");
   const [newPkgFeatures, setNewPkgFeatures] = useState<string[]>([""]);
+  const [newPkgTrending, setNewPkgTrending] = useState(false);
 
   const addFeatureInput = () => setNewPkgFeatures([...newPkgFeatures, ""]);
   const updateFeatureInput = (index: number, value: string) => {
@@ -540,6 +617,7 @@ export default function AdminDashboard() {
         price: Number(newPkgPrice),
         description: newPkgDesc,
         features: newPkgFeatures.filter(f => f.trim() !== ""),
+        isTrending: newPkgTrending,
         createdAt: serverTimestamp()
       });
       setEventPackages([{ 
@@ -547,11 +625,21 @@ export default function AdminDashboard() {
         name: newPkgName, 
         price: Number(newPkgPrice), 
         description: newPkgDesc,
-        features: newPkgFeatures.filter(f => f.trim() !== "")
+        features: newPkgFeatures.filter(f => f.trim() !== ""),
+        isTrending: newPkgTrending
       }, ...eventPackages]);
       setNewPkgName(""); setNewPkgPrice(""); setNewPkgDesc(""); setNewPkgFeatures([""]);
+      setNewPkgTrending(false);
     } catch (err: any) {
       alert("Failed to add package: " + err.message);
+    }
+  };
+
+  const togglePackageTrending = async (id: string, currentTrending: boolean) => {
+    try {
+      await updateDoc(doc(db, "event_packages", id), { isTrending: !currentTrending });
+    } catch (err: any) {
+      alert("Failed to update trending status: " + err.message);
     }
   };
 
@@ -602,6 +690,7 @@ export default function AdminDashboard() {
         description: newServiceDesc,
         image: newServiceImage || "",
         isActive: true,
+        isTrending: newServiceTrending,
         createdAt: serverTimestamp()
       });
       // Reset form states
@@ -611,6 +700,7 @@ export default function AdminDashboard() {
       setNewServiceDuration("");
       setNewServiceDesc("");
       setNewServiceImage("");
+      setNewServiceTrending(false);
       alert("Service added successfully!");
     } catch (err: any) {
       alert("Failed to add service: " + err.message);
@@ -622,6 +712,14 @@ export default function AdminDashboard() {
       await updateDoc(doc(db, "services", id), { isActive: !currentStatus });
     } catch (err: any) {
       alert("Failed to update status: " + err.message);
+    }
+  };
+
+  const toggleServiceTrending = async (id: string, currentTrending: boolean) => {
+    try {
+      await updateDoc(doc(db, "services", id), { isTrending: !currentTrending });
+    } catch (err: any) {
+      alert("Failed to update trending status: " + err.message);
     }
   };
 
@@ -710,10 +808,39 @@ export default function AdminDashboard() {
     document.body.removeChild(link);
   };
 
+  const handleDownloadRazorpayPayments = () => {
+    const headers = ["Booking Ref", "Customer Name", "Phone", "Service Booked", "Booking Date", "Total Price", "Amount Paid Online", "Balance Due", "Razorpay Payment ID", "Order ID", "Date Created"];
+    const filtered = bookings.filter(b => b.paymentId && b.paymentId !== 'free_booking');
+    const rows = filtered.map(b => [
+      b.bookingRef || "N/A",
+      b.customerName || "N/A",
+      b.phone || "N/A",
+      b.serviceTitle || "N/A",
+      b.bookingDateString || "N/A",
+      b.price || 0,
+      b.amountPaidOnline || 0,
+      b.balanceDue || 0,
+      b.paymentId || "N/A",
+      b.razorpayOrderId || "N/A",
+      b.createdAt ? new Date(b.createdAt.seconds * 1000).toLocaleString() : "N/A"
+    ]);
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + [headers.join(","), ...rows.map(e => e.map(val => `"${String(val).replace(/"/g, '""')}"`).join(","))].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "razorpay_payments.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // Chart Data preparation
+  const razorpayRevenue = bookings.reduce((sum, b) => sum + (b.paymentId && b.paymentId !== 'free_booking' ? Number(b.amountPaidOnline || 0) : 0), 0);
+  const totalBalanceDue = bookings.reduce((sum, b) => sum + Number(b.balanceDue || 0), 0);
   const bookingRevenue = bookings.reduce((a, b) => a + Number(b.price || 0), 0);
   const manualRevenue = revenueTransactions.reduce((a, tx) => a + Number(tx.amount || 0), 0);
-  const totalRevenue = bookingRevenue + manualRevenue;
+  const totalRevenue = razorpayRevenue + manualRevenue;
 
   const revenueByStatus = bookings.reduce((acc, curr) => {
     acc[curr.status] = (acc[curr.status] || 0) + Number(curr.price || 0);
@@ -820,7 +947,9 @@ export default function AdminDashboard() {
                 { id: "packages", label: "Event Packages", icon: <FiUsers/> },
                 { id: "coupons", label: "Coupons", icon: <FiTag/> },
                 { id: "referrals", label: "Referrals", icon: <FiGift/> },
+                { id: "giftcards", label: "Gift Cards", icon: <FiGift/> },
                 { id: "blogs", label: "Blogs", icon: <FiEdit3/> },
+                { id: "assistant", label: "AI Assistant", icon: <FiCpu/> },
                 { id: "finances", label: "Finances", icon: <FiDollarSign/> },
                 { id: "reports", label: "Reports", icon: <FiPieChart/> },
               ].map((tab) => (
@@ -838,6 +967,9 @@ export default function AdminDashboard() {
               {/* Referrals Tab */}
               {activeTab === "blogs" && (
                 <AdminBlogManager />
+              )}
+              {activeTab === "assistant" && (
+                <AdminAssistantManager />
               )}
               {activeTab === "referrals" && referralSettings && (
                 <div className="max-w-2xl mx-auto bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
@@ -908,6 +1040,182 @@ export default function AdminDashboard() {
                 </div>
               )}
 
+              {activeTab === "giftcards" && (
+                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Left Panel: Issue New Gift Card */}
+                    <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-6">
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-800 font-serif flex items-center gap-2">
+                          <FiGift className="text-pink-500" /> Issue Complimentary Gift Card
+                        </h3>
+                        <p className="text-xs text-gray-400 mt-1">Generate a free VIP gift card without payment.</p>
+                      </div>
+
+                      <form onSubmit={handleIssueGiftCard} className="space-y-4">
+                        <div>
+                          <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Recipient Name *</label>
+                          <input 
+                            type="text" 
+                            required
+                            value={newGcReceiver} 
+                            onChange={e => setNewGcReceiver(e.target.value)} 
+                            placeholder="Name" 
+                            className="w-full p-3 bg-gray-50 border border-transparent rounded-2xl text-sm focus:bg-white focus:border-pink-500 outline-none transition-all font-medium"
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Recipient Phone *</label>
+                            <input 
+                              type="tel" 
+                              required
+                              value={newGcPhone} 
+                              onChange={e => setNewGcPhone(e.target.value)} 
+                              placeholder="Phone number" 
+                              className="w-full p-3 bg-gray-50 border border-transparent rounded-2xl text-sm focus:bg-white focus:border-pink-500 outline-none transition-all font-medium"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Recipient Email</label>
+                            <input 
+                              type="email" 
+                              value={newGcEmail} 
+                              onChange={e => setNewGcEmail(e.target.value)} 
+                              placeholder="Optional" 
+                              className="w-full p-3 bg-gray-50 border border-transparent rounded-2xl text-sm focus:bg-white focus:border-pink-500 outline-none transition-all font-medium"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Gift Card Value (₹) *</label>
+                          <input 
+                            type="number" 
+                            min="500"
+                            required
+                            value={newGcAmount} 
+                            onChange={e => setNewGcAmount(e.target.value)} 
+                            placeholder="Minimum ₹500" 
+                            className="w-full p-3 bg-gray-50 border border-transparent rounded-2xl text-sm focus:bg-white focus:border-pink-500 outline-none transition-all font-medium"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Issuing Reason</label>
+                          <textarea 
+                            rows={2} 
+                            value={newGcReason} 
+                            onChange={e => setNewGcReason(e.target.value)} 
+                            placeholder="e.g. VIP Promo, Contest Winner, Compensation" 
+                            className="w-full p-3 bg-gray-50 border border-transparent rounded-2xl text-sm focus:bg-white focus:border-pink-500 outline-none transition-all resize-none font-medium"
+                          />
+                        </div>
+
+                        <button 
+                          type="submit" 
+                          className="w-full py-3 bg-pink-600 hover:bg-pink-700 text-white rounded-2xl font-bold text-xs transition-all shadow-md active:scale-[0.98]"
+                        >
+                          Generate & Issue Gift Card
+                        </button>
+                      </form>
+                    </div>
+
+                    {/* Right Panel: Gift Card Pool Ledger */}
+                    <div className="lg:col-span-2 bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-6">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border-b border-gray-50 pb-4">
+                        <div>
+                          <h3 className="text-lg font-bold text-gray-800 font-serif">Voucher Ledger</h3>
+                          <p className="text-xs text-gray-400 mt-1">
+                            Total Vouchers: {giftCards.length} | Balance Pool: ₹{giftCards.reduce((acc, gc) => acc + (gc.balance || 0), 0)}
+                          </p>
+                        </div>
+                        <input 
+                          type="text" 
+                          value={gcSearchQuery}
+                          onChange={e => setGcSearchQuery(e.target.value)}
+                          placeholder="Search Code or Name..." 
+                          className="p-2 border border-gray-200 rounded-xl text-xs font-medium outline-none focus:border-pink-500 max-w-[200px]"
+                        />
+                      </div>
+
+                      <div className="overflow-x-auto border border-gray-50 rounded-2xl">
+                        <table className="w-full text-left text-xs">
+                          <thead className="bg-gray-50/50 text-gray-500">
+                            <tr>
+                              <th className="p-3 font-bold uppercase tracking-wider">Date</th>
+                              <th className="p-3 font-bold uppercase tracking-wider">Code</th>
+                              <th className="p-3 font-bold uppercase tracking-wider">Recipient Details</th>
+                              <th className="p-3 font-bold uppercase tracking-wider">Balance / Value</th>
+                              <th className="p-3 font-bold uppercase tracking-wider">Status</th>
+                              <th className="p-3 font-bold uppercase tracking-wider text-center">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {giftCards
+                              .filter(gc => {
+                                const q = gcSearchQuery.toLowerCase();
+                                return (
+                                  (gc.code || "").toLowerCase().includes(q) ||
+                                  (gc.receiverName || "").toLowerCase().includes(q) ||
+                                  (gc.receiverPhone || "").toLowerCase().includes(q)
+                                );
+                              })
+                              .map(gc => (
+                                <tr key={gc.id} className="hover:bg-gray-50/50 transition-colors">
+                                  <td className="p-3 text-gray-500 whitespace-nowrap">
+                                    {gc.createdAt ? new Date(gc.createdAt.seconds * 1000).toLocaleDateString() : "N/A"}
+                                  </td>
+                                  <td className="p-3 font-mono font-bold text-pink-700">{gc.code}</td>
+                                  <td className="p-3">
+                                    <p className="font-bold text-gray-800">{gc.receiverName}</p>
+                                    <p className="text-[10px] text-gray-400">{gc.receiverPhone}</p>
+                                  </td>
+                                  <td className="p-3 font-medium text-gray-800">
+                                    ₹{gc.balance || 0} <span className="text-[10px] text-gray-400 font-normal">/ ₹{gc.amount}</span>
+                                  </td>
+                                  <td className="p-3">
+                                    <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${
+                                      gc.isActive && (gc.balance || 0) > 0
+                                        ? "bg-green-50 text-green-600 border border-green-200"
+                                        : "bg-red-50 text-red-500 border border-red-200"
+                                    }`}>
+                                      {gc.isActive && (gc.balance || 0) > 0 ? "Active" : "Inactive"}
+                                    </span>
+                                  </td>
+                                  <td className="p-3">
+                                    <div className="flex gap-2 justify-center">
+                                      <button 
+                                        onClick={() => handleToggleGiftCard(gc.id, gc.isActive)}
+                                        className={`px-2 py-1 text-[10px] font-bold rounded-lg border transition-colors ${
+                                          gc.isActive 
+                                            ? "bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100" 
+                                            : "bg-green-50 text-green-600 border-green-200 hover:bg-green-100"
+                                        }`}
+                                      >
+                                        {gc.isActive ? "Pause" : "Resume"}
+                                      </button>
+                                      <button 
+                                        onClick={() => handleDeleteGiftCard(gc.id)}
+                                        className="px-2 py-1 text-[10px] font-bold bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
+                                      >
+                                        Delete
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            {giftCards.length === 0 && (
+                              <tr>
+                                <td colSpan={6} className="p-6 text-center text-gray-400 text-xs">No Gift Vouchers in circulation.</td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Bookings Tab */}
               {activeTab === "bookings" && (
                 <div className="space-y-4">
@@ -929,7 +1237,14 @@ export default function AdminDashboard() {
                           <tr key={booking.id} className="hover:bg-gray-50">
                             <td className="p-4">
                               <div className="flex flex-col">
-                                <span className="font-semibold text-gray-800">{booking.customerName}</span>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-semibold text-gray-800">{booking.customerName}</span>
+                                  {booking.isVIPPass && (
+                                    <span className="bg-pink-50 text-pink-600 px-2 py-0.5 rounded-full text-[9px] font-extrabold tracking-wide uppercase border border-pink-100">
+                                      ✨ VIP Priority
+                                    </span>
+                                  )}
+                                </div>
                                 {booking.bookingRef && <span className="text-[10px] font-mono font-bold text-[var(--color-primary)] mt-0.5">{booking.bookingRef}</span>}
                                 {booking.phone ? (
                                   <div className="flex items-center gap-2 mt-1">
@@ -1024,9 +1339,14 @@ export default function AdminDashboard() {
                         )}
                         <div className="flex justify-between items-start mb-3">
                           <div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
                               <h4 className="font-extrabold text-gray-800 text-base">{booking.customerName}</h4>
                               {booking.bookingRef && <span className="bg-pink-50 text-pink-600 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold">{booking.bookingRef}</span>}
+                              {booking.isVIPPass && (
+                                <span className="bg-pink-100 text-pink-600 px-1.5 py-0.5 rounded-full text-[8px] font-extrabold tracking-wide uppercase">
+                                  ✨ VIP
+                                </span>
+                              )}
                             </div>
                             {booking.phone ? (
                               <div className="flex items-center gap-2 mt-1">
@@ -1470,6 +1790,21 @@ export default function AdminDashboard() {
                               )}
                             </div>
                           </div>
+
+                          <div className="pt-2">
+                            <label className="flex items-center space-x-2 cursor-pointer select-none">
+                              <input 
+                                type="checkbox" 
+                                checked={newServiceTrending} 
+                                onChange={(e)=>setNewServiceTrending(e.target.checked)} 
+                                className="w-5 h-5 text-pink-600 border-gray-300 rounded-xl focus:ring-pink-500 cursor-pointer" 
+                              />
+                              <span className="text-sm font-extrabold text-pink-700 uppercase tracking-wider flex items-center">
+                                🔥 Mark as Trending Service
+                              </span>
+                            </label>
+                          </div>
+
                         </div>
                       </div>
 
@@ -1533,16 +1868,29 @@ export default function AdminDashboard() {
                               <p className="text-gray-500 text-xs leading-relaxed mb-6 flex-grow line-clamp-3">{service.description}</p>
                               
                               <div className="border-t border-gray-100 pt-4 flex items-center justify-between mt-auto">
-                                <div className="flex items-center space-x-2">
-                                  <span className="text-[10px] text-gray-400 font-black uppercase">Visible:</span>
-                                  <button
-                                    onClick={() => toggleServiceStatus(service.id, service.isActive)}
-                                    className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${service.isActive ? 'bg-pink-500' : 'bg-gray-200'}`}
-                                  >
-                                    <span
-                                      className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${service.isActive ? 'translate-x-4' : 'translate-x-0'}`}
-                                    />
-                                  </button>
+                                <div className="flex flex-col space-y-2">
+                                  <div className="flex items-center space-x-2">
+                                    <span className="text-[10px] text-gray-400 font-black uppercase w-12">Visible:</span>
+                                    <button
+                                      onClick={() => toggleServiceStatus(service.id, service.isActive)}
+                                      className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${service.isActive ? 'bg-pink-500' : 'bg-gray-200'}`}
+                                    >
+                                      <span
+                                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${service.isActive ? 'translate-x-4' : 'translate-x-0'}`}
+                                      />
+                                    </button>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <span className="text-[10px] text-gray-400 font-black uppercase w-12">Trending:</span>
+                                    <button
+                                      onClick={() => toggleServiceTrending(service.id, service.isTrending || false)}
+                                      className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${service.isTrending ? 'bg-pink-500' : 'bg-gray-200'}`}
+                                    >
+                                      <span
+                                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${service.isTrending ? 'translate-x-4' : 'translate-x-0'}`}
+                                      />
+                                    </button>
+                                  </div>
                                 </div>
                                 <div className="flex space-x-2">
                                   <button 
@@ -1823,6 +2171,20 @@ export default function AdminDashboard() {
                         </div>
                       </div>
 
+                      <div className="mb-6">
+                        <label className="flex items-center space-x-2 cursor-pointer select-none">
+                          <input 
+                            type="checkbox" 
+                            checked={newPkgTrending} 
+                            onChange={(e)=>setNewPkgTrending(e.target.checked)} 
+                            className="w-5 h-5 text-amber-600 border-gray-300 rounded-xl focus:ring-amber-500 cursor-pointer" 
+                          />
+                          <span className="text-sm font-extrabold text-amber-700 uppercase tracking-wider">
+                            🔥 Mark as Trending Package
+                          </span>
+                        </label>
+                      </div>
+
                       <button onClick={handleAddPackage} className="w-full bg-amber-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-amber-700 transition-all shadow-xl shadow-amber-100">Create Luxury Package</button>
                     </div>
 
@@ -1845,6 +2207,20 @@ export default function AdminDashboard() {
                                 <span>{f}</span>
                               </div>
                             ))}
+                          </div>
+
+                          <div className="border-t border-gray-100 pt-4 flex items-center justify-between mt-auto">
+                            <div className="flex items-center space-x-2">
+                              <span className="text-[10px] text-gray-400 font-black uppercase">Trending:</span>
+                              <button
+                                onClick={() => togglePackageTrending(pkg.id, pkg.isTrending || false)}
+                                className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${pkg.isTrending ? 'bg-pink-500' : 'bg-gray-200'}`}
+                              >
+                                <span
+                                  className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${pkg.isTrending ? 'translate-x-4' : 'translate-x-0'}`}
+                                />
+                              </button>
+                            </div>
                           </div>
 
                           <div className="absolute -top-3 -right-3 flex space-x-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
@@ -2074,9 +2450,10 @@ export default function AdminDashboard() {
               {/* FINANCES TAB */}
               {activeTab === "finances" && (
                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  {/* Summary Cards */}
                   <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                     <div className="flex justify-between items-center mb-6">
-                      <h3 className="text-xl font-bold text-gray-800 font-serif">Revenue & Finances</h3>
+                      <h3 className="text-xl font-bold text-gray-800 font-serif">Revenue & Finances Dashboard</h3>
                       <button 
                         onClick={() => {
                           if (confirm("Are you sure you want to reset revenue? This will add a negative transaction to zero out the total.")) {
@@ -2085,100 +2462,182 @@ export default function AdminDashboard() {
                         }}
                         className="text-xs bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1 rounded-lg transition-colors font-bold border border-red-200"
                       >
-                        Reset Revenue
+                        Reset Net Collections
                       </button>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                      <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 text-center">
-                        <p className="text-gray-500 text-sm font-bold uppercase tracking-widest mb-2">Booking Revenue</p>
-                        <p className="text-3xl font-black text-gray-800">₹{bookingRevenue}</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+                      <div className="bg-gray-50 p-5 rounded-2xl border border-gray-100 text-center">
+                        <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Contract Value</p>
+                        <p className="text-2xl font-black text-gray-700">₹{bookingRevenue}</p>
                       </div>
-                      <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 text-center">
-                        <p className="text-gray-500 text-sm font-bold uppercase tracking-widest mb-2">Adjustments</p>
-                        <p className="text-3xl font-black text-gray-800">₹{manualRevenue}</p>
+                      <div className="bg-blue-50/40 p-5 rounded-2xl border border-blue-100 text-center">
+                        <p className="text-blue-500 text-[10px] font-bold uppercase tracking-widest mb-1">Razorpay Online</p>
+                        <p className="text-2xl font-black text-blue-700">₹{razorpayRevenue}</p>
                       </div>
-                      <div className="bg-green-50 p-6 rounded-2xl border border-green-100 text-center shadow-sm">
-                        <p className="text-green-600 text-sm font-bold uppercase tracking-widest mb-2">Net Total Revenue</p>
-                        <p className="text-4xl font-black text-green-700">₹{totalRevenue}</p>
+                      <div className="bg-amber-50/40 p-5 rounded-2xl border border-amber-100 text-center">
+                        <p className="text-amber-500 text-[10px] font-bold uppercase tracking-widest mb-1">Cash Due On-Site</p>
+                        <p className="text-2xl font-black text-amber-700">₹{totalBalanceDue}</p>
                       </div>
-                    </div>
-
-                    <div className="bg-pink-50/50 p-6 rounded-2xl border border-pink-100 mb-8">
-                      <h4 className="font-bold text-gray-800 mb-4">Add Manual Adjustment</h4>
-                      <div className="flex flex-col md:flex-row gap-4">
-                        <input 
-                          type="number" 
-                          value={newTransactionAmount}
-                          onChange={(e) => setNewTransactionAmount(e.target.value)}
-                          placeholder="Amount (e.g. 500 or -500)"
-                          className="flex-1 p-3 border border-white bg-white rounded-xl focus:ring-[var(--color-primary)] outline-none shadow-sm"
-                        />
-                        <input 
-                          type="text" 
-                          value={newTransactionReason}
-                          onChange={(e) => setNewTransactionReason(e.target.value)}
-                          placeholder="Reason (e.g. Offline Payment, Refund)"
-                          className="flex-[2] p-3 border border-white bg-white rounded-xl focus:ring-[var(--color-primary)] outline-none shadow-sm"
-                        />
-                        <button 
-                          onClick={() => {
-                            if (!newTransactionAmount || !newTransactionReason) return alert("Please fill both amount and reason");
-                            handleAddRevenueTransaction('manual_adjustment', Number(newTransactionAmount), newTransactionReason);
-                          }}
-                          className="bg-[var(--color-primary)] text-white px-8 py-3 rounded-xl font-bold hover:bg-[var(--color-header)] transition-all shadow-md"
-                        >
-                          Add Record
-                        </button>
+                      <div className="bg-gray-50 p-5 rounded-2xl border border-gray-100 text-center">
+                        <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Adjustments</p>
+                        <p className="text-2xl font-black text-gray-700">₹{manualRevenue}</p>
+                      </div>
+                      <div className="bg-green-50 p-5 rounded-2xl border border-green-100 text-center shadow-sm">
+                        <p className="text-green-600 text-[10px] font-bold uppercase tracking-widest mb-1">Net Collections</p>
+                        <p className="text-2xl font-black text-green-700">₹{totalRevenue}</p>
                       </div>
                     </div>
 
-                    <div>
+                    {/* Razorpay Online Payments Listing */}
+                    <div className="mb-10">
                       <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-bold text-gray-800">Transaction History</h4>
+                        <h4 className="font-bold text-gray-800 flex items-center gap-2">
+                          💳 Razorpay Payments Ledger ({bookings.filter(b => b.paymentId && b.paymentId !== 'free_booking').length} bookings)
+                        </h4>
                         <button 
-                          onClick={handleDownloadTransactions}
+                          onClick={handleDownloadRazorpayPayments}
                           className="flex items-center gap-2 text-xs font-bold text-[var(--color-primary)] hover:underline"
                         >
-                          <FiUploadCloud /> Download CSV
+                          <FiUploadCloud /> Download Payments CSV
                         </button>
                       </div>
-                      <div className="overflow-x-auto bg-white border border-gray-100 rounded-xl">
+                      
+                      <div className="overflow-x-auto bg-white border border-gray-100 rounded-2xl shadow-sm">
                         <table className="w-full text-left text-sm">
-                          <thead className="bg-gray-50 text-gray-500">
+                          <thead className="bg-gray-50/80 text-gray-500 border-b border-gray-100">
                             <tr>
-                              <th className="p-4 font-medium">Date</th>
-                              <th className="p-4 font-medium">Type</th>
-                              <th className="p-4 font-medium">Amount</th>
-                              <th className="p-4 font-medium">Reason</th>
-                              <th className="p-4 font-medium">Added By</th>
+                              <th className="p-4 font-bold text-xs uppercase tracking-wider">Date</th>
+                              <th className="p-4 font-bold text-xs uppercase tracking-wider">Booking Ref</th>
+                              <th className="p-4 font-bold text-xs uppercase tracking-wider">Customer Details</th>
+                              <th className="p-4 font-bold text-xs uppercase tracking-wider">Service Booked</th>
+                              <th className="p-4 font-bold text-xs uppercase tracking-wider text-right">Price</th>
+                              <th className="p-4 font-bold text-xs uppercase tracking-wider text-right">Paid Online</th>
+                              <th className="p-4 font-bold text-xs uppercase tracking-wider text-right">Cash Due</th>
+                              <th className="p-4 font-bold text-xs uppercase tracking-wider">Payment ID</th>
+                              <th className="p-4 font-bold text-xs uppercase tracking-wider">Status</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-gray-100">
-                            {revenueTransactions.map(tx => (
-                              <tr key={tx.id} className="hover:bg-gray-50">
-                                <td className="p-4 text-xs text-gray-500">{tx.createdAt ? new Date(tx.createdAt.seconds * 1000).toLocaleString() : "Just now"}</td>
-                                <td className="p-4">
-                                  <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${tx.type === 'reset' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'}`}>
-                                    {tx.type.replace('_', ' ')}
+                            {bookings.filter(b => b.paymentId && b.paymentId !== 'free_booking').map(b => (
+                              <tr key={b.id} className="hover:bg-gray-50/50 transition-colors">
+                                <td className="p-4 text-xs text-gray-500 whitespace-nowrap">
+                                  {b.createdAt ? new Date(b.createdAt.seconds * 1000).toLocaleDateString() : "N/A"}<br/>
+                                  <span className="text-[10px] text-gray-400">
+                                    {b.createdAt ? new Date(b.createdAt.seconds * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
                                   </span>
                                 </td>
-                                <td className={`p-4 font-bold ${tx.amount < 0 ? 'text-red-500' : 'text-green-500'}`}>
-                                  {tx.amount > 0 ? '+' : ''}₹{tx.amount}
+                                <td className="p-4 font-mono font-bold text-xs text-pink-700">{b.bookingRef || "N/A"}</td>
+                                <td className="p-4">
+                                  <p className="font-bold text-gray-800 text-xs">{b.customerName || "N/A"}</p>
+                                  <p className="text-[10px] text-gray-500">{b.phone || "N/A"}</p>
                                 </td>
-                                <td className="p-4 text-gray-700">{tx.reason}</td>
-                                <td className="p-4 text-xs text-gray-500">{tx.addedBy}</td>
+                                <td className="p-4 text-xs font-medium text-gray-700 max-w-[150px] truncate" title={b.serviceTitle}>
+                                  {b.serviceTitle || "N/A"}
+                                </td>
+                                <td className="p-4 text-right font-medium text-gray-700 text-xs">₹{b.price || 0}</td>
+                                <td className="p-4 text-right font-bold text-blue-600 text-xs">₹{b.amountPaidOnline || 0}</td>
+                                <td className="p-4 text-right font-medium text-amber-600 text-xs">₹{b.balanceDue || 0}</td>
+                                <td className="p-4 text-xs font-mono text-gray-400">{b.paymentId || "N/A"}</td>
+                                <td className="p-4">
+                                  <span className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold tracking-wider uppercase ${
+                                    b.paymentStatus === 'paid' 
+                                      ? 'bg-green-50 text-green-600 border border-green-200' 
+                                      : 'bg-blue-50 text-blue-600 border border-blue-200'
+                                  }`}>
+                                    {b.paymentStatus || 'advance_paid'}
+                                  </span>
+                                </td>
                               </tr>
                             ))}
-                            {revenueTransactions.length === 0 && (
+                            {bookings.filter(b => b.paymentId && b.paymentId !== 'free_booking').length === 0 && (
                               <tr>
-                                <td colSpan={5} className="p-8 text-center text-gray-400">No manual transactions yet.</td>
+                                <td colSpan={9} className="p-8 text-center text-gray-400 text-xs">No Razorpay online payments found.</td>
                               </tr>
                             )}
                           </tbody>
                         </table>
                       </div>
                     </div>
+
+                    {/* Manual Adjustments Section */}
+                    <div className="bg-pink-50/30 p-6 rounded-3xl border border-pink-100 mb-8">
+                      <h4 className="font-bold text-gray-800 mb-4 flex items-center gap-2">✍️ Add Manual Revenue Adjustment</h4>
+                      <div className="flex flex-col md:flex-row gap-4">
+                        <input 
+                          type="number" 
+                          value={newTransactionAmount}
+                          onChange={(e) => setNewTransactionAmount(e.target.value)}
+                          placeholder="Amount (e.g. 500 or -500)"
+                          className="flex-1 p-3 border border-white bg-white rounded-2xl focus:ring-[var(--color-primary)] outline-none shadow-sm text-sm"
+                        />
+                        <input 
+                          type="text" 
+                          value={newTransactionReason}
+                          onChange={(e) => setNewTransactionReason(e.target.value)}
+                          placeholder="Reason (e.g. Cash On-Site Payment, Discount Adjustment)"
+                          className="flex-[2] p-3 border border-white bg-white rounded-2xl focus:ring-[var(--color-primary)] outline-none shadow-sm text-sm"
+                        />
+                        <button 
+                          onClick={() => {
+                            if (!newTransactionAmount || !newTransactionReason) return alert("Please fill both amount and reason");
+                            handleAddRevenueTransaction('manual_adjustment', Number(newTransactionAmount), newTransactionReason);
+                          }}
+                          className="bg-[var(--color-primary)] text-white px-8 py-3 rounded-2xl font-bold hover:bg-[var(--color-header)] transition-all shadow-md text-xs"
+                        >
+                          Add Adjustment
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Manual Transaction History table */}
+                    <div>
+                      <div className="flex justify-between items-center mb-4">
+                        <h4 className="font-bold text-gray-800">📊 Manual Adjustments Log</h4>
+                        <button 
+                          onClick={handleDownloadTransactions}
+                          className="flex items-center gap-2 text-xs font-bold text-[var(--color-primary)] hover:underline"
+                        >
+                          <FiUploadCloud /> Download Adjustments CSV
+                        </button>
+                      </div>
+                      <div className="overflow-x-auto bg-white border border-gray-100 rounded-2xl shadow-sm">
+                        <table className="w-full text-left text-sm">
+                          <thead className="bg-gray-50 text-gray-500 border-b border-gray-100">
+                            <tr>
+                              <th className="p-4 font-bold text-xs uppercase tracking-wider">Date</th>
+                              <th className="p-4 font-bold text-xs uppercase tracking-wider">Type</th>
+                              <th className="p-4 font-bold text-xs uppercase tracking-wider">Amount</th>
+                              <th className="p-4 font-bold text-xs uppercase tracking-wider">Reason</th>
+                              <th className="p-4 font-bold text-xs uppercase tracking-wider">Added By</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {revenueTransactions.map(tx => (
+                              <tr key={tx.id} className="hover:bg-gray-50/50 transition-colors">
+                                <td className="p-4 text-xs text-gray-500">{tx.createdAt ? new Date(tx.createdAt.seconds * 1000).toLocaleString() : "Just now"}</td>
+                                <td className="p-4">
+                                  <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-extrabold tracking-wider uppercase ${tx.type === 'reset' ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-blue-50 text-blue-600 border border-blue-200'}`}>
+                                    {tx.type.replace('_', ' ')}
+                                  </span>
+                                </td>
+                                <td className={`p-4 font-bold text-xs ${tx.amount < 0 ? 'text-red-500' : 'text-green-500'}`}>
+                                  {tx.amount > 0 ? '+' : ''}₹{tx.amount}
+                                </td>
+                                <td className="p-4 text-gray-700 text-xs font-medium">{tx.reason}</td>
+                                <td className="p-4 text-xs text-gray-500">{tx.addedBy}</td>
+                              </tr>
+                            ))}
+                            {revenueTransactions.length === 0 && (
+                              <tr>
+                                <td colSpan={5} className="p-8 text-center text-gray-400 text-xs">No manual adjustments yet.</td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
                   </div>
                 </div>
               )}
@@ -2394,6 +2853,17 @@ export default function AdminDashboard() {
                         }} className="text-xs" />
                       </div>
                     </div>
+                    <div>
+                      <label className="flex items-center space-x-2 cursor-pointer select-none mt-2">
+                        <input 
+                          type="checkbox" 
+                          checked={editModal.data.isTrending || false} 
+                          onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, isTrending: e.target.checked } })} 
+                          className="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500 cursor-pointer" 
+                        />
+                        <span className="text-sm font-bold text-gray-700">🔥 Mark as Trending Service</span>
+                      </label>
+                    </div>
                   </>
                 )}
 
@@ -2441,6 +2911,17 @@ export default function AdminDashboard() {
                           </div>
                         ))}
                       </div>
+                    </div>
+                    <div className="pt-2">
+                      <label className="flex items-center space-x-2 cursor-pointer select-none">
+                        <input 
+                          type="checkbox" 
+                          checked={editModal.data.isTrending || false} 
+                          onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, isTrending: e.target.checked } })} 
+                          className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500 cursor-pointer" 
+                        />
+                        <span className="text-sm font-bold text-gray-700">🔥 Mark as Trending Package</span>
+                      </label>
                     </div>
                   </>
                 )}
