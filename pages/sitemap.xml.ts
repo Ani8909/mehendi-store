@@ -1,84 +1,292 @@
 import { GetServerSideProps } from 'next';
 import { adminDb } from '@/lib/firebaseAdmin';
 
-// Define the absolute URL of the website
+// ─────────────────────────────────────────────────────────────────
+// SITE CONFIG
+// ─────────────────────────────────────────────────────────────────
 const SITE_URL = 'https://jyotimehendi.in';
+const TODAY    = new Date().toISOString();
 
+// ─────────────────────────────────────────────────────────────────
+// KNOWN SERVICE SLUGS  (keep in sync with Firestore / services page)
+// ─────────────────────────────────────────────────────────────────
+const SERVICE_SLUGS = [
+  'bridal-mehndi-agra',
+  'arabic-mehndi-agra',
+  'guest-party-mehndi-agra',
+  'indo-western-mehndi-agra',
+  'rajasthani-mehndi-agra',
+  'moroccan-mehndi-agra',
+  'full-hand-mehndi-agra',
+  'feet-mehndi-agra',
+];
+
+// ─────────────────────────────────────────────────────────────────
+// KNOWN PACKAGE SLUGS
+// ─────────────────────────────────────────────────────────────────
+const PACKAGE_SLUGS = [
+  'royal-bridal-package-agra',
+  'budget-bridal-package-agra',
+  'premium-wedding-package-agra',
+  'engagement-mehndi-package-agra',
+  'karwa-chauth-mehndi-agra',
+  'full-wedding-family-package-agra',
+];
+
+// ─────────────────────────────────────────────────────────────────
+// AGRA LOCALITY LANDING PAGES  (keyword-rich geo pages)
+// ─────────────────────────────────────────────────────────────────
+const LOCALITY_PAGES = [
+  'mehndi-artist-tajganj-agra',
+  'mehndi-artist-sanjay-place-agra',
+  'mehndi-artist-kamla-nagar-agra',
+  'mehndi-artist-dayalbagh-agra',
+  'mehndi-artist-sikandra-agra',
+  'mehndi-artist-khandari-agra',
+  'mehndi-artist-shahganj-agra',
+  'mehndi-artist-fatehabad-road-agra',
+  'mehndi-artist-lohamandi-agra',
+  'mehndi-artist-shastripuram-agra',
+  'mehndi-artist-bodla-agra',
+  'mehndi-artist-prakash-nagar-agra',
+  'mehndi-artist-nehru-nagar-agra',
+  'mehndi-artist-civil-lines-agra',
+  'mehndi-artist-sadar-bazar-agra',
+  'mehndi-artist-belanganj-agra',
+  'mehndi-artist-hariparvat-agra',
+  'mehndi-artist-mant-road-agra',
+  'mehndi-artist-raj-nagar-agra',
+];
+
+// ─────────────────────────────────────────────────────────────────
+// KEYWORD-TARGETED STATIC PAGES
+// Each entry: [route, changefreq, priority, lastmod override?]
+// ─────────────────────────────────────────────────────────────────
+const STATIC_PAGES: Array<{
+  loc: string;
+  changefreq: string;
+  priority: string;
+  lastmod?: string;
+  images?: Array<{ loc: string; title: string; caption: string }>;
+}> = [
+  // ── Homepage ───────────────────────────────────────────────────
+  {
+    loc: '',
+    changefreq: 'daily',
+    priority: '1.0',
+    images: [
+      {
+        loc: `${SITE_URL}/images/services/bridal.png`,
+        title: 'Best Bridal Mehndi Artist in Agra - Jyoti Mehendi',
+        caption: 'Royal bridal mehndi designs by Jyoti Mehendi Artist Agra',
+      },
+      {
+        loc: `${SITE_URL}/images/services/arabic.png`,
+        title: 'Arabic Mehndi Artist in Agra',
+        caption: 'Premium Arabic and floral henna designs in Agra',
+      },
+    ],
+  },
+
+  // ── High-value booking pages ───────────────────────────────────
+  { loc: '/booking',          changefreq: 'daily',   priority: '0.95' },
+  { loc: '/express-booking',  changefreq: 'daily',   priority: '0.93' },
+
+  // ── Service & Package catalogue ────────────────────────────────
+  { loc: '/services',   changefreq: 'weekly', priority: '0.90' },
+  { loc: '/packages',   changefreq: 'weekly', priority: '0.90' },
+  { loc: '/offers',     changefreq: 'daily',  priority: '0.88' },
+  { loc: '/gift-cards', changefreq: 'weekly', priority: '0.80' },
+
+  // ── Social proof & discovery ───────────────────────────────────
+  { loc: '/gallery',   changefreq: 'weekly', priority: '0.85' },
+  { loc: '/reviews',   changefreq: 'daily',  priority: '0.82' },
+  { loc: '/blog',      changefreq: 'daily',  priority: '0.80' },
+
+  // ── Business pages ─────────────────────────────────────────────
+  { loc: '/partner',          changefreq: 'monthly', priority: '0.65' },
+  { loc: '/partner-register', changefreq: 'monthly', priority: '0.60' },
+
+  // ── Legal ──────────────────────────────────────────────────────
+  { loc: '/privacy', changefreq: 'yearly', priority: '0.30' },
+  { loc: '/terms',   changefreq: 'yearly', priority: '0.30' },
+];
+
+// ─────────────────────────────────────────────────────────────────
+// XML BUILDER HELPERS
+// ─────────────────────────────────────────────────────────────────
+function urlEntry(
+  loc: string,
+  lastmod: string,
+  changefreq: string,
+  priority: string,
+  images?: Array<{ loc: string; title: string; caption: string }>
+): string {
+  const imgTags = images
+    ? images
+        .map(
+          (img) => `
+      <image:image>
+        <image:loc>${img.loc}</image:loc>
+        <image:title>${img.title}</image:title>
+        <image:caption>${img.caption}</image:caption>
+      </image:image>`
+        )
+        .join('')
+    : '';
+
+  return `
+  <url>
+    <loc>${loc}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>${imgTags}
+  </url>`;
+}
+
+// ─────────────────────────────────────────────────────────────────
+// MAIN HANDLER
+// ─────────────────────────────────────────────────────────────────
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   try {
-    // 1. Define Static User-Facing Routes
-    const staticRoutes = [
-      '',
-      '/services',
-      '/gallery',
-      '/offers',
-      '/packages',
-      '/blog',
-      '/partner',
-      '/express-booking',
-      '/booking',
-      '/reviews'
-    ];
+    const entries: string[] = [];
 
-    const sitemapEntries = staticRoutes.map(route => {
-      return `
-        <url>
-          <loc>${SITE_URL}${route}</loc>
-          <lastmod>${new Date().toISOString()}</lastmod>
-          <changefreq>daily</changefreq>
-          <priority>${route === '' ? '1.0' : '0.8'}</priority>
-        </url>
-      `;
-    });
+    // 1. Static pages
+    for (const page of STATIC_PAGES) {
+      entries.push(
+        urlEntry(
+          `${SITE_URL}${page.loc}`,
+          page.lastmod ?? TODAY,
+          page.changefreq,
+          page.priority,
+          page.images
+        )
+      );
+    }
 
-    // 2. Fetch Dynamic Blog Routes from Firestore
+    // 2. Known service slugs
+    for (const slug of SERVICE_SLUGS) {
+      entries.push(
+        urlEntry(
+          `${SITE_URL}/services/${slug}`,
+          TODAY,
+          'weekly',
+          '0.88'
+        )
+      );
+    }
+
+    // 3. Known package slugs
+    for (const slug of PACKAGE_SLUGS) {
+      entries.push(
+        urlEntry(
+          `${SITE_URL}/packages/${slug}`,
+          TODAY,
+          'weekly',
+          '0.85'
+        )
+      );
+    }
+
+    // 4. Locality landing pages (geo-SEO keyword pages)
+    for (const slug of LOCALITY_PAGES) {
+      entries.push(
+        urlEntry(
+          `${SITE_URL}/services/${slug}`,
+          TODAY,
+          'monthly',
+          '0.78'
+        )
+      );
+    }
+
+    // 5. Dynamic blog posts from Firestore
     if (adminDb) {
-      const blogsSnapshot = await adminDb
+      const blogsSnap = await adminDb
         .collection('blogs')
         .where('published', '==', true)
         .get();
 
-      blogsSnapshot.forEach(doc => {
+      blogsSnap.forEach((doc) => {
         const blog = doc.data();
         if (blog.slug) {
-          sitemapEntries.push(`
-            <url>
-              <loc>${SITE_URL}/blog/${blog.slug}</loc>
-              <lastmod>${blog.updatedAt ? new Date(blog.updatedAt._seconds * 1000).toISOString() : new Date().toISOString()}</lastmod>
-              <changefreq>weekly</changefreq>
-              <priority>0.7</priority>
-            </url>
-          `);
+          const lastmod = blog.updatedAt
+            ? new Date(blog.updatedAt._seconds * 1000).toISOString()
+            : TODAY;
+          entries.push(
+            urlEntry(
+              `${SITE_URL}/blog/${blog.slug}`,
+              lastmod,
+              'weekly',
+              '0.75'
+            )
+          );
+        }
+      });
+
+      // 6. Dynamic service pages from Firestore
+      const servicesSnap = await adminDb.collection('services').get();
+      servicesSnap.forEach((doc) => {
+        const svc = doc.data();
+        if (svc.slug) {
+          entries.push(
+            urlEntry(
+              `${SITE_URL}/services/${svc.slug}`,
+              TODAY,
+              'weekly',
+              '0.87'
+            )
+          );
+        }
+      });
+
+      // 7. Dynamic package pages from Firestore
+      const packagesSnap = await adminDb.collection('packages').get();
+      packagesSnap.forEach((doc) => {
+        const pkg = doc.data();
+        if (pkg.slug) {
+          entries.push(
+            urlEntry(
+              `${SITE_URL}/packages/${pkg.slug}`,
+              TODAY,
+              'weekly',
+              '0.84'
+            )
+          );
         }
       });
     }
 
-    // 3. Construct the XML
+    // Build final XML with full Google Image & News namespace
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-      <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-        ${sitemapEntries.join('')}
-      </urlset>
-    `;
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml"
+  xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+${entries.join('')}
+</urlset>`;
 
-    // 4. Send Response
-    res.setHeader('Content-Type', 'text/xml');
-    // Cache the sitemap for 1 hour at the edge
-    res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=59');
+    res.setHeader('Content-Type', 'text/xml; charset=UTF-8');
+    res.setHeader(
+      'Cache-Control',
+      'public, s-maxage=7200, stale-while-revalidate=3600'
+    );
     res.write(sitemap);
     res.end();
 
     return { props: {} };
   } catch (error) {
-    console.error('Error generating sitemap:', error);
-    // Return empty sitemap on error to avoid completely breaking the route
+    console.error('Sitemap generation error:', error);
     res.setHeader('Content-Type', 'text/xml');
-    res.write('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>');
+    res.write(
+      '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>'
+    );
     res.end();
     return { props: {} };
   }
 };
 
-// Next.js pages component must be exported, even if empty
-export default function Sitemap() {
+export default function SitemapPage() {
   return null;
 }

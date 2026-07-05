@@ -1,9 +1,62 @@
+# ============================================================
+#  robots.txt — Jyoti Mehendi Artist, Agra
+#  https://jyotimehendi.in
+#  Optimized for Google, Bing, DuckDuckGo & Indian search engines
+# ============================================================
+
+# ── Allow all major crawlers ─────────────────────────────────
+User-agent: Googlebot
+Allow: /
+Allow: /services/
+Allow: /packages/
+Allow: /blog/
+Allow: /gallery
+Allow: /reviews
+Allow: /offers
+Allow: /booking
+Allow: /express-booking
+Allow: /gift-cards
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /login
+Disallow: /verify
+Disallow: /booking-slip/
+Disallow: /partner-register
+Disallow: /api/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /login
+Disallow: /api/
+
 User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /dashboard
-Disallow: /partner
 Disallow: /login
+Disallow: /verify
+Disallow: /booking-slip/
+Disallow: /partner-register
+Disallow: /api/
 
-# Help Google find the dynamic sitemap
+# ── Crawl delay for non-Google bots ──────────────────────────
+User-agent: Bingbot
+Crawl-delay: 5
+
+# ── Block bad / scraper bots ─────────────────────────────────
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# ── Sitemap location ─────────────────────────────────────────
 Sitemap: https://jyotimehendi.in/sitemap.xml
