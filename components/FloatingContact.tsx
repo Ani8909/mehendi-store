@@ -14,6 +14,17 @@ interface Message {
   type?: string;
 }
 
+interface BookingData {
+  serviceId: string;
+  serviceTitle: string;
+  price: number;
+  originalPrice: number;
+  bookingDateString: string;
+  timeSlot: string;
+  customerName: string;
+  phone: string;
+}
+
 
 const sanitizeInput = (text: string): string => {
   return text.replace(/<[^>]*>/g, "").trim();
@@ -88,7 +99,7 @@ export default function FloatingContact() {
   const [quizStep, setQuizStep] = useState(0); // 0 = idle, 1 = hours, 2 = oil, 3 = hand part
   const [quizAnswers, setQuizAnswers] = useState<string[]>([]);
   const [bookingStep, setBookingStep] = useState(0); // 0 = idle, 1 = service, 2 = date, 3 = slot, 4 = name, 5 = phone, 6 = confirm
-  const [bookingData, setBookingData] = useState<any>({
+  const [bookingData, setBookingData] = useState<BookingData>({
     serviceId: "",
     serviceTitle: "",
     price: 0,
