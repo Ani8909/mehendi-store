@@ -43,7 +43,6 @@ export default function Booking() {
   const [giftCardError, setGiftCardError] = useState("");
   const [isVIPPass, setIsVIPPass] = useState(false);
   const [onlinePayAmount, setOnlinePayAmount] = useState<number>(0);
-  const [paymentMethod, setPaymentMethod] = useState<"upi_direct" | "razorpay">("razorpay");
 
   // Load Razorpay Script dynamically on mount
   useEffect(() => {
@@ -454,9 +453,8 @@ export default function Booking() {
 
       const bRef = "JM-" + Math.random().toString(36).substring(2, 8).toUpperCase();
 
-      // If finalPrice is 0 OR paymentMethod is upi_direct, skip Razorpay!
-      if (finalPrice === 0 || paymentMethod === "upi_direct") {
-        const isFree = finalPrice === 0;
+      // If finalPrice is 0 (due to full discount/wallet deduction), skip Razorpay
+      if (finalPrice === 0) {
         const bookingData = {
           bookingRef: bRef,
           customerId: finalCustomerId,
@@ -477,11 +475,10 @@ export default function Booking() {
           bookingDate: new Date(data.bookingDate),
           timeSlot: data.timeSlot,
           status: "confirmed",
-          paymentStatus: isFree ? "paid" : "pay_on_arrival",
-          paymentId: isFree ? "free_booking" : "direct_upi_booking",
-          paymentMethod: isFree ? "Free Discount" : "Direct UPI / Pay on Arrival",
+          paymentStatus: "paid",
+          paymentId: "free_booking",
           amountPaidOnline: 0,
-          balanceDue: isFree ? 0 : finalPrice,
+          balanceDue: 0,
           isVIPPass: isVIPPass,
           giftCardUsed: appliedGiftCard?.code || null,
           giftCardDiscount: giftCardDeduction,
@@ -540,8 +537,7 @@ export default function Booking() {
         if (!orderRes.ok) {
           const errData = await orderRes.json().catch(() => ({}));
           console.error("Razorpay order error:", errData);
-          setPaymentMethod("upi_direct");
-          throw new Error(errData.message || errData.error || "Online payment gateway is offline or API keys are not set on live server. We have automatically selected 'Direct UPI / Pay on Arrival' mode—please click 'Confirm Instant Booking' below to complete your booking now!");
+          throw new Error("Razorpay Gateway Error: " + (errData.message || errData.error || "Failed to initialize payment gateway."));
         }
 
         const orderData = await orderRes.json();
@@ -1161,58 +1157,6 @@ export default function Booking() {
                       {appliedGiftCard && <p className="text-green-600 text-xs mt-2 font-bold">Gift Card verified! ₹{appliedGiftCard.balance} balance available.</p>}
                     </div>
 
-                    {/* Payment Mode Selector */}
-                    <div className="bg-white border border-gray-200 rounded-2xl p-5 mb-6 shadow-sm space-y-3">
-                      <label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">
-                        Select Payment Mode *
-                      </label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div 
-                          onClick={() => setPaymentMethod("razorpay")}
-                          className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-center justify-between ${
-                            paymentMethod === "razorpay"
-                              ? "border-pink-500 bg-pink-50/60 text-pink-900 font-bold shadow-sm ring-2 ring-pink-200"
-                              : "border-gray-200 hover:border-gray-300 bg-white text-gray-700 font-medium"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className="text-2xl">🔵</span>
-                            <div>
-                              <div className="text-sm font-extrabold flex items-center gap-1.5">
-                                <span>Online Gateway (Razorpay)</span>
-                                <span className="bg-pink-100 text-pink-700 text-[9px] px-1.5 py-0.5 rounded-full uppercase tracking-wider font-black">Default</span>
-                              </div>
-                              <div className="text-[11px] text-gray-500 font-normal">Credit Card / Debit / NetBanking / UPI</div>
-                            </div>
-                          </div>
-                          {paymentMethod === "razorpay" && <FiCheckCircle className="text-pink-600 text-xl flex-shrink-0" />}
-                        </div>
-
-                        <div 
-                          onClick={() => setPaymentMethod("upi_direct")}
-                          className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-center justify-between ${
-                            paymentMethod === "upi_direct"
-                              ? "border-green-500 bg-green-50/60 text-green-900 font-bold shadow-sm ring-2 ring-green-200"
-                              : "border-gray-200 hover:border-gray-300 bg-white text-gray-700 font-medium"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className="text-2xl">🟢</span>
-                            <div>
-                              <div className="text-sm font-extrabold">Direct UPI / Pay on Arrival</div>
-                              <div className="text-[11px] text-gray-500 font-normal">No gateway error • Instant 1-click booking</div>
-                            </div>
-                          </div>
-                          {paymentMethod === "upi_direct" && <FiCheckCircle className="text-green-600 text-xl flex-shrink-0" />}
-                        </div>
-                      </div>
-                      {paymentMethod === "upi_direct" && (
-                        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-800 font-medium flex items-center gap-2 mt-2">
-                          <span>💡 <strong>100% Guaranteed Booking:</strong> Confirm your booking now! You can pay the advance deposit directly via GooglePay / PhonePe to Master Artist Jyoti on WhatsApp.</span>
-                        </div>
-                      )}
-                    </div>
-
                     <div className="bg-pink-50 border border-pink-100 text-sm p-5 rounded-2xl mb-6 shadow-inner space-y-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 text-[var(--color-primary)] font-bold">
@@ -1308,7 +1252,7 @@ export default function Booking() {
                         <span>Processing...</span>
                       </>
                     ) : (
-                      paymentMethod === "upi_direct" || finalPrice === 0 ? "Confirm Instant Booking" : "Pay Online & Confirm"
+                      finalPrice === 0 ? "Confirm Free Booking" : `Pay Advance (₹${onlinePayAmount}) & Confirm`
                     )}
                   </button>
                 )}
