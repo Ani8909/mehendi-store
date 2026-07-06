@@ -52,58 +52,42 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Menu - Premium Minimalist Luxury */}
-          <div className="hidden md:flex items-center space-x-4 lg:space-x-6 xl:space-x-7">
+          <div className="hidden lg:flex items-center space-x-1 xl:space-x-3">
             {navLinks.map((link) => {
               const active = isLinkActive(link.href);
-              if (link.name === "Gift Cards") {
-                return (
-                  <Link 
-                    key={link.name} 
-                    href={link.href}
-                    className={`inline-flex items-center gap-1.5 font-bold transition-all text-sm group whitespace-nowrap px-3 py-1.5 rounded-full ${
-                      active
-                        ? "bg-gradient-to-r from-rose-50 to-pink-50 text-rose-700 font-extrabold border border-rose-300 ring-2 ring-rose-200 shadow-sm scale-105"
-                        : "bg-gradient-to-r from-rose-500 via-pink-600 to-red-500 bg-clip-text text-transparent hover:scale-105"
-                    }`}
-                  >
-                    <span>Gift Cards</span>
-                    <span className="text-base group-hover:scale-125 group-hover:rotate-12 transition-all duration-300 animate-pulse">💝</span>
-                  </Link>
-                );
-              }
-              if (link.name === "Custom Package") {
-                return (
-                  <Link 
-                    key={link.name} 
-                    href={link.href}
-                    className={`inline-flex items-center gap-1 font-extrabold transition-all text-sm group whitespace-nowrap px-3 py-1.5 rounded-full ${
-                      active
-                        ? "bg-gradient-to-r from-pink-50 to-purple-50 text-pink-900 border border-pink-300 ring-2 ring-pink-200 shadow-sm scale-105"
-                        : "bg-gradient-to-r from-[var(--color-primary)] to-pink-600 bg-clip-text text-transparent hover:scale-105"
-                    }`}
-                  >
-                    <span>Custom</span>
-                    <span className="text-pink-500 text-sm animate-pulse">✨</span>
-                  </Link>
-                );
-              }
               return (
                 <Link 
                   key={link.name} 
                   href={link.href}
-                  className={`px-3.5 py-1.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap flex items-center gap-1.5 ${
-                    active
-                      ? "text-[var(--color-primary)] font-extrabold bg-pink-50/90 shadow-2xs border border-pink-200/80 scale-105"
-                      : "text-gray-700 hover:text-[var(--color-primary)] hover:bg-gray-50/80"
+                  className={`relative py-2 px-2.5 xl:px-3 text-[13px] xl:text-sm transition-colors whitespace-nowrap group flex items-center gap-1 ${
+                    active ? "text-[var(--color-primary)] font-extrabold" : "text-gray-700 hover:text-[var(--color-primary)] font-semibold"
                   }`}
                 >
-                  {link.name}
-                  {active && <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] animate-pulse"></span>}
+                  {link.name === "Gift Cards" ? (
+                    <span className="bg-gradient-to-r from-rose-500 via-pink-600 to-red-500 bg-clip-text text-transparent font-extrabold flex items-center gap-1">
+                      <span>Gift Cards</span>
+                      <span className="text-sm">💝</span>
+                    </span>
+                  ) : link.name === "Custom Package" ? (
+                    <span className="bg-gradient-to-r from-[var(--color-primary)] to-pink-600 bg-clip-text text-transparent font-extrabold flex items-center gap-1">
+                      <span>Custom</span>
+                      <span className="text-xs">✨</span>
+                    </span>
+                  ) : (
+                    <span>{link.name}</span>
+                  )}
+
+                  {/* Professional Animated Underline */}
+                  <span 
+                    className={`absolute bottom-0 left-2 right-2 h-[2.5px] bg-gradient-to-r from-[var(--color-primary)] via-pink-500 to-rose-400 rounded-full transition-all duration-300 ${
+                      active ? "opacity-100 scale-x-100 shadow-[0_1px_6px_rgba(219,39,119,0.5)]" : "opacity-0 scale-x-0 group-hover:opacity-100 group-hover:scale-x-100"
+                    }`} 
+                  />
                 </Link>
               );
             })}
-            <div className="flex items-center space-x-3 lg:space-x-4 ml-2 lg:ml-4 border-l border-gray-200 pl-3 lg:pl-5">
-              <Link href="/verify" className="text-gray-500 hover:text-[var(--color-primary)] transition-colors p-2 flex items-center justify-center bg-gray-50 hover:bg-pink-50 rounded-full w-9 h-9 border border-gray-200/80 shadow-2xs shrink-0" title="Track Booking">
+            <div className="flex items-center space-x-2 xl:space-x-3 ml-1 xl:ml-3 border-l border-gray-200 pl-2 xl:pl-4">
+              <Link href="/verify" className="text-gray-500 hover:text-[var(--color-primary)] transition-colors p-2 flex items-center justify-center bg-gray-50 hover:bg-pink-50 rounded-full w-8 h-8 xl:w-9 xl:h-9 border border-gray-200/80 shadow-2xs shrink-0" title="Track Booking">
                 <FiSearch size={16} />
               </Link>
               {!loading && user ? (
@@ -135,7 +119,7 @@ export default function Navbar() {
               )}
               <Link 
                 href="/booking"
-                className="bg-gradient-to-r from-[var(--color-primary)] via-pink-700 to-[var(--color-header)] text-white px-5 lg:px-6 py-2.5 rounded-full font-bold text-xs tracking-wider uppercase hover:shadow-[0_8px_20px_rgba(219,39,119,0.35)] hover:-translate-y-0.5 transition-all duration-300 shadow-md shrink-0 whitespace-nowrap"
+                className="bg-gradient-to-r from-[var(--color-primary)] via-pink-700 to-[var(--color-header)] text-white px-4 xl:px-5 py-2 rounded-full font-bold text-xs tracking-wider uppercase hover:shadow-[0_8px_20px_rgba(219,39,119,0.35)] hover:-translate-y-0.5 transition-all duration-300 shadow-md shrink-0 whitespace-nowrap"
               >
                 Book Appointment
               </Link>
@@ -143,7 +127,7 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Top Bar Actions (No Hamburger - Pure Native App Feel!) */}
-          <div className="flex items-center space-x-2.5 md:hidden">
+          <div className="flex items-center space-x-2 lg:hidden">
             {!loading && user ? (
               <Link 
                 href={getDashboardHref()}

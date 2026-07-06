@@ -51,12 +51,12 @@ export default function BottomNav() {
                 <Link key={item.name} href={item.href} className="relative -top-4 flex flex-col items-center group">
                   <div className={`p-3.5 rounded-full shadow-lg text-white ring-4 transition-all duration-300 flex items-center justify-center ${
                     isActive
-                      ? "bg-gradient-to-r from-amber-500 via-rose-600 to-pink-600 ring-pink-300 scale-110 shadow-pink-500/60 animate-pulse"
+                      ? "bg-gradient-to-r from-amber-500 via-rose-600 to-pink-600 ring-pink-300 scale-110 shadow-pink-500/60"
                       : "bg-gradient-to-r from-[var(--color-primary)] to-pink-600 ring-white group-active:scale-95 shadow-pink-500/40"
                   }`}>
                     <Icon size={26} />
                   </div>
-                  <span className={`text-[10px] font-black mt-1 tracking-tight ${isActive ? "text-rose-600 scale-105 underline decoration-2 decoration-rose-500" : "text-[var(--color-primary)]"}`}>{item.name}</span>
+                  <span className={`text-[10px] font-black mt-1 tracking-tight ${isActive ? "text-rose-600 scale-105" : "text-[var(--color-primary)]"}`}>{item.name}</span>
                 </Link>
               );
             }
@@ -82,7 +82,7 @@ export default function BottomNav() {
             return (
               <Link key={item.name} href={item.href} className="flex flex-col items-center p-2 flex-1 group relative" onClick={() => setShowMenuModal(false)}>
                 {isActive && (
-                  <span className="absolute -top-3 w-8 h-1 bg-gradient-to-r from-[var(--color-primary)] to-rose-500 rounded-full shadow-sm animate-pulse"></span>
+                  <span className="absolute top-0 w-8 h-[2.5px] bg-gradient-to-r from-[var(--color-primary)] via-pink-500 to-rose-400 rounded-full shadow-sm transition-all duration-300"></span>
                 )}
                 <Icon 
                   size={22} 
