@@ -43,7 +43,7 @@ export default function Booking() {
   const [giftCardError, setGiftCardError] = useState("");
   const [isVIPPass, setIsVIPPass] = useState(false);
   const [onlinePayAmount, setOnlinePayAmount] = useState<number>(0);
-  const [paymentMethod, setPaymentMethod] = useState<"upi_direct" | "razorpay">("upi_direct");
+  const [paymentMethod, setPaymentMethod] = useState<"upi_direct" | "razorpay">("razorpay");
 
   // Load Razorpay Script dynamically on mount
   useEffect(() => {
@@ -1168,6 +1168,27 @@ export default function Booking() {
                       </label>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div 
+                          onClick={() => setPaymentMethod("razorpay")}
+                          className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-center justify-between ${
+                            paymentMethod === "razorpay"
+                              ? "border-pink-500 bg-pink-50/60 text-pink-900 font-bold shadow-sm ring-2 ring-pink-200"
+                              : "border-gray-200 hover:border-gray-300 bg-white text-gray-700 font-medium"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="text-2xl">🔵</span>
+                            <div>
+                              <div className="text-sm font-extrabold flex items-center gap-1.5">
+                                <span>Online Gateway (Razorpay)</span>
+                                <span className="bg-pink-100 text-pink-700 text-[9px] px-1.5 py-0.5 rounded-full uppercase tracking-wider font-black">Default</span>
+                              </div>
+                              <div className="text-[11px] text-gray-500 font-normal">Credit Card / Debit / NetBanking / UPI</div>
+                            </div>
+                          </div>
+                          {paymentMethod === "razorpay" && <FiCheckCircle className="text-pink-600 text-xl flex-shrink-0" />}
+                        </div>
+
+                        <div 
                           onClick={() => setPaymentMethod("upi_direct")}
                           className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-center justify-between ${
                             paymentMethod === "upi_direct"
@@ -1183,24 +1204,6 @@ export default function Booking() {
                             </div>
                           </div>
                           {paymentMethod === "upi_direct" && <FiCheckCircle className="text-green-600 text-xl flex-shrink-0" />}
-                        </div>
-
-                        <div 
-                          onClick={() => setPaymentMethod("razorpay")}
-                          className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-center justify-between ${
-                            paymentMethod === "razorpay"
-                              ? "border-pink-500 bg-pink-50/60 text-pink-900 font-bold shadow-sm ring-2 ring-pink-200"
-                              : "border-gray-200 hover:border-gray-300 bg-white text-gray-700 font-medium"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className="text-2xl">🔵</span>
-                            <div>
-                              <div className="text-sm font-extrabold">Online Gateway (Razorpay)</div>
-                              <div className="text-[11px] text-gray-500 font-normal">Credit Card / Debit / NetBanking / UPI</div>
-                            </div>
-                          </div>
-                          {paymentMethod === "razorpay" && <FiCheckCircle className="text-pink-600 text-xl flex-shrink-0" />}
                         </div>
                       </div>
                       {paymentMethod === "upi_direct" && (
