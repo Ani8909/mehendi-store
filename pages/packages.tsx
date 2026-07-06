@@ -326,11 +326,41 @@ export default function Packages() {
                   </motion.div>
                 );
               }) : (
-                <div className="col-span-full text-center py-20 text-gray-500">
-                  <p className="text-xl">No packages available at the moment. Please check back later!</p>
+                <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-16 bg-white/50 rounded-3xl border border-gray-100">
+                  <p className="text-gray-500 font-medium">No packages found in this category.</p>
                 </div>
               )}
             </div>
+
+            {/* Custom Package CTA Section */}
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="mt-20 bg-gradient-to-r from-[#500724] via-[#310012] to-[#180008] rounded-[2.5rem] p-8 md:p-12 text-white border border-pink-500/20 shadow-[0_20px_50px_rgba(80,7,36,0.15)] flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden"
+            >
+              <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-pink-500/10 rounded-full blur-3xl"></div>
+              <div className="absolute -left-10 -top-10 w-40 h-40 bg-rose-500/10 rounded-full blur-3xl"></div>
+              
+              <div className="space-y-4 max-w-2xl relative z-10 text-center md:text-left">
+                <span className="bg-pink-600/30 text-pink-300 border border-pink-500/30 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                  ✨ Tailored For You
+                </span>
+                <h2 className="text-3xl md:text-4xl font-bold font-serif">Need a Custom Experience?</h2>
+                <p className="text-sm text-pink-100/80 leading-relaxed font-light">
+                  Mix services, design styles, guest counts, and special demands to create a personalized mehendi package. Share your specifications and get a custom quote today!
+                </p>
+              </div>
+              
+              <div className="relative z-10 w-full md:w-auto">
+                <Link 
+                  href="/custom-package"
+                  className="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-pink-500 to-rose-600 hover:from-rose-600 hover:to-pink-500 text-white font-extrabold uppercase text-xs tracking-wider rounded-2xl shadow-lg hover:shadow-[0_10px_25px_rgba(219,39,119,0.4)] transition-all transform active:scale-95 block text-center"
+                >
+                  Create Custom Package
+                </Link>
+              </div>
+            </motion.div>
             </>
           )}
         </div>

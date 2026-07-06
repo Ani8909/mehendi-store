@@ -20,7 +20,7 @@ import {
   Legend,
   ArcElement
 } from "chart.js";
-import { FiUsers, FiCalendar, FiDollarSign, FiLogOut, FiImage, FiLayout, FiPieChart, FiX, FiUploadCloud, FiClock, FiCheck, FiActivity, FiTag, FiGift, FiEdit3, FiCpu } from "react-icons/fi";
+import { FiUsers, FiCalendar, FiDollarSign, FiLogOut, FiImage, FiLayout, FiPieChart, FiX, FiUploadCloud, FiClock, FiCheck, FiActivity, FiTag, FiGift, FiEdit3, FiCpu, FiFileText, FiSend, FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 import { FullScreenLoader } from "@/components/Loader";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
@@ -29,7 +29,7 @@ export default function AdminDashboard() {
   const { user, userData, loading: authLoading, signOut } = useAuth();
   const router = useRouter();
 
-  const [activeTab, setActiveTab] = useState<"bookings" | "partners" | "reports" | "gallery" | "hero" | "express" | "packages" | "finances" | "services" | "coupons" | "referrals" | "blogs" | "giftcards" | "assistant">("bookings");
+  const [activeTab, setActiveTab] = useState<"bookings" | "partners" | "reports" | "gallery" | "hero" | "express" | "packages" | "finances" | "services" | "coupons" | "referrals" | "blogs" | "giftcards" | "assistant" | "custom_quotes">("bookings");
   const [bookings, setBookings] = useState<any[]>([]);
   const [referralSettings, setReferralSettings] = useState<any>(null);
   const [partners, setPartners] = useState<any[]>([]);
@@ -39,6 +39,13 @@ export default function AdminDashboard() {
   const [expressZones, setExpressZones] = useState<any[]>([]);
   const [eventPackages, setEventPackages] = useState<any[]>([]);
   const [packageEnquiries, setPackageEnquiries] = useState<any[]>([]);
+  const [customPackageRequests, setCustomPackageRequests] = useState<any[]>([]);
+  // Custom Quote Modal State
+  const [quoteModal, setQuoteModal] = useState<any | null>(null);
+  const [quotePrice, setQuotePrice] = useState("");
+  const [quoteDeposit, setQuoteDeposit] = useState("");
+  const [quoteNotes, setQuoteNotes] = useState("");
+  const [sendingQuote, setSendingQuote] = useState(false);
   const [revenueTransactions, setRevenueTransactions] = useState<any[]>([]);
   const [coupons, setCoupons] = useState<any[]>([]);
   // Gift Card States
@@ -193,11 +200,82 @@ export default function AdminDashboard() {
     }, (err) => console.error("Gift Cards sync error:", err));
     unsubscribes.push(unsubGiftCards);
 
+    // 14. Live Custom Package Requests Listener
+    const customPkgQuery = query(collection(db, "custom_package_requests"), orderBy("createdAt", "desc"));
+    const unsubCustomPkg = onSnapshot(customPkgQuery, (snapshot) => {
+      setCustomPackageRequests(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+    }, (err) => console.error("Custom package requests sync error:", err));
+    unsubscribes.push(unsubCustomPkg);
+
     // Clean up all active listeners on unmount or session switch
     return () => {
       unsubscribes.forEach(unsub => unsub());
     };
   }, [userData]);
+
+  const handleSendQuote = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!quoteModal || !quotePrice || !quoteDeposit) return;
+    setSendingQuote(true);
+    try {
+      const price = Number(quotePrice);
+      const deposit = Number(quoteDeposit);
+      await updateDoc(doc(db, "custom_package_requests", quoteModal.id), {
+        status: "quoted",
+        quotedPrice: price,
+        depositAmount: deposit,
+        adminNotes: quoteNotes,
+        updatedAt: serverTimestamp(),
+      });
+
+      // Send email notification to the customer
+      try {
+        await fetch("/api/notify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "CUSTOM_QUOTE_SENT",
+            data: {
+              customerName: quoteModal.customerName,
+              customerPhone: quoteModal.customerPhone,
+              email: quoteModal.customerEmail,
+              eventType: quoteModal.eventType,
+              eventDate: quoteModal.eventDate,
+              quotedPrice: price,
+              depositAmount: deposit,
+              adminNotes: quoteNotes,
+            },
+          }),
+        });
+      } catch (emailErr) {
+        console.error("Email notification error:", emailErr);
+      }
+
+      setQuoteModal(null);
+      setQuotePrice("");
+      setQuoteDeposit("");
+      setQuoteNotes("");
+      alert(`Quotation sent to ${quoteModal.customerName} successfully!`);
+    } catch (err) {
+      console.error("Error sending quote:", err);
+      alert("Failed to send quotation. Please try again.");
+    } finally {
+      setSendingQuote(false);
+    }
+  };
+
+  const handleDeclineRequest = async (requestId: string, customerName: string) => {
+    if (!confirm(`Decline request from ${customerName}? They will be notified.`)) return;
+    try {
+      await updateDoc(doc(db, "custom_package_requests", requestId), {
+        status: "declined",
+        updatedAt: serverTimestamp(),
+      });
+    } catch (err) {
+      console.error("Error declining request:", err);
+      alert("Failed to update status.");
+    }
+  };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: "desktop" | "mobile" | "gallery" | "service") => {
     if (!e.target.files?.[0]) return;
@@ -952,6 +1030,7 @@ export default function AdminDashboard() {
                 { id: "assistant", label: "AI Assistant", icon: <FiCpu/> },
                 { id: "finances", label: "Finances", icon: <FiDollarSign/> },
                 { id: "reports", label: "Reports", icon: <FiPieChart/> },
+                { id: "custom_quotes", label: "Custom Quotations", icon: <FiFileText/> },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -1687,6 +1766,195 @@ export default function AdminDashboard() {
                     <h3 className="font-bold text-gray-700 mb-4 text-center">Booking Status Distribution</h3>
                     <div className="h-64 w-64"><Doughnut data={doughnutData} options={{ maintainAspectRatio: false }} /></div>
                   </div>
+                </div>
+              )}
+
+              {/* CUSTOM QUOTATIONS TAB */}
+              {activeTab === "custom_quotes" && (
+                <div className="space-y-6 p-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <div className="flex items-center justify-between flex-wrap gap-3">
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-800 font-serif flex items-center gap-3">
+                        <span className="bg-pink-100 p-2 rounded-xl text-pink-600"><FiFileText /></span>
+                        Custom Package Quotations
+                      </h3>
+                      <p className="text-sm text-gray-500 mt-1">Review customer requirements and send custom price quotes.</p>
+                    </div>
+                    <div className="flex gap-3 flex-shrink-0 flex-wrap">
+                      <span className="bg-amber-100 text-amber-700 px-3 py-1.5 rounded-full text-xs font-extrabold border border-amber-200">
+                        ⏳ {customPackageRequests.filter(r => r.status === "pending").length} Pending
+                      </span>
+                      <span className="bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full text-xs font-extrabold border border-blue-200">
+                        💬 {customPackageRequests.filter(r => r.status === "quoted").length} Quoted
+                      </span>
+                      <span className="bg-green-100 text-green-700 px-3 py-1.5 rounded-full text-xs font-extrabold border border-green-200">
+                        ✅ {customPackageRequests.filter(r => r.status === "paid").length} Paid
+                      </span>
+                    </div>
+                  </div>
+
+                  {customPackageRequests.length === 0 ? (
+                    <div className="bg-white rounded-3xl p-12 text-center border border-dashed border-gray-200">
+                      <div className="text-4xl mb-3">📋</div>
+                      <p className="text-gray-600 font-bold">No custom package requests yet.</p>
+                      <p className="text-gray-400 text-sm mt-1">When customers submit custom package requests from the website, they'll appear here.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {customPackageRequests.map((req) => {
+                        const statusColors: Record<string, string> = {
+                          pending: "bg-amber-100 text-amber-800 border-amber-200",
+                          quoted: "bg-blue-100 text-blue-800 border-blue-200",
+                          paid: "bg-green-100 text-green-800 border-green-200",
+                          declined: "bg-red-100 text-red-800 border-red-200",
+                        };
+                        const statusLabels: Record<string, string> = {
+                          pending: "⏳ Pending Review",
+                          quoted: "💬 Quote Sent",
+                          paid: "✅ Deposit Paid",
+                          declined: "❌ Declined",
+                        };
+                        const sc = statusColors[req.status] || statusColors.pending;
+                        return (
+                          <div key={req.id} className="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
+                            {/* Header */}
+                            <div className="p-5 border-b border-gray-50 flex flex-wrap items-center justify-between gap-3">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-rose-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                                  {req.customerName?.charAt(0) || "C"}
+                                </div>
+                                <div>
+                                  <p className="font-extrabold text-gray-800">{req.customerName}</p>
+                                  <p className="text-xs text-pink-600 font-medium">{req.customerPhone}</p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-3 flex-wrap">
+                                <span className={`text-[10px] font-extrabold px-3 py-1 rounded-full border ${sc}`}>
+                                  {statusLabels[req.status] || req.status}
+                                </span>
+                                <span className="text-[10px] text-gray-400">
+                                  {req.createdAt?.seconds ? new Date(req.createdAt.seconds * 1000).toLocaleDateString("en-IN") : "—"}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Body */}
+                            <div className="p-5 grid grid-cols-1 md:grid-cols-3 gap-5">
+                              {/* Left: Customer Requirements */}
+                              <div className="md:col-span-2 space-y-3">
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                  <div className="bg-gray-50 rounded-xl p-3">
+                                    <p className="text-[9px] text-gray-400 uppercase tracking-widest mb-0.5">Event Type</p>
+                                    <p className="font-bold text-gray-800 text-sm">{req.eventType}</p>
+                                  </div>
+                                  <div className="bg-gray-50 rounded-xl p-3">
+                                    <p className="text-[9px] text-gray-400 uppercase tracking-widest mb-0.5">Event Date</p>
+                                    <p className="font-bold text-gray-800 text-sm">{req.eventDate}</p>
+                                  </div>
+                                  <div className="bg-gray-50 rounded-xl p-3">
+                                    <p className="text-[9px] text-gray-400 uppercase tracking-widest mb-0.5">Guests</p>
+                                    <p className="font-bold text-gray-800 text-sm">{req.guestsCount}</p>
+                                  </div>
+                                </div>
+                                <div className="bg-gray-50 rounded-xl p-3">
+                                  <p className="text-[9px] text-gray-400 uppercase tracking-widest mb-0.5">Venue / Address</p>
+                                  <p className="font-bold text-gray-800 text-sm">{req.eventAddress}</p>
+                                </div>
+                                {req.styles?.length > 0 && (
+                                  <div className="bg-pink-50 rounded-xl p-3">
+                                    <p className="text-[9px] text-pink-400 uppercase tracking-widest mb-1.5">Preferred Styles</p>
+                                    <div className="flex flex-wrap gap-1.5">
+                                      {req.styles.map((s: string) => (
+                                        <span key={s} className="bg-white text-pink-700 text-[10px] font-bold px-2.5 py-1 rounded-full border border-pink-100">{s}</span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                {req.details && (
+                                  <div className="bg-gray-50 rounded-xl p-3">
+                                    <p className="text-[9px] text-gray-400 uppercase tracking-widest mb-1">Customer Notes</p>
+                                    <p className="text-sm text-gray-700 leading-relaxed">{req.details}</p>
+                                  </div>
+                                )}
+                                {req.inspirationPhoto && (
+                                  <div>
+                                    <p className="text-[9px] text-gray-400 uppercase tracking-widest mb-1.5">Inspiration Photo</p>
+                                    <img src={req.inspirationPhoto} alt="Inspiration" className="h-28 rounded-xl object-cover border border-gray-100 shadow-sm" />
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Right: Quotation Panel */}
+                              <div className="space-y-3">
+                                {(req.status === "quoted" || req.status === "paid") && (
+                                  <div className={`rounded-2xl p-4 text-center border ${req.status === "paid" ? "bg-green-50 border-green-100" : "bg-blue-50 border-blue-100"}`}>
+                                    <p className="text-[10px] font-extrabold uppercase tracking-widest mb-1 text-gray-500">Quoted Price</p>
+                                    <p className="text-3xl font-black text-gray-800">₹{req.quotedPrice}</p>
+                                    <div className="mt-2 pt-2 border-t border-gray-200">
+                                      <p className="text-[10px] text-gray-400 mb-0.5">Deposit Required</p>
+                                      <p className="text-lg font-extrabold text-[var(--color-primary)]">₹{req.depositAmount}</p>
+                                    </div>
+                                    {req.status === "paid" && req.paymentId && (
+                                      <p className="text-[9px] text-green-600 font-bold mt-2 bg-green-100 rounded-lg py-1 px-2 break-all">
+                                        ✓ {req.paymentId}
+                                      </p>
+                                    )}
+                                  </div>
+                                )}
+                                {req.status === "pending" && (
+                                  <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 text-center">
+                                    <div className="text-2xl mb-2">📋</div>
+                                    <p className="text-xs text-amber-700 font-bold">Awaiting Quote</p>
+                                    <p className="text-[10px] text-amber-500 mt-1">Review requirements and send a price quote</p>
+                                  </div>
+                                )}
+                                {req.adminNotes && (
+                                  <div className="bg-blue-50 rounded-xl p-3">
+                                    <p className="text-[9px] font-bold text-blue-400 uppercase tracking-widest mb-1">Your Notes to Customer</p>
+                                    <p className="text-xs text-gray-700 leading-relaxed">{req.adminNotes}</p>
+                                  </div>
+                                )}
+                                {req.status === "pending" && (
+                                  <div className="space-y-2">
+                                    <button
+                                      onClick={() => {
+                                        setQuoteModal(req);
+                                        setQuotePrice("");
+                                        setQuoteDeposit("");
+                                        setQuoteNotes("");
+                                      }}
+                                      className="w-full py-3 bg-gradient-to-r from-[var(--color-primary)] to-pink-700 text-white font-bold text-xs rounded-xl shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2"
+                                    >
+                                      <FiSend size={14}/> Send Quote
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeclineRequest(req.id, req.customerName)}
+                                      className="w-full py-2.5 border border-red-200 text-red-500 font-bold text-xs rounded-xl hover:bg-red-50 transition-all"
+                                    >
+                                      Decline Request
+                                    </button>
+                                  </div>
+                                )}
+                                {req.status === "quoted" && (
+                                  <button
+                                    onClick={() => {
+                                      setQuoteModal(req);
+                                      setQuotePrice(String(req.quotedPrice));
+                                      setQuoteDeposit(String(req.depositAmount));
+                                      setQuoteNotes(req.adminNotes || "");
+                                    }}
+                                    className="w-full py-2.5 border border-blue-200 text-blue-600 font-bold text-xs rounded-xl hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
+                                  >
+                                    ✏️ Update Quote
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -2644,6 +2912,101 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
+
+        {/* Send Quote Modal */}
+        {quoteModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setQuoteModal(null)}></div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              className="relative bg-white rounded-[2rem] p-8 max-w-md w-full shadow-2xl z-10"
+            >
+              <button onClick={() => setQuoteModal(null)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-700"><FiX size={22}/></button>
+              
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold font-serif text-gray-800">Send Quotation</h2>
+                <p className="text-sm text-gray-500 mt-1">For <span className="font-bold text-pink-600">{quoteModal.customerName}</span> — {quoteModal.eventType} on {quoteModal.eventDate}</p>
+              </div>
+
+              <form onSubmit={handleSendQuote} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Total Quoted Price (₹) *</label>
+                    <input
+                      type="number"
+                      required
+                      min="1"
+                      value={quotePrice}
+                      onChange={(e) => {
+                        setQuotePrice(e.target.value);
+                        // Auto-calculate 20% deposit
+                        const p = Number(e.target.value);
+                        if (p > 0) setQuoteDeposit(String(Math.round(p * 0.2)));
+                      }}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-lg font-bold"
+                      placeholder="e.g. 5000"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Advance Deposit (₹) *</label>
+                    <input
+                      type="number"
+                      required
+                      min="1"
+                      value={quoteDeposit}
+                      onChange={(e) => setQuoteDeposit(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-lg font-bold"
+                      placeholder="e.g. 1000"
+                    />
+                    <p className="text-[10px] text-gray-400 mt-1">Auto-filled as 20% of total. Adjust as needed.</p>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Notes / Message to Customer</label>
+                  <textarea
+                    rows={3}
+                    value={quoteNotes}
+                    onChange={(e) => setQuoteNotes(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm"
+                    placeholder="Include any details about the package, what's included, timing etc..."
+                  />
+                </div>
+
+                {quotePrice && quoteDeposit && (
+                  <div className="bg-pink-50 border border-pink-100 rounded-2xl p-4">
+                    <p className="text-xs font-bold text-pink-600 mb-2">Quote Summary</p>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Total Price</span>
+                      <span className="font-extrabold text-gray-800">₹{quotePrice}</span>
+                    </div>
+                    <div className="flex justify-between text-sm mt-1">
+                      <span className="text-gray-600">Advance Deposit</span>
+                      <span className="font-extrabold text-[var(--color-primary)]">₹{quoteDeposit}</span>
+                    </div>
+                    <div className="flex justify-between text-sm mt-1 pt-1 border-t border-pink-100">
+                      <span className="text-gray-500">Balance Due (on event day)</span>
+                      <span className="font-bold text-gray-600">₹{Number(quotePrice) - Number(quoteDeposit)}</span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex gap-3 pt-2">
+                  <button type="button" onClick={() => setQuoteModal(null)} className="flex-1 py-3 border border-gray-200 text-gray-600 font-bold rounded-xl hover:bg-gray-50">Cancel</button>
+                  <button
+                    type="submit"
+                    disabled={sendingQuote}
+                    className="flex-1 py-3 bg-gradient-to-r from-[var(--color-primary)] to-pink-700 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    <FiSend size={14}/>
+                    {sendingQuote ? "Sending..." : "Send Quote"}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
 
         {/* Custom Delete Confirmation Modal */}
         {deleteModal?.isOpen && (

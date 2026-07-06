@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { collection, query, where, getDocs, orderBy, doc, getDoc, updateDoc, addDoc, serverTimestamp, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/lib/authContext";
-import { FiCalendar, FiClock, FiMapPin, FiStar, FiLogOut, FiCheckCircle, FiXCircle, FiPhone, FiGift, FiCopy } from "react-icons/fi";
+import { FiCalendar, FiClock, FiMapPin, FiStar, FiLogOut, FiCheckCircle, FiXCircle, FiPhone, FiGift, FiCopy, FiTag, FiInfo, FiDollarSign, FiCheck, FiFileText, FiPlus } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
 import { FullScreenLoader } from "@/components/Loader";
 
@@ -14,10 +14,27 @@ export default function Dashboard() {
   
   const [bookings, setBookings] = useState<any[]>([]);
   const [partners, setPartners] = useState<any[]>([]);
+  const [customRequests, setCustomRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [reviewModal, setReviewModal] = useState<string | null>(null);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
+  const [paymentLoading, setPaymentLoading] = useState<string | null>(null);
+
+  // Dynamic Razorpay Script Load
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      try {
+        document.body.removeChild(script);
+      } catch (e) {
+        // script might have already been removed
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -53,11 +70,143 @@ export default function Dashboard() {
       console.error("Dashboard partners sync error:", err);
     });
 
+    // 3. Live Custom Requests Subscription
+    const qCustom = query(collection(db, "custom_package_requests"), where("customerId", "==", user.uid));
+    const unsubCustom = onSnapshot(qCustom, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      // Sort by date (descending)
+      data.sort((a: any, b: any) => {
+        if (!a.createdAt || !b.createdAt) return 0;
+        return b.createdAt.seconds - a.createdAt.seconds;
+      });
+      setCustomRequests(data);
+    }, (err) => {
+      console.error("Dashboard custom requests sync error:", err);
+    });
+
     return () => {
       unsubBookings();
       unsubPartners();
+      unsubCustom();
     };
   }, [user]);
+
+  const handlePayDeposit = async (request: any) => {
+    if (!request.depositAmount || !request.quotedPrice) return;
+    setPaymentLoading(request.id);
+    
+    const bRef = "JM-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+    
+    try {
+      const orderRes = await fetch("/api/razorpay/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: request.depositAmount,
+          receipt: bRef,
+        }),
+      });
+
+      if (!orderRes.ok) {
+        throw new Error("Failed to initialize payment gateway");
+      }
+
+      const orderData = await orderRes.json();
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "Jyoti Mehendi Artist",
+        description: `Deposit for Custom Package (${request.eventType})`,
+        image: "https://jyotimehendi.in/logo.png",
+        order_id: orderData.id,
+        handler: async function (response: any) {
+          setLoading(true);
+          try {
+            // 1. Create standard confirmed booking
+            const bookingData = {
+              bookingRef: bRef,
+              customerId: request.customerId,
+              customerName: request.customerName,
+              phone: request.customerPhone,
+              address: request.eventAddress,
+              serviceId: "custom_package",
+              serviceTitle: `Custom Package (${request.eventType})`,
+              price: request.quotedPrice,
+              originalPrice: request.quotedPrice,
+              isPackage: true,
+              additionalNotes: `Custom Package Details:\n- Guest Count: ${request.guestsCount}\n- Styles: ${request.styles?.join(", ") || "None"}\n- Notes: ${request.details || "None"}`,
+              bookingDateString: request.eventDate,
+              bookingDate: new Date(request.eventDate),
+              timeSlot: "As requested",
+              status: "confirmed",
+              paymentStatus: "advance_paid",
+              paymentId: response.razorpay_payment_id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpaySignature: response.razorpay_signature,
+              amountPaidOnline: request.depositAmount,
+              balanceDue: request.quotedPrice - request.depositAmount,
+              createdAt: serverTimestamp(),
+              customPackageRequestId: request.id,
+              inspirationPhoto: request.inspirationPhoto || null
+            };
+
+            await addDoc(collection(db, "bookings"), bookingData);
+
+            // 2. Update custom package request to paid
+            await updateDoc(doc(db, "custom_package_requests", request.id), {
+              status: "paid",
+              paymentId: response.razorpay_payment_id,
+              razorpayOrderId: response.razorpay_order_id,
+              updatedAt: serverTimestamp()
+            });
+
+            // 3. Send Email Notification
+            try {
+              await fetch("/api/notify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                  type: "NEW_BOOKING", 
+                  data: {
+                    ...bookingData,
+                    email: request.customerEmail
+                  }
+                })
+              });
+            } catch (err) {
+              console.error("Notification error:", err);
+            }
+
+            alert("Payment successful! Your custom package booking is confirmed.");
+            router.push(`/dashboard?bookingSuccess=true`);
+          } catch (err) {
+            console.error("Error confirming custom booking:", err);
+            alert("Payment was successful, but we failed to record your booking. Please contact support immediately with Payment ID: " + response.razorpay_payment_id);
+          } finally {
+            setLoading(false);
+            setPaymentLoading(null);
+          }
+        },
+        prefill: {
+          name: request.customerName,
+          contact: request.customerPhone,
+          email: request.customerEmail,
+        },
+        theme: {
+          color: "#db2777",
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error("Payment initiation error:", err);
+      alert("Failed to initiate payment. Please try again.");
+      setPaymentLoading(null);
+    }
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -154,9 +303,13 @@ export default function Dashboard() {
               <div className="w-16 h-16 bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] rounded-full flex items-center justify-center text-white text-2xl font-serif font-bold shadow-md">
                 {userData?.name?.charAt(0) || user.phoneNumber?.charAt(3) || "U"}
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-[var(--color-header)] font-serif">Welcome, {userData?.name || "Customer"}!</h1>
-                <p className="text-gray-500">{user.phoneNumber || user.email}</p>
+              <div className="min-w-0">
+                <h1 className="text-2xl font-bold text-[var(--color-header)] font-serif truncate">Welcome, {userData?.name || "Customer"}!</h1>
+                {user.phoneNumber ? (
+                  <p className="text-gray-500 text-sm font-medium mt-0.5">{user.phoneNumber}</p>
+                ) : (
+                  <p className="text-gray-400 text-xs font-medium mt-0.5 truncate max-w-[200px] sm:max-w-xs md:max-w-sm">{user.email}</p>
+                )}
               </div>
             </div>
             <button 
@@ -391,6 +544,127 @@ export default function Dashboard() {
                       )}
                     </div>
                   ))}
+                </div>
+              )}
+            </section>
+
+            {/* Custom Package Requests Section */}
+            <section className="mt-4">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-[var(--color-header)] flex items-center">
+                  <FiFileText className="mr-2"/> Custom Package Requests
+                </h2>
+                <a 
+                  href="/custom-package"
+                  className="flex items-center gap-1.5 text-xs font-bold text-white bg-gradient-to-r from-[var(--color-primary)] to-pink-700 px-4 py-2 rounded-full shadow-sm hover:shadow-md transition-all"
+                >
+                  <FiPlus size={14} /> New Request
+                </a>
+              </div>
+
+              {customRequests.length === 0 ? (
+                <div className="bg-white rounded-2xl p-8 text-center border border-dashed border-gray-200">
+                  <div className="w-14 h-14 bg-pink-50 text-pink-400 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">✨</div>
+                  <p className="text-gray-600 font-semibold mb-1">No custom package requests yet</p>
+                  <p className="text-gray-400 text-sm mb-4">Design your own package and get a custom quote from us.</p>
+                  <a href="/custom-package" className="inline-block px-6 py-2.5 bg-gradient-to-r from-[var(--color-primary)] to-pink-700 text-white text-sm font-bold rounded-xl shadow-sm hover:shadow-md transition-all">
+                    Create Custom Package
+                  </a>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {customRequests.map((req) => {
+                    const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
+                      pending: { label: "⏳ Pending Review", color: "text-amber-700", bg: "bg-amber-50 border-amber-200" },
+                      quoted: { label: "💬 Quotation Ready", color: "text-blue-700", bg: "bg-blue-50 border-blue-200" },
+                      paid: { label: "✅ Booking Confirmed", color: "text-green-700", bg: "bg-green-50 border-green-200" },
+                      declined: { label: "❌ Not Available", color: "text-red-700", bg: "bg-red-50 border-red-200" },
+                    };
+                    const sc = statusConfig[req.status] || statusConfig.pending;
+
+                    return (
+                      <div key={req.id} className="bg-white rounded-3xl p-6 border border-pink-50 shadow-sm">
+                        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                          <div className="flex-1 space-y-3">
+                            {/* Header */}
+                            <div className="flex items-center gap-3 flex-wrap">
+                              <span className="text-base font-bold text-gray-800 font-serif">
+                                {req.eventType} Mehndi Package
+                              </span>
+                              <span className={`text-[10px] font-extrabold px-3 py-1 rounded-full border uppercase tracking-wider ${sc.bg} ${sc.color}`}>
+                                {sc.label}
+                              </span>
+                            </div>
+
+                            {/* Details Grid */}
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs text-gray-600">
+                              <div className="bg-gray-50 rounded-xl p-2.5">
+                                <p className="text-[9px] text-gray-400 uppercase tracking-widest mb-0.5">Event Date</p>
+                                <p className="font-bold text-gray-800">{req.eventDate}</p>
+                              </div>
+                              <div className="bg-gray-50 rounded-xl p-2.5">
+                                <p className="text-[9px] text-gray-400 uppercase tracking-widest mb-0.5">Guest Count</p>
+                                <p className="font-bold text-gray-800">{req.guestsCount}</p>
+                              </div>
+                              <div className="bg-gray-50 rounded-xl p-2.5 col-span-2 md:col-span-1">
+                                <p className="text-[9px] text-gray-400 uppercase tracking-widest mb-0.5">Styles</p>
+                                <p className="font-bold text-gray-800 line-clamp-1">{req.styles?.join(", ") || "Not specified"}</p>
+                              </div>
+                            </div>
+
+                            {/* Admin Notes */}
+                            {req.adminNotes && (
+                              <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-3">
+                                <p className="text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">💬 Message from Admin</p>
+                                <p className="text-sm text-gray-700 leading-relaxed">{req.adminNotes}</p>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Right side: Quotation + CTA */}
+                          <div className="md:min-w-[200px] space-y-3">
+                            {req.status === "quoted" && req.quotedPrice && (
+                              <div className="bg-gradient-to-br from-pink-50 to-rose-50 border border-pink-100 rounded-2xl p-4 text-center">
+                                <p className="text-[10px] text-pink-500 font-extrabold uppercase tracking-widest mb-1">Your Quote</p>
+                                <p className="text-3xl font-black text-gray-800">₹{req.quotedPrice}</p>
+                                <div className="mt-2 pt-2 border-t border-pink-100">
+                                  <p className="text-[10px] text-gray-500 mb-0.5">Advance Deposit</p>
+                                  <p className="text-lg font-extrabold text-[var(--color-primary)]">₹{req.depositAmount}</p>
+                                </div>
+                                <p className="text-[9px] text-gray-400 mt-1">Balance ₹{req.quotedPrice - req.depositAmount} due on event day</p>
+                              </div>
+                            )}
+
+                            {req.status === "quoted" && (
+                              <button
+                                onClick={() => handlePayDeposit(req)}
+                                disabled={paymentLoading === req.id}
+                                className="w-full py-3 bg-gradient-to-r from-[var(--color-primary)] to-pink-700 hover:from-pink-700 hover:to-[var(--color-primary)] text-white font-extrabold text-xs uppercase tracking-wider rounded-2xl shadow-md hover:shadow-lg transition-all active:scale-[0.98] disabled:opacity-50"
+                              >
+                                {paymentLoading === req.id ? "Processing..." : `Pay Deposit ₹${req.depositAmount}`}
+                              </button>
+                            )}
+
+                            {req.status === "paid" && (
+                              <div className="text-center bg-green-50 border border-green-200 rounded-2xl p-4">
+                                <div className="w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center text-lg mx-auto mb-2">✓</div>
+                                <p className="text-xs font-bold text-green-700">Booking Confirmed!</p>
+                                <p className="text-[10px] text-green-600 mt-1">Balance ₹{(req.quotedPrice || 0) - (req.depositAmount || 0)} due on event day</p>
+                              </div>
+                            )}
+
+                            {req.status === "pending" && (
+                              <div className="text-center bg-amber-50 border border-amber-200 rounded-2xl p-4">
+                                <div className="text-2xl mb-2">📋</div>
+                                <p className="text-xs font-bold text-amber-700">Under Review</p>
+                                <p className="text-[10px] text-amber-600 mt-1">We'll notify you once the quote is ready</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </section>

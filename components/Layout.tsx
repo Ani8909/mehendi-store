@@ -2,6 +2,7 @@ import Navbar from "./Navbar";
 import BottomNav from "./BottomNav";
 import Footer from "./Footer";
 import FloatingContact from "./FloatingContact";
+import PageSwipeController from "./PageSwipeController";
 import { useRouter } from "next/router";
 import RecentActivityPopup from "./RecentActivityPopup";
 
@@ -15,6 +16,7 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <div className={`flex flex-col min-h-screen relative ${isAdminOrPartner ? "" : "pb-16 md:pb-0"}`}>
+      {!isAdminOrPartner && <PageSwipeController />}
       <Navbar />
       <main className="flex-grow pt-16">
         {children}

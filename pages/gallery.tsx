@@ -3,7 +3,7 @@ import { SkeletonGallery } from "@/components/Loader";
 import { useEffect, useState } from "react";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { FiX, FiZoomIn } from "react-icons/fi";
+import { FiX, FiZoomIn, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Gallery() {
@@ -36,6 +36,22 @@ export default function Gallery() {
     ? images 
     : images.filter(img => img.category === activeCategory);
 
+  const handleNext = () => {
+    if (!selectedImage || filteredImages.length === 0) return;
+    const currentIndex = filteredImages.findIndex(img => img.imageURL === selectedImage);
+    if (currentIndex === -1) return;
+    const nextIndex = (currentIndex + 1) % filteredImages.length;
+    setSelectedImage(filteredImages[nextIndex].imageURL);
+  };
+
+  const handlePrev = () => {
+    if (!selectedImage || filteredImages.length === 0) return;
+    const currentIndex = filteredImages.findIndex(img => img.imageURL === selectedImage);
+    if (currentIndex === -1) return;
+    const prevIndex = (currentIndex - 1 + filteredImages.length) % filteredImages.length;
+    setSelectedImage(filteredImages[prevIndex].imageURL);
+  };
+
   return (
     <>
       <SEO 
@@ -59,80 +75,51 @@ export default function Gallery() {
             />
             <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]"></div>
           </motion.div>
-          
-          <div className="relative z-10 text-center px-4">
-            <motion.span 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-pink-200 text-sm font-bold uppercase tracking-[0.3em] mb-4 block"
-            >
-              Masterpieces
-            </motion.span>
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-5xl md:text-7xl font-bold text-white font-serif mb-6 drop-shadow-lg"
-            >
-              Artistic Portfolio
-            </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-gray-200 max-w-2xl mx-auto text-lg md:text-xl font-light leading-relaxed"
-            >
-              Explore our collection of authentic, hand-crafted Mehndi designs that bring timeless tradition to life.
-            </motion.p>
+
+          <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+            <span className="bg-[var(--color-primary)]/20 text-[var(--color-primary)] border border-[var(--color-primary)]/40 px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase backdrop-blur-md inline-block mb-3">
+              Our Masterpieces
+            </span>
+            <h1 className="text-4xl md:text-6xl font-extrabold font-serif text-white tracking-tight leading-tight">
+              Design <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-pink-400 to-rose-400">Gallery</span>
+            </h1>
+            <p className="mt-4 text-base md:text-lg text-gray-200 font-medium max-w-2xl mx-auto">
+              Explore our handcrafted henna designs, ranging from intricate traditional bridal patterns to sleek, contemporary minimalist aesthetics.
+            </p>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
-          {/* Filters */}
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="flex overflow-x-auto md:flex-wrap md:justify-center gap-3 mb-16 pb-2 px-1"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
-            <style jsx>{`
-              div::-webkit-scrollbar {
-                display: none;
-              }
-            `}</style>
-            {categories.map(category => (
+        {/* Category Filter Pills */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-20 mb-12">
+          <div className="flex items-center space-x-2 overflow-x-auto pb-4 pt-2 scrollbar-none py-2 px-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/40">
+            {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setActiveCategory(category)}
-                className={`flex-shrink-0 whitespace-nowrap px-8 py-3 rounded-full text-sm font-bold transition-all duration-300 tracking-wide ${
-                  activeCategory === category 
-                    ? "bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] text-white shadow-[0_10px_20px_-5px_rgba(219,39,119,0.3)] md:scale-105" 
-                    : "bg-white text-gray-500 hover:bg-pink-50 hover:text-[var(--color-primary)] shadow-sm"
+                className={`px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider whitespace-nowrap transition-all duration-300 ${
+                  activeCategory === category
+                    ? "bg-gradient-to-r from-[var(--color-primary)] to-pink-600 text-white shadow-md shadow-pink-500/30 scale-105"
+                    : "bg-transparent text-gray-600 hover:bg-gray-100/80 hover:text-gray-900"
                 }`}
               >
                 {category}
               </button>
             ))}
-          </motion.div>
+          </div>
+        </div>
 
-          {/* Masonry Grid */}
+        {/* Gallery Grid */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
           {loading ? (
-            <div className="columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6">
-              {[250, 320, 280, 400, 300, 350, 260, 380].map((h, i) => (
-                <div key={i} className="break-inside-avoid shadow-sm" style={{ height: `${h}px` }}>
-                  <SkeletonGallery className="w-full h-full" />
-                </div>
-              ))}
-            </div>
+            <SkeletonGallery />
           ) : (
             <motion.div 
-              layout
-              className="columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6"
+              layout 
+              className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6"
             >
-              <AnimatePresence mode="popLayout">
+              <AnimatePresence>
                 {filteredImages.map((img, index) => (
-                  <motion.div 
+                  <motion.div
                     layout
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -163,23 +150,10 @@ export default function Gallery() {
               </AnimatePresence>
             </motion.div>
           )}
-
-          {filteredImages.length === 0 && !loading && (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-32"
-            >
-              <div className="bg-white inline-block p-12 rounded-[3rem] shadow-sm">
-                <FiZoomIn className="mx-auto text-4xl text-gray-200 mb-4" />
-                <p className="text-gray-400 font-medium italic">No designs found in this category yet.</p>
-              </div>
-            </motion.div>
-          )}
         </div>
       </div>
 
-      {/* Lightbox Modal */}
+      {/* Lightbox Modal with Touch Swipe Gestures */}
       <AnimatePresence>
         {selectedImage && (
           <motion.div 
@@ -192,23 +166,53 @@ export default function Gallery() {
             <motion.button 
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="absolute top-6 right-6 sm:top-10 sm:right-10 text-white hover:text-[var(--color-primary)] transition-all duration-300 p-2 bg-white/10 rounded-full border border-white/20"
+              className="absolute top-6 right-6 sm:top-10 sm:right-10 text-white hover:text-[var(--color-primary)] transition-all duration-300 p-2 bg-white/10 rounded-full border border-white/20 z-20"
               onClick={(e) => { e.stopPropagation(); setSelectedImage(null); }}
             >
               <FiX size={32} />
             </motion.button>
+
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="relative max-w-5xl w-full"
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.7}
+              onDragEnd={(e, info) => {
+                if (info.offset.x < -60 || info.velocity.x < -400) {
+                  handleNext();
+                } else if (info.offset.x > 60 || info.velocity.x > 400) {
+                  handlePrev();
+                } else if (info.offset.y > 100 || info.velocity.y > 400) {
+                  setSelectedImage(null);
+                }
+              }}
+              className="relative max-w-5xl w-full flex items-center justify-center touch-pan-y touch-pan-x cursor-grab active:cursor-grabbing"
               onClick={(e) => e.stopPropagation()}
             >
+              <button
+                onClick={(e) => { e.stopPropagation(); handlePrev(); }}
+                className="absolute left-2 sm:-left-12 z-10 p-3 bg-white/20 hover:bg-white/40 text-white rounded-full backdrop-blur-md transition-all active:scale-90 shadow-lg"
+                title="Previous (or swipe right)"
+              >
+                <FiChevronLeft size={28} />
+              </button>
+
               <img 
                 src={selectedImage} 
-                alt="Enlarged" 
-                className="w-full max-h-[85vh] object-contain rounded-[2rem] shadow-2xl border-2 border-white/10"
+                alt="Enlarged Mehndi Design" 
+                className="w-full max-h-[85vh] object-contain rounded-[2rem] shadow-2xl border-2 border-white/10 select-none pointer-events-none"
               />
+
+              <button
+                onClick={(e) => { e.stopPropagation(); handleNext(); }}
+                className="absolute right-2 sm:-right-12 z-10 p-3 bg-white/20 hover:bg-white/40 text-white rounded-full backdrop-blur-md transition-all active:scale-90 shadow-lg"
+                title="Next (or swipe left)"
+              >
+                <FiChevronRight size={28} />
+              </button>
             </motion.div>
           </motion.div>
         )}

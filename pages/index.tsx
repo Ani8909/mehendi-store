@@ -2,6 +2,7 @@ import SEO from "@/components/SEO";
 import { FadeUp, StaggerContainer, StaggerItem, CountUp, SlideInLeft, SlideInRight, ScalePop, ScrollProgressBar, ParallaxImage } from "@/components/ScrollAnimations";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import GiftCardVisual from "@/components/GiftCardVisual";
 import { useRouter } from "next/router";
 import { FiCheckCircle, FiClock, FiCreditCard, FiMapPin, FiCheck, FiTruck, FiAward, FiHeart, FiStar, FiShoppingBag, FiArrowRight, FiEdit2, FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { FaWhatsapp, FaPhone } from "react-icons/fa";
@@ -306,9 +307,25 @@ export default function Home() {
                   <h2 className="text-3xl sm:text-4xl font-serif font-bold text-stone-50 leading-[1.25] tracking-wide">
                     {heroSlides[currentSlide]?.title || "Royal Bridal Mehndi"}
                   </h2>
-                  <p className="text-xs sm:text-sm text-stone-400 leading-relaxed font-light">
+                  <p className="text-xs sm:text-sm text-stone-400 leading-relaxed font-light mb-4">
                     {heroSlides[currentSlide]?.subtitle || "Intricate heritage patterns crafted with 100% organic henna."}
                   </p>
+
+                  {/* Navigation CTA Buttons inside Hero */}
+                  <div className="flex flex-wrap items-center gap-3 pt-2">
+                    <Link 
+                      href="/services" 
+                      className="inline-flex items-center justify-center bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white px-5 py-2.5 rounded-full font-bold text-[10px] uppercase tracking-widest transition-all duration-300 shadow-[0_4px_15px_rgba(219,39,119,0.3)] hover:scale-105 active:scale-95"
+                    >
+                      Our Services
+                    </Link>
+                    <Link 
+                      href="/packages" 
+                      className="inline-flex items-center justify-center bg-white/5 hover:bg-white/10 text-stone-200 border border-white/15 px-5 py-2.5 rounded-full font-bold text-[10px] uppercase tracking-widest transition-all duration-300 hover:scale-105 active:scale-95"
+                    >
+                      Mehndi Packages
+                    </Link>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -843,6 +860,104 @@ export default function Home() {
         </div>
       </section>
 
+      {/* NEW: Emotional Love Story & Gift Card Section (Light Pink Theme with Visual Card) */}
+      <section className="py-24 bg-gradient-to-br from-pink-50 via-rose-50/80 to-pink-100/70 text-[#5c1c3f] px-4 sm:px-6 lg:px-8 relative overflow-hidden border-t border-b border-pink-200/60 shadow-inner">
+        {/* Ambient Glowing Love Hearts and Orbs */}
+        <div className="absolute top-10 left-10 w-72 h-72 bg-pink-300/30 rounded-full blur-[100px] pointer-events-none animate-pulse"></div>
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-rose-300/30 rounded-full blur-[120px] pointer-events-none animate-pulse" style={{ animationDelay: "1.5s" }}></div>
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] pointer-events-none"></div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+            
+            {/* Left Column: Interactive 3D Gift Card Visual */}
+            <div className="lg:col-span-6 w-full flex flex-col items-center">
+              <FadeUp>
+                <div className="w-full max-w-lg mx-auto transform hover:scale-[1.02] transition-transform duration-500">
+                  <GiftCardVisual 
+                    receiverName="Sneha (Bride-to-be)"
+                    senderName="Rahul (Brother)"
+                    message="Wishing you a lifetime of happiness! May the color of your bridal henna be the deepest and darkest."
+                    amount={2100}
+                    interactive={true}
+                  />
+                </div>
+                <p className="text-center text-xs text-rose-600/80 font-serif italic mt-4 flex items-center justify-center gap-1.5">
+                  <span className="animate-bounce">👆</span> Interactive 3D E-Voucher Preview • Tilt & move your finger/mouse!
+                </p>
+              </FadeUp>
+            </div>
+
+            {/* Right Column: Love Vibe Story & Concise Benefits */}
+            <div className="lg:col-span-6 space-y-6 text-left">
+              <FadeUp>
+                <div className="inline-flex items-center space-x-2 bg-white/80 backdrop-blur-md border border-rose-300/60 px-4 py-1.5 rounded-full text-rose-700 text-xs font-bold uppercase tracking-[0.2em] shadow-sm">
+                  <span className="animate-pulse">💝</span>
+                  <span>A Gift of Love & Memories</span>
+                </div>
+                <h2 className="text-3xl sm:text-5xl font-black text-[#4d1f2e] font-serif mt-3 mb-4 leading-tight">
+                  Because Some Gifts <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-600 via-pink-600 to-[#802254]">Touch the Heart...</span>
+                </h2>
+                <p className="text-[#7a4857] text-sm sm:text-base font-normal leading-relaxed">
+                  Whether it's a brother surprising his sister on her wedding, or a groom gifting his bride—a Mehndi E-Voucher transforms moments into cherished lifetime photographs.
+                </p>
+              </FadeUp>
+
+              {/* Concise 3-Pillar Glass Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                {[
+                  {
+                    icon: "💌",
+                    title: "Emotional Bond",
+                    desc: "Intricate bridal henna becomes a treasured memory forever."
+                  },
+                  {
+                    icon: "✨",
+                    title: "Total Freedom",
+                    desc: "They choose their own favorite style, date, and luxury package."
+                  },
+                  {
+                    icon: "⚡",
+                    title: "Instant Gift",
+                    desc: "Deliver digitally to their WhatsApp with your personal love note."
+                  }
+                ].map((item, idx) => (
+                  <motion.div 
+                    key={idx}
+                    whileHover={{ y: -5 }}
+                    className="bg-white/80 backdrop-blur-md hover:bg-white p-5 rounded-2xl border border-pink-200/80 hover:border-pink-400 transition-all duration-300 shadow-sm hover:shadow-md flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-100 to-rose-100 border border-pink-200 flex items-center justify-center text-xl mb-3 shadow-inner">
+                        {item.icon}
+                      </div>
+                      <h3 className="font-bold text-[#4d1f2e] text-sm sm:text-base mb-1 font-serif">
+                        {item.title}
+                      </h3>
+                      <p className="text-[#7a4857] text-xs leading-relaxed font-light">
+                        {item.desc}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Compact CTA Row */}
+              <FadeUp className="pt-4">
+                <Link 
+                  href="/gift-cards" 
+                  className="inline-flex items-center justify-center gap-3 w-full sm:w-auto bg-gradient-to-r from-rose-600 via-pink-600 to-[#9c276a] hover:from-rose-500 hover:to-[#802254] text-white font-extrabold text-sm sm:text-base px-8 py-4 rounded-2xl shadow-[0_10px_25px_rgba(225,29,72,0.3)] hover:shadow-[0_15px_35px_rgba(225,29,72,0.45)] hover:scale-105 active:scale-95 transition-all duration-300"
+                >
+                  <span className="text-xl animate-pulse">💝</span>
+                  <span>Send a Gift of Love Now</span>
+                  <FiArrowRight className="text-lg" />
+                </Link>
+              </FadeUp>
+            </div>
+
+          </div>
+        </div>
+      </section>
 
       {/* Royal Wedding & Event Packages */}
       <section id="packages" className="py-32 bg-pink-50 px-4 sm:px-6 lg:px-8 relative overflow-hidden">

@@ -1,16 +1,15 @@
 import Link from "next/link";
-import { FiMenu, FiX, FiUser, FiLogOut, FiSearch } from "react-icons/fi";
-import { useState } from "react";
+import { FiUser, FiLogOut, FiSearch } from "react-icons/fi";
 import { useAuth } from "@/lib/authContext";
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
   const { user, userData, loading, signOut } = useAuth();
 
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Services", href: "/services" },
     { name: "Packages", href: "/packages" },
+    { name: "Custom Package", href: "/custom-package" },
     { name: "Gallery", href: "/gallery" },
     { name: "Blog", href: "/blog" },
     { name: "Gift Cards", href: "/gift-cards" },
@@ -27,51 +26,78 @@ export default function Navbar() {
   const displayName = userData?.name || user?.email?.split("@")[0] || user?.phoneNumber || "My Profile";
 
   return (
-    <nav className="bg-white/80 backdrop-blur-md fixed w-full z-50 shadow-sm top-0 transition-all">
+    <nav className="bg-white/90 backdrop-blur-md fixed w-full z-50 shadow-[0_4px_20px_rgba(0,0,0,0.03)] top-0 transition-all border-b border-gray-100/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="flex items-center space-x-3 group">
-              <div className="relative w-10 h-10 sm:w-11 sm:h-11 flex-shrink-0 bg-white rounded-full p-0.5 shadow-sm border border-gray-100 group-hover:scale-105 transition-transform duration-300 flex items-center justify-center">
+            <Link href="/" className="flex items-center space-x-2.5 sm:space-x-3 group">
+              <div className="relative w-9 h-9 sm:w-11 sm:h-11 flex-shrink-0 bg-white rounded-full p-0.5 shadow-sm border border-gray-100 group-hover:scale-105 transition-transform duration-300 flex items-center justify-center">
                 <img src="/logo.png" alt="Jyoti Mehendi Logo" className="w-full h-full object-contain" />
               </div>
-              <span className="font-serif text-xl sm:text-2xl font-bold tracking-wide flex items-baseline">
+              <span className="font-serif text-lg sm:text-2xl font-bold tracking-wide flex items-baseline">
                 <span className="text-[var(--color-header)]">Jyoti</span>
-                <span className="text-[var(--color-primary)] ml-1.5 font-light text-xs sm:text-sm tracking-[0.2em] uppercase font-sans">
+                <span className="text-[var(--color-primary)] ml-1 font-light text-[10px] sm:text-sm tracking-[0.2em] uppercase font-sans">
                   Mehendi
                 </span>
               </span>
             </Link>
           </div>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-6">
-            {navLinks.map((link) => (
-              <Link 
-                key={link.name} 
-                href={link.href}
-                className="text-[var(--color-foreground)] hover:text-[var(--color-primary)] font-semibold transition-colors"
-              >
-                {link.name}
-              </Link>
-            ))}
-            <div className="flex items-center space-x-4 ml-4 border-l border-gray-200 pl-6">
-              <Link href="/verify" className="text-gray-500 hover:text-[var(--color-primary)] transition-colors p-1 flex items-center justify-center bg-gray-50 rounded-full w-9 h-9 border border-gray-200" title="Track Booking">
-                <FiSearch size={18} />
+          {/* Desktop Menu - Premium Minimalist Luxury */}
+          <div className="hidden md:flex items-center space-x-4 lg:space-x-6 xl:space-x-7">
+            {navLinks.map((link) => {
+              if (link.name === "Gift Cards") {
+                return (
+                  <Link 
+                    key={link.name} 
+                    href={link.href}
+                    className="inline-flex items-center gap-1.5 font-bold bg-gradient-to-r from-rose-500 via-pink-600 to-red-500 bg-clip-text text-transparent hover:scale-105 transition-all text-sm group whitespace-nowrap"
+                  >
+                    <span>Gift Cards</span>
+                    <span className="text-base group-hover:scale-125 group-hover:rotate-12 transition-all duration-300 animate-pulse">💝</span>
+                  </Link>
+                );
+              }
+              if (link.name === "Custom Package") {
+                return (
+                  <Link 
+                    key={link.name} 
+                    href={link.href}
+                    className="inline-flex items-center gap-1 font-extrabold bg-gradient-to-r from-[var(--color-primary)] to-pink-600 bg-clip-text text-transparent hover:scale-105 transition-all text-sm group whitespace-nowrap"
+                  >
+                    <span>Custom</span>
+                    <span className="text-pink-500 text-sm animate-pulse">✨</span>
+                  </Link>
+                );
+              }
+              return (
+                <Link 
+                  key={link.name} 
+                  href={link.href}
+                  className="text-gray-700 hover:text-[var(--color-primary)] font-semibold transition-colors text-sm whitespace-nowrap"
+                >
+                  {link.name}
+                </Link>
+              );
+            })}
+            <div className="flex items-center space-x-3 lg:space-x-4 ml-2 lg:ml-4 border-l border-gray-200 pl-3 lg:pl-5">
+              <Link href="/verify" className="text-gray-500 hover:text-[var(--color-primary)] transition-colors p-2 flex items-center justify-center bg-gray-50 hover:bg-pink-50 rounded-full w-9 h-9 border border-gray-200/80 shadow-2xs shrink-0" title="Track Booking">
+                <FiSearch size={16} />
               </Link>
               {!loading && user ? (
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2.5 shrink-0">
                   <Link 
                     href={getDashboardHref()}
-                    className="flex items-center space-x-2 text-[var(--color-primary)] font-semibold hover:text-[var(--color-header)] transition-colors"
+                    className="group relative flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-tr from-pink-600 to-rose-400 text-white font-extrabold text-xs shadow-md hover:shadow-lg hover:scale-105 transition-all ring-2 ring-pink-100"
+                    title={`Dashboard (${displayName})`}
                   >
-                    <FiUser size={18} />
-                    <span className="max-w-[120px] truncate" title={displayName}>{displayName}</span>
+                    {displayName.charAt(0).toUpperCase()}
+                    <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"></span>
                   </Link>
                   <button 
                     onClick={() => signOut()}
-                    className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                    className="text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full p-1.5 transition-all"
                     title="Sign Out"
                   >
                     <FiLogOut size={16} />
@@ -80,94 +106,59 @@ export default function Navbar() {
               ) : (
                 <Link 
                   href="/login"
-                  className="flex items-center space-x-2 text-gray-600 hover:text-[var(--color-primary)] font-medium transition-colors"
+                  className="flex items-center space-x-1.5 text-gray-700 hover:text-[var(--color-primary)] font-semibold transition-colors text-sm shrink-0 whitespace-nowrap"
                 >
-                  <FiUser size={18} />
+                  <FiUser size={16} />
                   <span>Login</span>
                 </Link>
               )}
               <Link 
                 href="/booking"
-                className="bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-header)] text-white px-5 py-2.5 rounded-full font-bold hover:shadow-lg hover:shadow-[var(--color-primary)]/30 hover:-translate-y-0.5 transition-all shadow-md"
+                className="bg-gradient-to-r from-[var(--color-primary)] via-pink-700 to-[var(--color-header)] text-white px-5 lg:px-6 py-2.5 rounded-full font-bold text-xs tracking-wider uppercase hover:shadow-[0_8px_20px_rgba(219,39,119,0.35)] hover:-translate-y-0.5 transition-all duration-300 shadow-md shrink-0 whitespace-nowrap"
               >
                 Book Appointment
               </Link>
             </div>
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="flex items-center md:hidden">
-            <button 
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-[var(--color-foreground)] hover:text-[var(--color-primary)] focus:outline-none"
+          {/* Mobile Top Bar Actions (No Hamburger - Pure Native App Feel!) */}
+          <div className="flex items-center space-x-2.5 md:hidden">
+            {!loading && user ? (
+              <Link 
+                href={getDashboardHref()}
+                className="group relative flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-tr from-pink-600 to-rose-400 text-white font-extrabold text-xs shadow-sm active:scale-95 transition-transform ring-2 ring-pink-100"
+                title={`Dashboard (${displayName})`}
+              >
+                {displayName.charAt(0).toUpperCase()}
+                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"></span>
+              </Link>
+            ) : (
+              <Link 
+                href="/login"
+                className="flex items-center gap-1 px-3 py-1 rounded-full bg-pink-50 border border-pink-200 text-[var(--color-primary)] font-extrabold text-xs shadow-2xs active:scale-95 transition-transform"
+                title="Login / Account"
+              >
+                <FiUser size={13} />
+                <span>Login</span>
+              </Link>
+            )}
+            <Link 
+              href="/verify" 
+              className="w-8 h-8 rounded-full bg-gray-50 border border-gray-200/80 text-gray-600 flex items-center justify-center active:scale-95 transition-transform" 
+              title="Track Booking"
             >
-              {isOpen ? <FiX size={28} /> : <FiMenu size={28} />}
-            </button>
+              <FiSearch size={15} />
+            </Link>
+            <Link 
+              href="/booking"
+              className="bg-gradient-to-r from-[var(--color-primary)] to-pink-700 text-white px-3.5 py-1.5 rounded-full font-extrabold text-[11px] uppercase tracking-wider shadow-sm active:scale-95 transition-transform whitespace-nowrap"
+            >
+              Book Now
+            </Link>
           </div>
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden bg-white border-t border-gray-100">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="block px-3 py-2 rounded-md text-base font-medium text-[var(--color-foreground)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background)]"
-                onClick={() => setIsOpen(false)}
-              >
-                {link.name}
-              </Link>
-            ))}
-            <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col space-y-2">
-              <Link
-                href="/verify"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-[var(--color-primary)] hover:bg-[var(--color-background)] flex items-center gap-2"
-                onClick={() => setIsOpen(false)}
-              >
-                <FiSearch size={18} /> Track Booking
-              </Link>
-              {!loading && user ? (
-                <>
-                  <Link
-                    href={getDashboardHref()}
-                    className="block px-3 py-2 rounded-md text-base font-medium text-[var(--color-primary)] hover:bg-pink-50"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    👤 {displayName} (Dashboard)
-                  </Link>
-                  <button
-                    onClick={() => {
-                      signOut();
-                      setIsOpen(false);
-                    }}
-                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-500 hover:bg-red-50"
-                  >
-                    🚪 Logout
-                  </button>
-                </>
-              ) : (
-                <Link
-                  href="/login"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-[var(--color-primary)] hover:bg-[var(--color-background)]"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Login / Profile
-                </Link>
-              )}
-              <Link
-                href="/booking"
-                className="block text-center px-3 py-3 rounded-full text-base font-bold text-white bg-[var(--color-primary)] hover:bg-[var(--color-header)] transition-colors shadow-md mx-2"
-                onClick={() => setIsOpen(false)}
-              >
-                Book Appointment
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
     </nav>
   );
 }
+

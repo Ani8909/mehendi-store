@@ -365,6 +365,11 @@ export default function FloatingContact() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [router.pathname]);
 
+  // Minimize chatbot window when route changes to allow users to see the new page
+  useEffect(() => {
+    setIsOpen(false);
+  }, [router.pathname]);
+
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -1372,7 +1377,7 @@ export default function FloatingContact() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
             transition={{ duration: 0.3 }}
-            className="fixed bottom-6 sm:bottom-8 right-4 left-4 sm:left-auto sm:right-6 w-auto sm:w-96 max-h-[85vh] md:max-h-[580px] bg-white rounded-3xl border border-pink-100 shadow-[0_20px_50px_rgba(219,39,119,0.15)] overflow-hidden z-[110] flex flex-col"
+            className="fixed bottom-20 sm:bottom-8 right-4 left-4 sm:left-auto sm:right-6 w-auto sm:w-96 max-h-[85vh] md:max-h-[580px] bg-white rounded-3xl border border-pink-100 shadow-[0_20px_50px_rgba(219,39,119,0.15)] overflow-hidden z-[110] flex flex-col"
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-pink-500 to-rose-600 p-4 text-white flex justify-between items-center flex-shrink-0">
