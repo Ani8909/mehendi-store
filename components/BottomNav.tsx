@@ -43,16 +43,20 @@ export default function BottomNav() {
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-gray-100 shadow-[0_-8px_25px_rgba(0,0,0,0.08)] z-50 pb-safe">
         <div className="flex justify-around items-center h-16 max-w-lg mx-auto px-2">
           {navItems.map((item) => {
-            const isActive = router.pathname === item.href && !showMenuModal;
+            const isActive = (item.href === "/" ? (router.pathname === "/" || router.asPath === "/") : (router.pathname.startsWith(item.href) || router.asPath.startsWith(item.href))) && !showMenuModal;
             const Icon = item.icon;
 
             if (item.special) {
               return (
                 <Link key={item.name} href={item.href} className="relative -top-4 flex flex-col items-center group">
-                  <div className="bg-gradient-to-r from-[var(--color-primary)] to-pink-600 p-3.5 rounded-full shadow-lg shadow-pink-500/40 text-white ring-4 ring-white group-active:scale-95 transition-all duration-300 flex items-center justify-center">
+                  <div className={`p-3.5 rounded-full shadow-lg text-white ring-4 transition-all duration-300 flex items-center justify-center ${
+                    isActive
+                      ? "bg-gradient-to-r from-amber-500 via-rose-600 to-pink-600 ring-pink-300 scale-110 shadow-pink-500/60 animate-pulse"
+                      : "bg-gradient-to-r from-[var(--color-primary)] to-pink-600 ring-white group-active:scale-95 shadow-pink-500/40"
+                  }`}>
                     <Icon size={26} />
                   </div>
-                  <span className="text-[10px] font-black text-[var(--color-primary)] mt-1 tracking-tight">{item.name}</span>
+                  <span className={`text-[10px] font-black mt-1 tracking-tight ${isActive ? "text-rose-600 scale-105 underline decoration-2 decoration-rose-500" : "text-[var(--color-primary)]"}`}>{item.name}</span>
                 </Link>
               );
             }
@@ -76,12 +80,15 @@ export default function BottomNav() {
             }
 
             return (
-              <Link key={item.name} href={item.href} className="flex flex-col items-center p-2 flex-1 group" onClick={() => setShowMenuModal(false)}>
+              <Link key={item.name} href={item.href} className="flex flex-col items-center p-2 flex-1 group relative" onClick={() => setShowMenuModal(false)}>
+                {isActive && (
+                  <span className="absolute -top-3 w-8 h-1 bg-gradient-to-r from-[var(--color-primary)] to-rose-500 rounded-full shadow-sm animate-pulse"></span>
+                )}
                 <Icon 
                   size={22} 
                   className={`mb-1 transition-all duration-300 group-active:scale-90 ${isActive ? "text-[var(--color-primary)] scale-110 stroke-[2.5]" : "text-gray-400 stroke-[1.75]"}`} 
                 />
-                <span className={`text-[10px] tracking-tight transition-colors duration-300 ${isActive ? "text-[var(--color-primary)] font-extrabold" : "text-gray-500 font-medium"}`}>
+                <span className={`text-[10px] tracking-tight transition-colors duration-300 ${isActive ? "text-[var(--color-primary)] font-extrabold scale-105" : "text-gray-500 font-medium"}`}>
                   {item.name}
                 </span>
               </Link>

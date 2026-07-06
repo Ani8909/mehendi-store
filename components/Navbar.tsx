@@ -1,9 +1,16 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { FiUser, FiLogOut, FiSearch } from "react-icons/fi";
 import { useAuth } from "@/lib/authContext";
 
 export default function Navbar() {
+  const router = useRouter();
   const { user, userData, loading, signOut } = useAuth();
+
+  const isLinkActive = (href: string) => {
+    if (href === "/") return router.pathname === "/" || router.asPath === "/";
+    return router.pathname.startsWith(href) || router.asPath.startsWith(href);
+  };
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -47,12 +54,17 @@ export default function Navbar() {
           {/* Desktop Menu - Premium Minimalist Luxury */}
           <div className="hidden md:flex items-center space-x-4 lg:space-x-6 xl:space-x-7">
             {navLinks.map((link) => {
+              const active = isLinkActive(link.href);
               if (link.name === "Gift Cards") {
                 return (
                   <Link 
                     key={link.name} 
                     href={link.href}
-                    className="inline-flex items-center gap-1.5 font-bold bg-gradient-to-r from-rose-500 via-pink-600 to-red-500 bg-clip-text text-transparent hover:scale-105 transition-all text-sm group whitespace-nowrap"
+                    className={`inline-flex items-center gap-1.5 font-bold transition-all text-sm group whitespace-nowrap px-3 py-1.5 rounded-full ${
+                      active
+                        ? "bg-gradient-to-r from-rose-50 to-pink-50 text-rose-700 font-extrabold border border-rose-300 ring-2 ring-rose-200 shadow-sm scale-105"
+                        : "bg-gradient-to-r from-rose-500 via-pink-600 to-red-500 bg-clip-text text-transparent hover:scale-105"
+                    }`}
                   >
                     <span>Gift Cards</span>
                     <span className="text-base group-hover:scale-125 group-hover:rotate-12 transition-all duration-300 animate-pulse">💝</span>
@@ -64,7 +76,11 @@ export default function Navbar() {
                   <Link 
                     key={link.name} 
                     href={link.href}
-                    className="inline-flex items-center gap-1 font-extrabold bg-gradient-to-r from-[var(--color-primary)] to-pink-600 bg-clip-text text-transparent hover:scale-105 transition-all text-sm group whitespace-nowrap"
+                    className={`inline-flex items-center gap-1 font-extrabold transition-all text-sm group whitespace-nowrap px-3 py-1.5 rounded-full ${
+                      active
+                        ? "bg-gradient-to-r from-pink-50 to-purple-50 text-pink-900 border border-pink-300 ring-2 ring-pink-200 shadow-sm scale-105"
+                        : "bg-gradient-to-r from-[var(--color-primary)] to-pink-600 bg-clip-text text-transparent hover:scale-105"
+                    }`}
                   >
                     <span>Custom</span>
                     <span className="text-pink-500 text-sm animate-pulse">✨</span>
@@ -75,9 +91,14 @@ export default function Navbar() {
                 <Link 
                   key={link.name} 
                   href={link.href}
-                  className="text-gray-700 hover:text-[var(--color-primary)] font-semibold transition-colors text-sm whitespace-nowrap"
+                  className={`px-3.5 py-1.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap flex items-center gap-1.5 ${
+                    active
+                      ? "text-[var(--color-primary)] font-extrabold bg-pink-50/90 shadow-2xs border border-pink-200/80 scale-105"
+                      : "text-gray-700 hover:text-[var(--color-primary)] hover:bg-gray-50/80"
+                  }`}
                 >
                   {link.name}
+                  {active && <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] animate-pulse"></span>}
                 </Link>
               );
             })}
