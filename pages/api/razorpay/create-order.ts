@@ -9,6 +9,13 @@ const razorpay = new Razorpay({
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
     try {
+      if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+        return res.status(500).json({ 
+          error: "RAZORPAY_KEYS_MISSING", 
+          message: "Razorpay API keys (NEXT_PUBLIC_RAZORPAY_KEY_ID & RAZORPAY_KEY_SECRET) are not set in live hosting Environment Variables. Please select 'Direct UPI / Pay on Arrival' option." 
+        });
+      }
+
       const { amount, receipt } = req.body;
       
       if (!amount || isNaN(amount) || amount <= 0) {
