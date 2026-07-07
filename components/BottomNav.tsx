@@ -146,25 +146,53 @@ export default function BottomNav() {
                       key={index}
                       href={page.href}
                       onClick={() => setShowMenuModal(false)}
-                      className="relative p-4 rounded-2xl border-0 bg-gradient-to-br from-pink-600 via-rose-500 to-amber-500 text-white shadow-[0_8px_25px_rgba(244,63,94,0.35)] active:scale-95 transition-all duration-300 flex flex-col justify-between items-start overflow-hidden group scale-[1.02] border border-pink-400/20"
+                      className="relative p-4 rounded-2xl border-0 bg-gradient-to-br from-[#190410] via-[#3d0f28] to-[#12020a] text-white shadow-[0_8px_25px_rgba(219,39,119,0.3)] active:scale-95 transition-all duration-300 flex flex-col justify-between items-start overflow-hidden group scale-[1.02] border border-[#db2777]/30 min-h-[120px]"
                     >
-                      {/* Premium Shimmer Background Effect */}
-                      <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
+                      {/* Inner Gold/Rose Frame */}
+                      <div className="absolute inset-1.5 border border-[#db2777]/20 rounded-xl pointer-events-none z-10" />
                       
-                      {/* Golden Sparkle Badge */}
-                      <span className="absolute -top-1 -right-1 bg-gradient-to-r from-amber-400 to-yellow-500 text-pink-950 text-[7px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm animate-bounce">
-                        Special Gift 🎁
+                      {/* Corner Rosettes */}
+                      <div className="absolute top-[8px] left-[8px] w-1 h-1 bg-[#db2777]/60 rounded-full pointer-events-none z-10" />
+                      <div className="absolute top-[8px] right-[8px] w-1 h-1 bg-[#db2777]/60 rounded-full pointer-events-none z-10" />
+                      <div className="absolute bottom-[8px] left-[8px] w-1 h-1 bg-[#db2777]/60 rounded-full pointer-events-none z-10" />
+                      <div className="absolute bottom-[8px] right-[8px] w-1 h-1 bg-[#db2777]/60 rounded-full pointer-events-none z-10" />
+
+                      {/* Henna Heart Overlay Background */}
+                      <div className="absolute right-0 bottom-0 w-24 h-24 pointer-events-none opacity-20 translate-x-[20%] translate-y-[20%] select-none z-0">
+                        <svg className="w-full h-full stroke-[#db2777] stroke-[0.75] fill-none" viewBox="0 0 100 100">
+                          <path d="M50,85 C20,60 5,45 5,28 C5,15 15,5 28,5 C37,5 45,10 50,17 C55,10 63,5 72,5 C85,5 95,15 95,28 C95,45 80,60 50,85 Z" fill="#db2777" className="opacity-40" />
+                          <path d="M50,75 C25,53 12,41 12,28 C12,18 20,10 30,10 C38,10 45,15 50,21 C55,15 62,10 70,10 C80,10 88,18 88,28 C88,41 75,53 50,75 Z" />
+                        </svg>
+                      </div>
+
+                      {/* Premium Shimmer Sweep Animation */}
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 pointer-events-none z-10"
+                        initial={{ x: "-150%" }}
+                        animate={{ x: ["-150%", "200%"] }}
+                        transition={{
+                          repeat: Infinity,
+                          repeatType: "loop",
+                          duration: 3.5,
+                          ease: "easeInOut",
+                          delay: 0.5,
+                        }}
+                      />
+                      
+                      {/* Golden Sparkle Badge (Inside the Card) */}
+                      <span className="absolute top-2.5 right-2.5 bg-gradient-to-r from-amber-400 via-rose-500 to-pink-600 text-white text-[7px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-md animate-pulse z-20">
+                        For Loved Ones 💝
                       </span>
                       
-                      <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-md shadow-xs flex items-center justify-center mb-3 text-amber-300 animate-pulse">
+                      <div className="w-9 h-9 rounded-xl bg-pink-950/40 backdrop-blur-md shadow-xs flex items-center justify-center mb-3 text-amber-300 z-10 border border-pink-500/20">
                         <PageIcon size={18} className="drop-shadow-[0_0_4px_rgba(251,191,36,0.8)] fill-amber-300" />
                       </div>
-                      <div>
-                        <h4 className="font-black text-xs leading-tight tracking-wide drop-shadow-sm flex items-center gap-1">
+                      <div className="z-10">
+                        <h4 className="font-serif font-black text-xs leading-tight tracking-wide text-amber-100 flex items-center gap-1">
                           {page.name}
                         </h4>
-                        <p className="text-[9px] text-pink-100/90 mt-0.5 font-bold leading-tight drop-shadow-sm">
-                          {page.desc}
+                        <p className="text-[9px] text-pink-200/90 mt-0.5 font-bold leading-tight">
+                          Special Gift for Your Loved Ones 💝
                         </p>
                       </div>
                     </Link>
