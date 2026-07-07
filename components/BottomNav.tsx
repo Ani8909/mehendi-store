@@ -32,10 +32,7 @@ export default function BottomNav() {
     { name: "Custom ✨", href: "/custom-package", icon: GiFlowers, desc: "Tailored Package Creator", color: "bg-rose-50 text-rose-700 border-rose-200 font-bold" },
     { name: "Gallery", href: "/gallery", icon: FiImage, desc: "Design Portfolio", color: "bg-amber-50 text-amber-700 border-amber-200/60" },
     { name: "Blog & Tips", href: "/blog", icon: FiFileText, desc: "Mehendi Care & Trends", color: "bg-blue-50 text-blue-700 border-blue-200/60" },
-    { name: "Gift Cards 💝", href: "/gift-cards", icon: FiHeart, desc: "Love E-Gift Vouchers", color: "bg-gradient-to-br from-rose-50 via-pink-100 to-red-50 text-rose-700 border-rose-300 shadow-sm font-extrabold animate-pulse" },
-    { name: "Track Order", href: "/verify", icon: FiSearch, desc: "Check Booking Status", color: "bg-emerald-50 text-emerald-700 border-emerald-200/60" },
-    { name: "Book Now", href: "/booking", icon: FiCalendar, desc: "Schedule Appointment", color: "bg-red-50 text-red-700 border-red-200/60" },
-    { name: user ? "My Dashboard" : "Login / Account", href: getProfileHref(), icon: FiUser, desc: user ? "Orders & Profile" : "Login or Register", color: "bg-indigo-50 text-indigo-700 border-indigo-200/60" },
+    { name: "Gift Cards 💝", href: "/gift-cards", icon: FiHeart, desc: "Love E-Gift Vouchers", color: "" },
   ];
 
   return (
@@ -146,21 +143,21 @@ export default function BottomNav() {
                       key={index}
                       href={page.href}
                       onClick={() => setShowMenuModal(false)}
-                      className="relative p-4 rounded-2xl border-0 bg-gradient-to-br from-[#190410] via-[#3d0f28] to-[#12020a] text-white shadow-[0_8px_25px_rgba(219,39,119,0.3)] active:scale-95 transition-all duration-300 flex flex-col justify-between items-start overflow-hidden group scale-[1.02] border border-[#db2777]/30 min-h-[120px]"
+                      className="relative p-4 rounded-2xl border-0 bg-gradient-to-br from-[#db2777] via-[#ec4899] to-[#f472b6] text-white shadow-[0_8px_25px_rgba(219,39,119,0.35)] active:scale-95 transition-all duration-300 flex flex-col justify-between items-start overflow-hidden group scale-[1.02] border border-white/10 min-h-[120px]"
                     >
-                      {/* Inner Gold/Rose Frame */}
-                      <div className="absolute inset-1.5 border border-[#db2777]/20 rounded-xl pointer-events-none z-10" />
+                      {/* Inner Luxury Frame */}
+                      <div className="absolute inset-1.5 border border-white/20 rounded-xl pointer-events-none z-10" />
                       
                       {/* Corner Rosettes */}
-                      <div className="absolute top-[8px] left-[8px] w-1 h-1 bg-[#db2777]/60 rounded-full pointer-events-none z-10" />
-                      <div className="absolute top-[8px] right-[8px] w-1 h-1 bg-[#db2777]/60 rounded-full pointer-events-none z-10" />
-                      <div className="absolute bottom-[8px] left-[8px] w-1 h-1 bg-[#db2777]/60 rounded-full pointer-events-none z-10" />
-                      <div className="absolute bottom-[8px] right-[8px] w-1 h-1 bg-[#db2777]/60 rounded-full pointer-events-none z-10" />
+                      <div className="absolute top-[8px] left-[8px] w-1 h-1 bg-white/60 rounded-full pointer-events-none z-10" />
+                      <div className="absolute top-[8px] right-[8px] w-1 h-1 bg-white/60 rounded-full pointer-events-none z-10" />
+                      <div className="absolute bottom-[8px] left-[8px] w-1 h-1 bg-white/60 rounded-full pointer-events-none z-10" />
+                      <div className="absolute bottom-[8px] right-[8px] w-1 h-1 bg-white/60 rounded-full pointer-events-none z-10" />
 
                       {/* Henna Heart Overlay Background */}
                       <div className="absolute right-0 bottom-0 w-24 h-24 pointer-events-none opacity-20 translate-x-[20%] translate-y-[20%] select-none z-0">
-                        <svg className="w-full h-full stroke-[#db2777] stroke-[0.75] fill-none" viewBox="0 0 100 100">
-                          <path d="M50,85 C20,60 5,45 5,28 C5,15 15,5 28,5 C37,5 45,10 50,17 C55,10 63,5 72,5 C85,5 95,15 95,28 C95,45 80,60 50,85 Z" fill="#db2777" className="opacity-40" />
+                        <svg className="w-full h-full stroke-white stroke-[0.75] fill-none" viewBox="0 0 100 100">
+                          <path d="M50,85 C20,60 5,45 5,28 C5,15 15,5 28,5 C37,5 45,10 50,17 C55,10 63,5 72,5 C85,5 95,15 95,28 C95,45 80,60 50,85 Z" fill="white" className="opacity-30" />
                           <path d="M50,75 C25,53 12,41 12,28 C12,18 20,10 30,10 C38,10 45,15 50,21 C55,15 62,10 70,10 C80,10 88,18 88,28 C88,41 75,53 50,75 Z" />
                         </svg>
                       </div>
@@ -180,18 +177,18 @@ export default function BottomNav() {
                       />
                       
                       {/* Golden Sparkle Badge (Inside the Card) */}
-                      <span className="absolute top-2.5 right-2.5 bg-gradient-to-r from-amber-400 via-rose-500 to-pink-600 text-white text-[7px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-md animate-pulse z-20">
+                      <span className="absolute top-2.5 right-2.5 bg-gradient-to-r from-amber-300 to-yellow-300 text-pink-900 text-[7px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider shadow-xs animate-pulse z-20">
                         For Loved Ones 💝
                       </span>
                       
-                      <div className="w-9 h-9 rounded-xl bg-pink-950/40 backdrop-blur-md shadow-xs flex items-center justify-center mb-3 text-amber-300 z-10 border border-pink-500/20">
-                        <PageIcon size={18} className="drop-shadow-[0_0_4px_rgba(251,191,36,0.8)] fill-amber-300" />
+                      <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-md shadow-xs flex items-center justify-center mb-3 text-yellow-200 z-10 border border-white/10">
+                        <PageIcon size={18} className="drop-shadow-[0_0_4px_rgba(253,224,71,0.8)] fill-yellow-200" />
                       </div>
                       <div className="z-10">
-                        <h4 className="font-serif font-black text-xs leading-tight tracking-wide text-amber-100 flex items-center gap-1">
+                        <h4 className="font-serif font-black text-xs leading-tight tracking-wide text-white flex items-center gap-1">
                           {page.name}
                         </h4>
-                        <p className="text-[9px] text-pink-200/90 mt-0.5 font-bold leading-tight">
+                        <p className="text-[9px] text-pink-100/90 mt-0.5 font-bold leading-tight">
                           Special Gift for Your Loved Ones 💝
                         </p>
                       </div>
@@ -217,6 +214,36 @@ export default function BottomNav() {
                 );
               })}
             </div>
+
+            {/* Secondary Utility Actions (Track Order & My Dashboard) */}
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              <Link
+                href="/verify"
+                onClick={() => setShowMenuModal(false)}
+                className="py-3.5 px-4 rounded-xl bg-gray-50 border border-gray-200/60 text-gray-700 font-bold text-xs flex items-center justify-center gap-2 hover:bg-gray-100 active:scale-95 transition-all shadow-2xs"
+              >
+                <FiSearch size={14} className="text-gray-400" />
+                <span>Track Order</span>
+              </Link>
+              <Link
+                href={getProfileHref()}
+                onClick={() => setShowMenuModal(false)}
+                className="py-3.5 px-4 rounded-xl bg-gray-50 border border-gray-200/60 text-gray-700 font-bold text-xs flex items-center justify-center gap-2 hover:bg-gray-100 active:scale-95 transition-all shadow-2xs"
+              >
+                <FiUser size={14} className="text-gray-400" />
+                <span>My Dashboard</span>
+              </Link>
+            </div>
+
+            {/* Primary Booking Call to Action */}
+            <Link
+              href="/booking"
+              onClick={() => setShowMenuModal(false)}
+              className="w-full py-4 bg-gradient-to-r from-[var(--color-primary)] to-pink-600 text-white font-extrabold text-xs rounded-2xl flex items-center justify-center gap-2 shadow-[0_4px_15px_rgba(219,39,119,0.2)] hover:shadow-[0_6px_20px_rgba(219,39,119,0.35)] active:scale-[0.98] transition-all mb-4 uppercase tracking-wider"
+            >
+              <FiCalendar size={15} />
+              <span>Book Appointment Now 📅</span>
+            </Link>
 
             {/* Footer / Account Status */}
             <div className="bg-gray-50 rounded-2xl p-4 border border-gray-200/60 flex items-center justify-between mb-4">
