@@ -140,6 +140,37 @@ export default function BottomNav() {
             <div className="grid grid-cols-2 gap-3 mb-6">
               {allPages.map((page, index) => {
                 const PageIcon = page.icon;
+                if (page.name.includes("Gift Cards")) {
+                  return (
+                    <Link
+                      key={index}
+                      href={page.href}
+                      onClick={() => setShowMenuModal(false)}
+                      className="relative p-4 rounded-2xl border-0 bg-gradient-to-br from-pink-600 via-rose-500 to-amber-500 text-white shadow-[0_8px_25px_rgba(244,63,94,0.35)] active:scale-95 transition-all duration-300 flex flex-col justify-between items-start overflow-hidden group scale-[1.02] border border-pink-400/20"
+                    >
+                      {/* Premium Shimmer Background Effect */}
+                      <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
+                      
+                      {/* Golden Sparkle Badge */}
+                      <span className="absolute -top-1 -right-1 bg-gradient-to-r from-amber-400 to-yellow-500 text-pink-950 text-[7px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm animate-bounce">
+                        Special Gift 🎁
+                      </span>
+                      
+                      <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-md shadow-xs flex items-center justify-center mb-3 text-amber-300 animate-pulse">
+                        <PageIcon size={18} className="drop-shadow-[0_0_4px_rgba(251,191,36,0.8)] fill-amber-300" />
+                      </div>
+                      <div>
+                        <h4 className="font-black text-xs leading-tight tracking-wide drop-shadow-sm flex items-center gap-1">
+                          {page.name}
+                        </h4>
+                        <p className="text-[9px] text-pink-100/90 mt-0.5 font-bold leading-tight drop-shadow-sm">
+                          {page.desc}
+                        </p>
+                      </div>
+                    </Link>
+                  );
+                }
+
                 return (
                   <Link
                     key={index}
