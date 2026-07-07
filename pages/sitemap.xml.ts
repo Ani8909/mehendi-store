@@ -117,6 +117,20 @@ const STATIC_PAGES: Array<{
 // ─────────────────────────────────────────────────────────────────
 // XML BUILDER HELPERS
 // ─────────────────────────────────────────────────────────────────
+function escapeXml(unsafe: string): string {
+  if (!unsafe) return '';
+  return unsafe.replace(/[<>&'"]/g, (c) => {
+    switch (c) {
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '&': return '&amp;';
+      case '\'': return '&apos;';
+      case '"': return '&quot;';
+      default: return c;
+    }
+  });
+}
+
 function urlEntry(
   loc: string,
   lastmod: string,
@@ -129,9 +143,9 @@ function urlEntry(
         .map(
           (img) => `
       <image:image>
-        <image:loc>${img.loc}</image:loc>
-        <image:title>${img.title}</image:title>
-        <image:caption>${img.caption}</image:caption>
+        <image:loc>${escapeXml(img.loc)}</image:loc>
+        <image:title>${escapeXml(img.title)}</image:title>
+        <image:caption>${escapeXml(img.caption)}</image:caption>
       </image:image>`
         )
         .join('')
@@ -139,10 +153,10 @@ function urlEntry(
 
   return `
   <url>
-    <loc>${loc}</loc>
-    <lastmod>${lastmod}</lastmod>
-    <changefreq>${changefreq}</changefreq>
-    <priority>${priority}</priority>${imgTags}
+    <loc>${escapeXml(loc)}</loc>
+    <lastmod>${escapeXml(lastmod)}</lastmod>
+    <changefreq>${escapeXml(changefreq)}</changefreq>
+    <priority>${escapeXml(priority)}</priority>${imgTags}
   </url>`;
 }
 
@@ -227,9 +241,10 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
         const blog = doc.data();
         if (blog.slug) {
           const lastmod = parseLastMod(blog.updatedAt || blog.createdAt);
-          const imgUrl = blog.coverImage && blog.coverImage.startsWith('http') 
+          const isCoverImageStr = typeof blog.coverImage === 'string';
+          const imgUrl = isCoverImageStr && blog.coverImage.startsWith('http') 
             ? blog.coverImage 
-            : `${SITE_URL}${blog.coverImage || '/images/services/minimalist.png'}`;
+            : `${SITE_URL}${isCoverImageStr ? blog.coverImage : '/images/services/minimalist.png'}`;
           
           entries.push(
             urlEntry(
@@ -239,8 +254,8 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
               '0.75',
               [{
                 loc: imgUrl,
-                title: `${blog.title} - Jyoti Mehendi Blog`,
-                caption: blog.excerpt || `${blog.title} article about mehndi trends`
+                title: `${blog.title || 'Mehendi Design'} - Jyoti Mehendi Blog`,
+                caption: blog.excerpt || `${blog.title || 'Mehendi Design'} article about mehndi trends`
               }]
             )
           );
@@ -253,7 +268,8 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
         const svc = doc.data();
         const serviceSlug = svc.title ? slugify(svc.title) : null;
         if (serviceSlug && svc.isActive !== false) {
-          const serviceImg = svc.image || '/images/services/minimalist.png';
+          const isServiceImgStr = typeof svc.image === 'string';
+          const serviceImg = isServiceImgStr ? svc.image : '/images/services/minimalist.png';
           const imgUrl = serviceImg.startsWith('http') ? serviceImg : `${SITE_URL}${serviceImg}`;
           
           entries.push(
@@ -264,8 +280,8 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
               '0.87',
               [{
                 loc: imgUrl,
-                title: `${svc.title} - Best Mehndi Design in Agra`,
-                caption: svc.description || `${svc.title} mehndi design by Jyoti Mehendi`
+                title: `${svc.title || 'Mehendi Service'} - Best Mehndi Design in Agra`,
+                caption: svc.description || `${svc.title || 'Mehendi Service'} mehndi design by Jyoti Mehendi`
               }]
             )
           );
@@ -316,11 +332,17 @@ ${entries.join('')}
     res.end();
 
     return { props: {} };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Sitemap generation error:', error);
     res.setHeader('Content-Type', 'text/xml');
     res.write(
-      '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>'
+      `<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Sitemap Generation Error:
+${error?.message || error}
+${error?.stack || ''}
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>`
     );
     res.end();
     return { props: {} };
