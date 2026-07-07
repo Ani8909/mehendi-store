@@ -1,5 +1,6 @@
 import { GetServerSideProps } from 'next';
 import { adminDb } from '@/lib/firebaseAdmin';
+import { slugify } from '@/lib/slugify';
 
 // ─────────────────────────────────────────────────────────────────
 // SITE CONFIG
@@ -91,6 +92,7 @@ const STATIC_PAGES: Array<{
   // ── High-value booking pages ───────────────────────────────────
   { loc: '/booking',          changefreq: 'daily',   priority: '0.95' },
   { loc: '/express-booking',  changefreq: 'daily',   priority: '0.93' },
+  { loc: '/custom-package',   changefreq: 'weekly',  priority: '0.90' }, // Custom Package builder
 
   // ── Service & Package catalogue ────────────────────────────────
   { loc: '/services',   changefreq: 'weekly', priority: '0.90' },
@@ -142,6 +144,20 @@ function urlEntry(
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>${imgTags}
   </url>`;
+}
+
+// Helper to parse mix of string dates, Firestore Timestamps and date objects safely
+function parseLastMod(dateVal: any): string {
+  if (!dateVal) return TODAY;
+  if (typeof dateVal === 'string') return dateVal;
+  if (dateVal._seconds) return new Date(dateVal._seconds * 1000).toISOString();
+  if (dateVal.seconds) return new Date(dateVal.seconds * 1000).toISOString();
+  if (typeof dateVal.toDate === 'function') return dateVal.toDate().toISOString();
+  try {
+    const d = new Date(dateVal);
+    if (!isNaN(d.getTime())) return d.toISOString();
+  } catch (e) {}
+  return TODAY;
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -210,15 +226,22 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
       blogsSnap.forEach((doc) => {
         const blog = doc.data();
         if (blog.slug) {
-          const lastmod = blog.updatedAt
-            ? new Date(blog.updatedAt._seconds * 1000).toISOString()
-            : TODAY;
+          const lastmod = parseLastMod(blog.updatedAt || blog.createdAt);
+          const imgUrl = blog.coverImage && blog.coverImage.startsWith('http') 
+            ? blog.coverImage 
+            : `${SITE_URL}${blog.coverImage || '/images/services/minimalist.png'}`;
+          
           entries.push(
             urlEntry(
               `${SITE_URL}/blog/${blog.slug}`,
               lastmod,
               'weekly',
-              '0.75'
+              '0.75',
+              [{
+                loc: imgUrl,
+                title: `${blog.title} - Jyoti Mehendi Blog`,
+                caption: blog.excerpt || `${blog.title} article about mehndi trends`
+              }]
             )
           );
         }
@@ -228,29 +251,46 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
       const servicesSnap = await adminDb.collection('services').get();
       servicesSnap.forEach((doc) => {
         const svc = doc.data();
-        if (svc.slug) {
+        const serviceSlug = svc.title ? slugify(svc.title) : null;
+        if (serviceSlug && svc.isActive !== false) {
+          const serviceImg = svc.image || '/images/services/minimalist.png';
+          const imgUrl = serviceImg.startsWith('http') ? serviceImg : `${SITE_URL}${serviceImg}`;
+          
           entries.push(
             urlEntry(
-              `${SITE_URL}/services/${svc.slug}`,
+              `${SITE_URL}/services/${serviceSlug}`,
               TODAY,
               'weekly',
-              '0.87'
+              '0.87',
+              [{
+                loc: imgUrl,
+                title: `${svc.title} - Best Mehndi Design in Agra`,
+                caption: svc.description || `${svc.title} mehndi design by Jyoti Mehendi`
+              }]
             )
           );
         }
       });
 
       // 7. Dynamic package pages from Firestore
-      const packagesSnap = await adminDb.collection('packages').get();
+      const packagesSnap = await adminDb.collection('event_packages').get();
       packagesSnap.forEach((doc) => {
         const pkg = doc.data();
-        if (pkg.slug) {
+        const packageSlug = pkg.name ? slugify(pkg.name) : null;
+        if (packageSlug && pkg.isActive !== false) {
+          const pkgImg = '/images/gallery/bridal_2.png'; // standard package cover
+          
           entries.push(
             urlEntry(
-              `${SITE_URL}/packages/${pkg.slug}`,
+              `${SITE_URL}/packages/${packageSlug}`,
               TODAY,
               'weekly',
-              '0.84'
+              '0.84',
+              [{
+                loc: `${SITE_URL}${pkgImg}`,
+                title: `${pkg.name} - Exclusive Event Package in Agra`,
+                caption: pkg.description || `${pkg.name} design package details`
+              }]
             )
           );
         }

@@ -19,6 +19,8 @@ interface ServicePageProps {
     duration: string;
     category: string;
     image?: string;
+    isLocality?: boolean;
+    localityName?: string;
   } | null;
 }
 
@@ -121,7 +123,7 @@ export default function ServiceDetail({ service }: ServicePageProps) {
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "Nagla Latoori Singh, Deori Road",
-        "addressLocality": "Agra",
+        "addressLocality": service.localityName || "Agra",
         "addressRegion": "Uttar Pradesh",
         "postalCode": "282001",
         "addressCountry": "IN"
@@ -129,7 +131,7 @@ export default function ServiceDetail({ service }: ServicePageProps) {
     },
     "areaServed": {
       "@type": "City",
-      "name": "Agra"
+      "name": service.localityName || "Agra"
     },
     "offers": {
       "@type": "Offer",
@@ -274,6 +276,39 @@ export default function ServiceDetail({ service }: ServicePageProps) {
   );
 }
 
+const LEGACY_SERVICE_MAPPING: Record<string, string> = {
+  'bridal-mehndi-agra': 'Traditional Bridal Mehndi',
+  'arabic-mehndi-agra': 'Arabic Floral Mehndi',
+  'guest-party-mehndi-agra': 'Minimalist Guest Mehndi',
+  'indo-western-mehndi-agra': 'Indo-Arabic Fusion',
+  'rajasthani-mehndi-agra': 'Traditional Bridal Mehndi',
+  'moroccan-mehndi-agra': 'Arabic Floral Mehndi',
+  'full-hand-mehndi-agra': 'Traditional Bridal Mehndi',
+  'feet-mehndi-agra': 'Leg & Foot Bridal',
+};
+
+const LOCALITY_MAPPING: Record<string, string> = {
+  'mehndi-artist-tajganj-agra': 'Tajganj',
+  'mehndi-artist-sanjay-place-agra': 'Sanjay Place',
+  'mehndi-artist-kamla-nagar-agra': 'Kamla Nagar',
+  'mehndi-artist-dayalbagh-agra': 'Dayalbagh',
+  'mehndi-artist-sikandra-agra': 'Sikandra',
+  'mehndi-artist-khandari-agra': 'Khandari',
+  'mehndi-artist-shahganj-agra': 'Shahganj',
+  'mehndi-artist-fatehabad-road-agra': 'Fatehabad Road',
+  'mehndi-artist-lohamandi-agra': 'Lohamandi',
+  'mehndi-artist-shastripuram-agra': 'Shastripuram',
+  'mehndi-artist-bodla-agra': 'Bodla',
+  'mehndi-artist-prakash-nagar-agra': 'Prakash Nagar',
+  'mehndi-artist-nehru-nagar-agra': 'Nehru Nagar',
+  'mehndi-artist-civil-lines-agra': 'Civil Lines',
+  'mehndi-artist-sadar-bazar-agra': 'Sadar Bazar',
+  'mehndi-artist-belanganj-agra': 'Belanganj',
+  'mehndi-artist-hariparvat-agra': 'Hariparvat',
+  'mehndi-artist-mant-road-agra': 'Mant Road',
+  'mehndi-artist-raj-nagar-agra': 'Raj Nagar',
+};
+
 export const getStaticPaths: GetStaticPaths = async () => {
   if (!adminDb) {
     return { paths: [], fallback: "blocking" };
@@ -281,7 +316,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   try {
     const snapshot = await adminDb.collection("services").get();
-    const paths = snapshot.docs
+    const dbPaths = snapshot.docs
       .map(doc => {
         const data = doc.data();
         if (data.title && data.isActive !== false) {
@@ -290,6 +325,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
         return null;
       })
       .filter((p): p is { params: { slug: string } } => p !== null);
+
+    const legacyPaths = Object.keys(LEGACY_SERVICE_MAPPING).map(slug => ({ params: { slug } }));
+    const localityPaths = Object.keys(LOCALITY_MAPPING).map(slug => ({ params: { slug } }));
+
+    const paths = [...dbPaths, ...legacyPaths, ...localityPaths];
 
     return { paths, fallback: "blocking" };
   } catch (error) {
@@ -305,11 +345,39 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   }
 
   try {
+    // 1. Check if this is a dynamic locality SEO page
+    const localityName = LOCALITY_MAPPING[slug];
+    if (localityName) {
+      const service = {
+        id: `locality-${slug}`,
+        title: `Mehndi Artist in ${localityName}, Agra`,
+        description: `Looking for the best professional mehndi artist in ${localityName}, Agra? Jyoti Mehendi offers premium doorstep bridal, Arabic, and custom mehndi services in ${localityName} at budget-friendly prices. With 100% natural, deep-staining organic henna and years of experience, we make your special occasions truly royal. Book your home visit slot today!`,
+        price: 499,
+        duration: "Flexible",
+        category: "Doorstep Service",
+        image: "/images/services/bridal.png",
+        isLocality: true,
+        localityName: localityName
+      };
+      return {
+        props: { service },
+        revalidate: 3600,
+      };
+    }
+
+    // 2. Resolve legacy/hardcoded slugs to direct service titles
+    let targetTitleSlug = slug;
+    const mappedTitle = LEGACY_SERVICE_MAPPING[slug];
+    if (mappedTitle) {
+      targetTitleSlug = slugify(mappedTitle);
+    }
+
+    // 3. Query Firestore services
     const snapshot = await adminDb.collection("services").get();
     const services = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     
-    // Find the service that slugifies to the parameter slug
-    const service = services.find(s => slugify((s as any).title) === slug);
+    // Find the service that slugifies to targetTitleSlug
+    const service = services.find(s => slugify((s as any).title) === targetTitleSlug);
 
     if (!service) {
       return {

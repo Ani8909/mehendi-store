@@ -2,10 +2,30 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { FiUser, FiLogOut, FiSearch } from "react-icons/fi";
 import { useAuth } from "@/lib/authContext";
+import { useState, useEffect } from "react";
 
 export default function Navbar() {
   const router = useRouter();
   const { user, userData, loading, signOut } = useAuth();
+  const [visible, setVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > lastScrollY && currentScrollY > 80) {
+        // Scrolling down & passed header height
+        setVisible(false);
+      } else {
+        // Scrolling up
+        setVisible(true);
+      }
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
 
   const isLinkActive = (href: string) => {
     if (href === "/") return router.pathname === "/" || router.asPath === "/";
@@ -33,7 +53,9 @@ export default function Navbar() {
   const displayName = userData?.name || user?.email?.split("@")[0] || user?.phoneNumber || "My Profile";
 
   return (
-    <nav className="bg-white/90 backdrop-blur-md fixed w-full z-50 shadow-[0_4px_20px_rgba(0,0,0,0.03)] top-0 transition-all border-b border-gray-100/80">
+    <nav className={`bg-white/90 backdrop-blur-md fixed w-full z-50 shadow-[0_4px_20px_rgba(0,0,0,0.03)] top-0 transition-transform duration-300 border-b border-gray-100/80 ${
+      visible ? "translate-y-0" : "-translate-y-full lg:translate-y-0"
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}

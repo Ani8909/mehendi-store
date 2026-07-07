@@ -115,15 +115,7 @@ export default function BottomNav() {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 300 }}
-              drag="y"
-              dragConstraints={{ top: 0, bottom: 600 }}
-              dragElastic={0.25}
-              onDragEnd={(e, info) => {
-                if (info.offset.y > 100 || info.velocity.y > 400) {
-                  setShowMenuModal(false);
-                }
-              }}
-              className="relative w-full bg-white rounded-t-[2.5rem] p-6 shadow-2xl max-h-[85vh] overflow-y-auto border-t border-pink-100 touch-pan-y"
+              className="relative w-full bg-white rounded-t-[2.5rem] p-6 pb-32 shadow-2xl max-h-[85vh] overflow-y-auto border-t border-pink-100 touch-pan-y"
             >
               {/* Drag Handle (Visual Swipe Hint) */}
               <div className="w-14 h-1.5 bg-gray-300 rounded-full mx-auto mb-6 cursor-grab active:cursor-grabbing"></div>

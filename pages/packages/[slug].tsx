@@ -215,6 +215,15 @@ export default function PackageDetail({ pkg }: PackagePageProps) {
   );
 }
 
+const LEGACY_PACKAGE_MAPPING: Record<string, string> = {
+  'royal-bridal-package-agra': 'The Royal Queen (Bridal Contract)',
+  'budget-bridal-package-agra': 'Suhagan Group Pack (Family Special)',
+  'premium-wedding-package-agra': 'Shagun Party Contract (Events)',
+  'engagement-mehndi-package-agra': 'The Royal Queen (Bridal Contract)',
+  'karwa-chauth-mehndi-agra': 'Suhagan Group Pack (Family Special)',
+  'full-wedding-family-package-agra': 'Shagun Party Contract (Events)',
+};
+
 export const getStaticPaths: GetStaticPaths = async () => {
   if (!adminDb) {
     return { paths: [], fallback: "blocking" };
@@ -222,7 +231,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   try {
     const snapshot = await adminDb.collection("event_packages").get();
-    const paths = snapshot.docs
+    const dbPaths = snapshot.docs
       .map(doc => {
         const data = doc.data();
         if (data.name && data.isActive !== false) {
@@ -231,6 +240,9 @@ export const getStaticPaths: GetStaticPaths = async () => {
         return null;
       })
       .filter((p): p is { params: { slug: string } } => p !== null);
+
+    const legacyPaths = Object.keys(LEGACY_PACKAGE_MAPPING).map(slug => ({ params: { slug } }));
+    const paths = [...dbPaths, ...legacyPaths];
 
     return { paths, fallback: "blocking" };
   } catch (error) {
@@ -246,11 +258,18 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   }
 
   try {
+    // 1. Resolve legacy/hardcoded slugs to actual database names
+    let targetSlug = slug;
+    const mappedName = LEGACY_PACKAGE_MAPPING[slug];
+    if (mappedName) {
+      targetSlug = slugify(mappedName);
+    }
+
     const snapshot = await adminDb.collection("event_packages").get();
     const packages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     
-    // Find the package that slugifies to the parameter slug
-    const pkg = packages.find(p => slugify((p as any).name) === slug);
+    // Find the package that slugifies to targetSlug
+    const pkg = packages.find(p => slugify((p as any).name) === targetSlug);
 
     if (!pkg) {
       return {
